@@ -15,9 +15,15 @@ namespace Industropolis
             foreach (var child in node.Children) AddNode(child);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 pos)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-            foreach (var d in _drawable) d.Draw(spriteBatch, d.GlobalPosition.Floor() - pos.Floor());
+            foreach (var d in _drawable)
+            {
+                var pos = d.GlobalPosition.Floor() - position.Floor();
+
+                if (!(pos.Y + d.Size.Y < 0 || pos.X + d.Size.X < 0 || pos.X > 1280 || pos.Y > 720))
+                    d.Draw(spriteBatch, pos);
+            }
         }
     }
 }
