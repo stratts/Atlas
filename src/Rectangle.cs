@@ -10,11 +10,15 @@ namespace Industropolis
 
         private static Texture2D? _texture;
 
-        public Rect(Vector2 position, Vector2 size, Color color)
+        public Rect(Vector2 size, Color color)
         {
-            Position = position;
             Size = size;
             Color = color;
+        }
+
+        public Rect(Vector2 position, Vector2 size, Color color) : this(size, color)
+        {
+            Position = position;
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)

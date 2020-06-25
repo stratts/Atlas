@@ -11,11 +11,13 @@ namespace Industropolis
         public void AddNode(Node node)
         {
             if (node is IDrawable d) _drawable.Add(d);
+
+            foreach (var child in node.Children) AddNode(child);
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 pos)
         {
-            foreach (var d in _drawable) d.Draw(spriteBatch, d.GlobalPosition);
+            foreach (var d in _drawable) d.Draw(spriteBatch, d.GlobalPosition.Floor() - pos.Floor());
         }
     }
 }
