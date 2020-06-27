@@ -14,6 +14,12 @@ namespace Industropolis
             var matrix = Matrix.CreateRotationZ(rotation);
             return Vector2.Transform(v, matrix);
         }
+
+        public static float Angle(this Vector2 v)
+        {
+            var n = Vector2.Normalize(v);
+            return (float)Math.Atan2(n.Y, n.X);
+        }
     }
 
     public struct ColorHsv

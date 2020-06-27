@@ -20,7 +20,21 @@ namespace Industropolis
 
         public static void DrawRect(Vector2 position, Vector2 size, Color color)
         {
-            _spriteBatch.Draw(_texture, new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y), color);
+            DrawRect(position + size / 2, size, color, 0);
+        }
+
+        public static void DrawRect(Vector2 centrePos, Vector2 size, Color color, float angle)
+        {
+            _spriteBatch.Draw(
+                _texture,
+                destinationRectangle: new Rectangle((int)centrePos.X, (int)centrePos.Y, (int)size.X, (int)size.Y),
+                sourceRectangle: null,
+                color: color,
+                rotation: angle,
+                origin: new Vector2(0.5f),
+                effects: SpriteEffects.None,
+                layerDepth: 0
+            );
         }
 
         public static void DrawCircle(Vector2 position, int radius, Color color)
@@ -38,8 +52,7 @@ namespace Industropolis
         {
             var dist = end - start;
             var length = dist.Length();
-            var distN = Vector2.Normalize(dist);
-            var angle = (float)Math.Atan2(distN.Y, distN.X);
+            var angle = dist.Angle();
 
             _spriteBatch.Draw(
                 _texture,
