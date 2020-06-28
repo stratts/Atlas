@@ -9,16 +9,33 @@ namespace Industropolis
     {
         private List<IDrawable> _drawable = new List<IDrawable>();
         private List<IMouseInputHandler> _mHandlers = new List<IMouseInputHandler>();
+        private List<IComponentSystem> _systems = new List<IComponentSystem>();
         protected Vector2 _camera;
 
         private MouseState prevMouseState = Mouse.GetState();
+
+        public void AddSystem(IComponentSystem system)
+        {
+            _systems.Add(system);
+        }
 
         public void AddNode(Node node)
         {
             if (node is IDrawable d) _drawable.Add(d);
             if (node is IMouseInputHandler m) _mHandlers.Add(m);
 
+            foreach (var component in node.Components) AddComponent(component);
+            node.ComponentAdded += AddComponent;
+
             foreach (var child in node.Children) AddNode(child);
+        }
+
+        private void AddComponent(Component component)
+        {
+            foreach (var system in _systems)
+            {
+                if (system.HandlesComponent(component)) system.AddComponent(component);
+            }
         }
 
         public virtual void Update(float elapsed)
@@ -49,6 +66,8 @@ namespace Industropolis
             }
 
             prevMouseState = mouseState;
+
+            foreach (var system in _systems) system.UpdateComponents(elapsed);
         }
 
         public void Draw(SpriteBatch spriteBatch)
