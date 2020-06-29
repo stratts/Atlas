@@ -32,8 +32,8 @@ namespace Industropolis
             );
         }
 
-        public void UpdateComponents(float elapsed) => UpdateComponents(_components, elapsed);
+        public void UpdateComponents(Scene scene, float elapsed) => UpdateComponents(scene, _components, elapsed);
 
-        public abstract void UpdateComponents(IReadOnlyList<T> components, float elapsed);
+        public abstract void UpdateComponents(Scene scene, IReadOnlyList<T> components, float elapsed);
     }
 }
