@@ -9,40 +9,63 @@ namespace Industropolis
     {
         public Rectangle InputArea { get; set; }
         public Action<Vector2>? OnClick { get; set; }
+        public Action<Vector2>? OnMove { get; set; }
+        public Action? OnMouseEnter { get; set; }
+        public Action? OnMouseExit { get; set; }
     }
 
     public class MouseInputSystem : BaseComponentSystem<MouseInput>
     {
-        private MouseState prevMouseState = Mouse.GetState();
+        private MouseState _mouseState;
+        private MouseState _prevMouseState = Mouse.GetState();
 
         public override void UpdateComponents(Scene scene, IReadOnlyList<MouseInput> components, float elapsed)
         {
-            var mouseState = Mouse.GetState();
+            _mouseState = Mouse.GetState();
 
-            if (mouseState.LeftButton == ButtonState.Pressed && prevMouseState.LeftButton == ButtonState.Released)
+            if (_mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
             {
                 foreach (var c in components)
                 {
-                    var screenPos = c.Parent.GlobalPosition - scene.Camera;
-
-                    var mX = mouseState.X;
-                    var mY = mouseState.Y;
-
-                    var left = screenPos.X + c.InputArea.X;
-                    var up = screenPos.Y + c.InputArea.Y;
-                    var right = left + c.InputArea.Width;
-                    var down = up + c.InputArea.Height;
-
-                    if (!(mX < left || mX > right || mY < up || mY > down))
+                    if (c.OnClick == null) continue;
+                    if (WithinInputArea(scene, _mouseState, c))
                     {
-                        // Clicked within input area
-                        c.OnClick?.Invoke(Vector2.Zero);
+                        c.OnClick.Invoke(MouseToAreaPos(scene, _mouseState, c));
                     }
-
                 }
             }
 
-            prevMouseState = mouseState;
+            if (_mouseState.X != _prevMouseState.X || _mouseState.Y != _prevMouseState.Y)
+            {
+                foreach (var c in components)
+                {
+                    if (c.OnMove == null && c.OnMouseEnter == null && c.OnMouseExit == null) continue;
+
+                    bool withinCurrent = WithinInputArea(scene, _mouseState, c);
+                    bool withinPrev = WithinInputArea(scene, _prevMouseState, c);
+                    if (withinCurrent)
+                    {
+                        c.OnMove?.Invoke(MouseToAreaPos(scene, _mouseState, c));
+                        if (!withinPrev) c.OnMouseEnter?.Invoke();
+                    }
+                    else if (withinPrev) c.OnMouseExit?.Invoke();
+                }
+            }
+
+            _prevMouseState = _mouseState;
+        }
+
+        private Vector2 MouseToAreaPos(Scene scene, MouseState state, MouseInput component)
+        {
+            var mousePos = new Vector2(state.X + scene.Camera.X, state.Y + scene.Camera.Y);
+            var nodePos = component.Parent.GlobalPosition;
+            var areaPos = new Vector2(component.InputArea.X, component.InputArea.Y);
+            return mousePos - nodePos - areaPos;
+        }
+
+        private bool WithinInputArea(Scene scene, MouseState state, MouseInput component)
+        {
+            return component.InputArea.Contains(MouseToAreaPos(scene, state, component));
         }
     }
 }
