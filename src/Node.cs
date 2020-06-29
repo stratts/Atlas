@@ -4,13 +4,13 @@ using Microsoft.Xna.Framework;
 
 namespace Industropolis
 {
-    public class Node
+    public abstract class Node
     {
         private List<Node> _children = new List<Node>();
         private List<Component> _components = new List<Component>();
 
-        public Vector2 Position { get; set; }
-        public Vector2 GlobalPosition => Parent != null ? Position + Parent.GlobalPosition : Position;
+        public Vector2 Position;
+        public Vector2 ScenePosition => Parent != null ? Position + Parent.ScenePosition : Position;
 
         public Node? Parent { get; set; }
         public IReadOnlyList<Node> Children => _children;

@@ -57,8 +57,8 @@ namespace Industropolis
 
         private Vector2 MouseToAreaPos(Scene scene, MouseState state, MouseInput component)
         {
-            var mousePos = new Vector2(state.X + scene.Camera.X, state.Y + scene.Camera.Y);
-            var nodePos = component.Parent.GlobalPosition;
+            var mousePos = new Vector2(state.X + scene.Camera.Position.X, state.Y + scene.Camera.Position.Y);
+            var nodePos = component.Parent.ScenePosition;
             var areaPos = new Vector2(component.InputArea.X, component.InputArea.Y);
             return mousePos - nodePos - areaPos;
         }

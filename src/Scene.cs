@@ -9,12 +9,13 @@ namespace Industropolis
     {
         private List<IDrawable> _drawable = new List<IDrawable>();
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
-        protected Vector2 _camera;
+        protected Camera _camera = new Camera(1280, 720);
 
-        public Vector2 Camera => _camera;
+        public Camera Camera => _camera;
 
         public Scene()
         {
+            AddNode(_camera);
             AddSystem(new MouseInputSystem());
         }
 
@@ -50,7 +51,7 @@ namespace Industropolis
         {
             foreach (var d in _drawable)
             {
-                var pos = d.GlobalPosition.Floor() - _camera.Floor();
+                var pos = d.ScenePosition.Floor() - _camera.Position.Floor();
 
                 if (!(pos.Y + d.Size.Y < 0 || pos.X + d.Size.X < 0 || pos.X > 1280 || pos.Y > 720))
                     d.Draw(spriteBatch, pos);
