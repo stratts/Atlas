@@ -5,7 +5,37 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Industropolis
 {
-    public class Scene
+    public interface IScene
+    {
+        void Update(float elapsed);
+        void Draw(SpriteBatch spriteBatch);
+    }
+
+    public class LayeredScene : IScene
+    {
+        private Scene[] _scenes;
+
+        public LayeredScene(int layers)
+        {
+            _scenes = new Scene[layers];
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            for (int i = _scenes.Length - 1; i >= 0; i--) _scenes[i]?.Draw(spriteBatch);
+        }
+
+        public void Update(float elapsed)
+        {
+            foreach (var scene in _scenes) scene?.Update(elapsed);
+        }
+
+        public Scene GetScene(int layer) => _scenes[layer];
+
+        public void SetScene(int layer, Scene scene) => _scenes[layer] = scene;
+    }
+
+    public class Scene : IScene
     {
         private List<IDrawable> _drawable = new List<IDrawable>();
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
