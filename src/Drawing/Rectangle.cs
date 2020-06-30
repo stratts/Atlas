@@ -21,6 +21,7 @@ namespace Industropolis
             Position = position;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position) => CustomDrawing.DrawRect(position, Size, Color * SceneOpacity);
+        public void Draw(SpriteBatch spriteBatch, Vector2 position) =>
+            CustomDrawing.DrawRect(position, Size, GetRenderColor(Color));
     }
 }

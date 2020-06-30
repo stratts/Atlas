@@ -19,6 +19,6 @@ namespace Industropolis
             Position = position;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position) => CustomDrawing.DrawEqTriangle(position, Size, Color * SceneOpacity);
+        public void Draw(SpriteBatch spriteBatch, Vector2 position) => CustomDrawing.DrawEqTriangle(position, Size, GetRenderColor(Color));
     }
 }

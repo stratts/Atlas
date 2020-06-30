@@ -13,7 +13,7 @@ namespace Industropolis
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-            spriteBatch.DrawString(Font, Content, position, Color * SceneOpacity);
+            spriteBatch.DrawString(Font, Content, position, GetRenderColor(Color));
         }
     }
 }

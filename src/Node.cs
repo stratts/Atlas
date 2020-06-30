@@ -15,7 +15,7 @@ namespace Industropolis
         public bool Enabled { get; set; } = true;
 
         public float Opacity { get; set; } = 1f;
-        public float SceneOpacity => Parent != null ? Opacity * Parent.Opacity : Opacity;
+        public Color Tint { get; set; } = Color.White;
 
         public Node? Parent { get; set; }
         public IReadOnlyList<Node> Children => _children;
@@ -60,6 +60,22 @@ namespace Industropolis
                 if (component is T c) return c;
             }
             return null;
+        }
+
+        protected Color GetRenderColor(Color color)
+        {
+            var opacity = Parent != null ? Opacity * Parent.Opacity : Opacity;
+            var tint = Parent != null && Parent.Tint != Color.White ? Parent.Tint : Tint;
+            var c = color;
+            if (tint != Color.White)
+            {
+                var tHsv = tint.ToHsv();
+                var cHsv = c.ToHsv();
+                cHsv.Hue = tHsv.Hue;
+                cHsv.Saturation = tHsv.Saturation;
+                c = cHsv.ToRgb();
+            }
+            return c * opacity;
         }
     }
 }
