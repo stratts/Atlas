@@ -6,7 +6,9 @@ namespace Industropolis
     public class Rect : Node, IDrawable
     {
         public Vector2 Size { get; set; }
-        public Color Color { get; set; }
+        public Color Color { get; set; } = Color.White;
+
+        public Rect() { }
 
         public Rect(Vector2 size, Color color)
         {
