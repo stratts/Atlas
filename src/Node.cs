@@ -12,6 +12,11 @@ namespace Industropolis
         public Vector2 Position;
         public Vector2 ScenePosition => Parent != null ? Position + Parent.ScenePosition : Position;
 
+        public bool Enabled { get; set; } = true;
+
+        public float Opacity { get; set; } = 1f;
+        public float SceneOpacity => Parent != null ? Opacity * Parent.Opacity : Opacity;
+
         public Node? Parent { get; set; }
         public IReadOnlyList<Node> Children => _children;
         public IReadOnlyList<Component> Components => _components;

@@ -98,6 +98,7 @@ namespace Industropolis
         {
             foreach (var d in _drawable)
             {
+                if (!d.Enabled) continue;
                 var pos = d.ScenePosition.Floor() - _camera.Position.Floor();
 
                 if (!(pos.Y + d.Size.Y < 0 || pos.X + d.Size.X < 0 || pos.X > 1280 || pos.Y > 720))
