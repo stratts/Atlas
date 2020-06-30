@@ -21,8 +21,7 @@ namespace Industropolis
         private MouseState _prevMouseState = Mouse.GetState();
         private Vector2 _mousePos;
         private Vector2 _prevMousePos;
-        private static MouseInput? _consumer;
-        private static MouseInput? _prevConsumer;
+        private HashSet<MouseInput> _mouseEntered = new HashSet<MouseInput>();
 
         public static bool InputConsumed { get; set; } = false;
 
@@ -33,10 +32,7 @@ namespace Industropolis
 
             foreach (var c in components)
             {
-                bool withinCurrent = WithinInputArea(scene, _mousePos, c);
-                bool withinPrev = WithinInputArea(scene, _prevMousePos, c);
-
-                if (withinCurrent && !InputConsumed)
+                if (!InputConsumed && WithinInputArea(scene, _mousePos, c))
                 {
                     // Handle click
                     if (_mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
@@ -48,22 +44,22 @@ namespace Industropolis
                     if (_mousePos != _prevMousePos)
                     {
                         c.OnMove?.Invoke(MouseToAreaPos(scene, _mousePos, c));
-                        // Invoke OnMouseEnter method if either the previous position was outside,
-                        // or if another component directly above this one consumed the mouse input last update
-                        if (!withinPrev || _consumer != c) c.OnMouseEnter?.Invoke();
+
+                        if (!_mouseEntered.Contains(c))
+                        {
+                            _mouseEntered.Add(c);
+                            c.OnMouseEnter?.Invoke();
+                        }
                     }
 
                     // Mark input as consumed
-                    if (c.ConsumeInput)
-                    {
-                        InputConsumed = true;
-                        _prevConsumer = _consumer;
-                        _consumer = c;
-                    }
+                    if (c.ConsumeInput) InputConsumed = true;
                 }
-                // Invoke OnMouseExit method if the mouse was inside last update or if another component 
-                // consumed the input - but only if this component was the last one to consume the input 
-                else if (withinPrev && (!c.ConsumeInput || _prevConsumer == c)) c.OnMouseExit?.Invoke();
+                else if (_mouseEntered.Contains(c))
+                {
+                    c.OnMouseExit?.Invoke();
+                    _mouseEntered.Remove(c);
+                }
             }
 
             _prevMouseState = _mouseState;
