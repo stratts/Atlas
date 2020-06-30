@@ -20,6 +20,10 @@ namespace Industropolis
             var n = Vector2.Normalize(v);
             return (float)Math.Atan2(n.Y, n.X);
         }
+
+        public static Vector2 Normalized(this Vector2 v) => Vector2.Normalize(v);
+
+        public static Vector2 Round(this Vector2 v) => new Vector2((float)Math.Round(v.X), (float)Math.Round(v.Y));
     }
 
     public struct ColorHsv

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace Industropolis
 {
-    public abstract class Node
+    public class Node
     {
         private List<Node> _children = new List<Node>();
         private List<Component> _components = new List<Component>();
