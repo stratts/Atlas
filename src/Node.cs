@@ -19,6 +19,8 @@ namespace Industropolis
         public event Action<Component>? ComponentAdded;
         public event Action<Component>? ComponentRemoved;
 
+        public event Action<Node>? Deleted;
+
         public void AddChild(Node node)
         {
             node.Parent = this;
@@ -30,6 +32,8 @@ namespace Industropolis
             node.Parent = null;
             _children.Remove(node);
         }
+
+        public void Delete() => Deleted?.Invoke(this);
 
         public void AddComponent(Component component)
         {

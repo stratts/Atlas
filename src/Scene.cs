@@ -60,8 +60,17 @@ namespace Industropolis
 
             foreach (var component in node.Components) AddComponent(component);
             node.ComponentAdded += AddComponent;
+            node.ComponentRemoved += RemoveComponent;
+            node.Deleted += RemoveNode;
 
             foreach (var child in node.Children) AddNode(child);
+        }
+
+        public void RemoveNode(Node node)
+        {
+            if (node is IDrawable d) _drawable.Remove(d);
+            foreach (var component in node.Components) RemoveComponent(component);
+            foreach (var child in node.Children) RemoveNode(child);
         }
 
         private void AddComponent(Component component)
@@ -69,6 +78,14 @@ namespace Industropolis
             foreach (var system in _systems)
             {
                 if (system.HandlesComponent(component)) system.AddComponent(component);
+            }
+        }
+
+        private void RemoveComponent(Component component)
+        {
+            foreach (var system in _systems)
+            {
+                if (system.HandlesComponent(component)) system.RemoveComponent(component);
             }
         }
 
