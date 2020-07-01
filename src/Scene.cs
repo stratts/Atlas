@@ -100,8 +100,10 @@ namespace Industropolis
             {
                 if (!d.Enabled) continue;
                 var pos = d.ScenePosition.Floor() - _camera.Position.Floor();
+                var bounds = d.DrawBounds;
 
-                if (!(pos.Y + d.Size.Y < 0 || pos.X + d.Size.X < 0 || pos.X > 1280 || pos.Y > 720))
+                if (!(pos.X + bounds.Right < 0 || pos.Y + bounds.Bottom < 0
+                    || pos.X + bounds.Left > 1280 || pos.Y + bounds.Top > 720))
                     d.Draw(spriteBatch, pos);
             }
         }
