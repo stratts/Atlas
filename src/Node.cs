@@ -8,11 +8,16 @@ namespace Industropolis
     {
         private List<Node> _children = new List<Node>();
         private List<Component> _components = new List<Component>();
+        private bool _enabled = true;
 
         public Vector2 Position;
         public Vector2 ScenePosition => Parent != null ? Position + Parent.ScenePosition : Position;
 
-        public bool Enabled { get; set; } = true;
+        public bool Enabled
+        {
+            get => _enabled && Parent != null ? Parent.Enabled : _enabled;
+            set => _enabled = value;
+        }
 
         public float Opacity { get; set; } = 1f;
         public Color Tint { get; set; } = Color.White;

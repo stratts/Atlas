@@ -32,7 +32,7 @@ namespace Industropolis
 
             foreach (var c in components)
             {
-                if (!InputConsumed && WithinInputArea(scene, _mousePos, c))
+                if (c.Enabled && !InputConsumed && WithinInputArea(scene, _mousePos, c))
                 {
                     // Handle click
                     if (_mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
