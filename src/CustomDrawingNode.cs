@@ -21,7 +21,7 @@ namespace Industropolis
         public void DrawRect(Vector2 position, Vector2 size, Color color) => DrawRect(position, size, color);
 
         public void DrawRect(Vector2 centrePos, Vector2 size, Color color, float angle) =>
-            CustomDrawing.DrawRect(_screenPos + Position, size, GetRenderColor(color), angle);
+            CustomDrawing.DrawRect(_screenPos + centrePos, size, GetRenderColor(color), angle);
 
         public void DrawCircle(Vector2 position, int radius, Color color) =>
             CustomDrawing.DrawCircle(_screenPos + position, radius, GetRenderColor(color));
