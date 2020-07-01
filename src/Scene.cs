@@ -38,8 +38,9 @@ namespace Industropolis
     public class Scene : IScene
     {
         private List<IDrawable> _drawable = new List<IDrawable>();
+        private List<IUpdateable> _updateable = new List<IUpdateable>();
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
-        protected Camera _camera = new Camera(1280, 720);
+        protected Camera _camera = new Camera(GameScreen.Width, GameScreen.Height);
 
         public Camera Camera => _camera;
 
@@ -57,6 +58,7 @@ namespace Industropolis
         public void AddNode(Node node)
         {
             if (node is IDrawable d) _drawable.Add(d);
+            if (node is IUpdateable u) _updateable.Add(u);
 
             foreach (var component in node.Components) AddComponent(component);
             node.ComponentAdded += AddComponent;
@@ -69,6 +71,8 @@ namespace Industropolis
         public void RemoveNode(Node node)
         {
             if (node is IDrawable d) _drawable.Remove(d);
+            if (node is IUpdateable u) _updateable.Remove(u);
+
             foreach (var component in node.Components) RemoveComponent(component);
             foreach (var child in node.Children) RemoveNode(child);
         }
@@ -91,6 +95,10 @@ namespace Industropolis
 
         public virtual void Update(float elapsed)
         {
+            foreach (var u in _updateable)
+            {
+                if (u.Enabled) u.Update(elapsed);
+            }
             foreach (var system in _systems) system.UpdateComponents(this, elapsed);
         }
 
@@ -103,7 +111,7 @@ namespace Industropolis
                 var bounds = d.DrawBounds;
 
                 if (!(pos.X + bounds.Right < 0 || pos.Y + bounds.Bottom < 0
-                    || pos.X + bounds.Left > 1280 || pos.Y + bounds.Top > 720))
+                    || pos.X + bounds.Left > GameScreen.Width || pos.Y + bounds.Top > GameScreen.Height))
                     d.Draw(spriteBatch, pos);
             }
         }
