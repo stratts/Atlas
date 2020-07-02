@@ -8,10 +8,10 @@ namespace Industropolis.Engine
     public class MouseInput : Component
     {
         public bool ConsumeInput { get; set; } = true;
-        public Rectangle InputArea { get; set; }
+        public Rectangle InputArea { get; set; } = Rectangle.Empty;
         public Action<Vector2>? OnClick { get; set; }
         public Action<Vector2>? OnMove { get; set; }
-        public Action<int>? OnScroll { get; set; }
+        public Action<Vector2, int>? OnScroll { get; set; }
         public Action? OnMouseEnter { get; set; }
         public Action? OnMouseExit { get; set; }
     }
@@ -43,14 +43,14 @@ namespace Industropolis.Engine
 
                     // Handle scroll
                     var scroll = _mouseState.ScrollWheelValue - _prevMouseState.ScrollWheelValue;
-                    if (scroll != 0) c.OnScroll?.Invoke(scroll);
+                    if (scroll != 0) c.OnScroll?.Invoke(_mousePos, scroll);
 
                     // Handle movement
                     if (_mousePos != _prevMousePos)
                     {
                         c.OnMove?.Invoke(MouseToAreaPos(scene, _mousePos, c));
 
-                        if (!_mouseEntered.Contains(c))
+                        if (c.InputArea != Rectangle.Empty && !_mouseEntered.Contains(c))
                         {
                             _mouseEntered.Add(c);
                             c.OnMouseEnter?.Invoke();
@@ -82,6 +82,7 @@ namespace Industropolis.Engine
 
         private bool WithinInputArea(Scene scene, Vector2 mousePos, MouseInput component)
         {
+            if (component.InputArea == Rectangle.Empty) return true;
             return component.InputArea.Contains(MouseToAreaPos(scene, mousePos, component));
         }
     }

@@ -104,11 +104,7 @@ namespace Industropolis.Engine
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            var scale = Matrix.CreateScale(Camera.Zoom);
-            var translation = Matrix.CreateTranslation(-Camera.Position.X, -Camera.Position.Y, 0);
-            var offset = Matrix.CreateTranslation(Camera.Size.X / 2, Camera.Size.Y / 2, 0);
-
-            spriteBatch.Begin(transformMatrix: translation * scale * offset);
+            spriteBatch.Begin(transformMatrix: Matrix.CreateScale(Camera.Zoom));
             var viewport = Camera.Viewport;
 
             foreach (var d in _drawable)
@@ -119,7 +115,7 @@ namespace Industropolis.Engine
 
                 if (!(pos.X + bounds.Right < viewport.Left || pos.Y + bounds.Bottom < viewport.Top
                     || pos.X + bounds.Left > viewport.Right || pos.Y + bounds.Top > viewport.Bottom))
-                    d.Draw(spriteBatch, pos - new Vector2(offset.Translation.X, offset.Translation.Y));
+                    d.Draw(spriteBatch, pos - _camera.Position.Floor());
             }
 
             spriteBatch.End();

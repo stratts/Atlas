@@ -5,22 +5,27 @@ namespace Industropolis.Engine
 {
     public class Camera : Node
     {
-        public Point Size;
+        private Vector2 _size;
         public float Zoom { get; set; } = 1f;
-        public Camera(int width, int height)
+        public Rectangle Viewport => new Rectangle(Position.ToPoint(), (_size / Zoom).ToPoint());
+
+        public Vector2 Centre
         {
-            Size = new Point(width, height);
+            get => Position + Viewport.Size.ToVector2() / 2;
+            set => Position = value - Viewport.Size.ToVector2() / 2;
         }
 
-        public Rectangle Viewport
+        public Camera(int width, int height)
         {
-            get
-            {
-                var sizeV = Size.ToVector2();
-                var centre = Position + sizeV / 2;
-                var viewSize = sizeV / Zoom;
-                return new Rectangle((centre - viewSize / 2).ToPoint(), viewSize.ToPoint());
-            }
+            _size = new Vector2(width, height);
+        }
+
+        public void ZoomTowards(Vector2 pos, float zoom)
+        {
+            var vectorFrom = Centre - pos;
+            double change = (double)this.Zoom / (double)zoom;   // To avoid camera shifting due to rounding errors
+            this.Zoom = zoom;
+            Centre = pos + vectorFrom * (float)change;
         }
     }
 }
