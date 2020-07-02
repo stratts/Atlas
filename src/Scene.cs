@@ -25,7 +25,7 @@ namespace Industropolis.Engine
             for (int i = _scenes.Length - 1; i >= 0; i--) _scenes[i]?.Draw(spriteBatch);
         }
 
-        public void Update(float elapsed)
+        public virtual void Update(float elapsed)
         {
             foreach (var scene in _scenes) scene?.Update(elapsed);
         }
