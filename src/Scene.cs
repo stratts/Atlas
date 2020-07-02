@@ -104,6 +104,11 @@ namespace Industropolis
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            spriteBatch.Begin(transformMatrix: Matrix.CreateScale(Camera.Zoom));
+
+            var width = GameScreen.Width / Camera.Zoom;
+            var height = GameScreen.Height / Camera.Zoom;
+
             foreach (var d in _drawable)
             {
                 if (!d.Enabled) continue;
@@ -111,9 +116,11 @@ namespace Industropolis
                 var bounds = d.DrawBounds;
 
                 if (!(pos.X + bounds.Right < 0 || pos.Y + bounds.Bottom < 0
-                    || pos.X + bounds.Left > GameScreen.Width || pos.Y + bounds.Top > GameScreen.Height))
+                    || pos.X + bounds.Left > width || pos.Y + bounds.Top > height))
                     d.Draw(spriteBatch, pos);
             }
+
+            spriteBatch.End();
         }
     }
 }
