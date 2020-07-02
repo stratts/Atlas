@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Industropolis
+namespace Industropolis.Engine
 {
     public abstract class BaseComponentSystem<T> : IComponentSystem where T : Component
     {

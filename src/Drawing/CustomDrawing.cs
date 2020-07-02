@@ -1,8 +1,8 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
-namespace Industropolis
+namespace Industropolis.Engine
 {
     public static class CustomDrawing
     {

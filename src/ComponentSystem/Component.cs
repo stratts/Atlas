@@ -1,5 +1,5 @@
 
-namespace Industropolis
+namespace Industropolis.Engine
 {
     public abstract class Component
     {

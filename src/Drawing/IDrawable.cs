@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Industropolis
+namespace Industropolis.Engine
 {
     public interface IDrawable
     {

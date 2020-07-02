@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Industropolis
+namespace Industropolis.Engine
 {
     public class Node
     {

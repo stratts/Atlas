@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
-namespace Industropolis
+namespace Industropolis.Engine
 {
     public interface IScene
     {
@@ -40,7 +40,7 @@ namespace Industropolis
         private List<IDrawable> _drawable = new List<IDrawable>();
         private List<IUpdateable> _updateable = new List<IUpdateable>();
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
-        protected Camera _camera = new Camera(GameScreen.Width, GameScreen.Height);
+        protected Camera _camera = new Camera(UI.GameScreen.Width, UI.GameScreen.Height);
 
         public Camera Camera => _camera;
 

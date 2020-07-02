@@ -1,7 +1,7 @@
 
 using Microsoft.Xna.Framework;
 
-namespace Industropolis
+namespace Industropolis.Engine
 {
     public class Camera : Node
     {
