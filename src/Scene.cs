@@ -104,23 +104,30 @@ namespace Industropolis
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin(transformMatrix: Matrix.CreateScale(Camera.Zoom));
+            var scale = Matrix.CreateScale(Camera.Zoom);
+            var translation = Matrix.CreateTranslation(-Camera.Position.X, -Camera.Position.Y, 0);
+            var offset = Matrix.CreateTranslation(Camera.Size.X / 2, Camera.Size.Y / 2, 0);
 
-            var width = GameScreen.Width / Camera.Zoom;
-            var height = GameScreen.Height / Camera.Zoom;
+            spriteBatch.Begin(transformMatrix: translation * scale * offset);
+            var viewport = Camera.Viewport;
 
             foreach (var d in _drawable)
             {
                 if (!d.Enabled) continue;
-                var pos = d.ScenePosition.Floor() - _camera.Position.Floor();
+                var pos = d.ScenePosition.Floor();
                 var bounds = d.DrawBounds;
 
-                if (!(pos.X + bounds.Right < 0 || pos.Y + bounds.Bottom < 0
-                    || pos.X + bounds.Left > width || pos.Y + bounds.Top > height))
-                    d.Draw(spriteBatch, pos);
+                if (!(pos.X + bounds.Right < viewport.Left || pos.Y + bounds.Bottom < viewport.Top
+                    || pos.X + bounds.Left > viewport.Right || pos.Y + bounds.Top > viewport.Bottom))
+                    d.Draw(spriteBatch, pos - new Vector2(offset.Translation.X, offset.Translation.Y));
             }
 
             spriteBatch.End();
+        }
+
+        public Vector2 ScreenToScene(Vector2 screenPos)
+        {
+            return (screenPos / Camera.Zoom) + Camera.Viewport.Location.ToVector2();
         }
     }
 }

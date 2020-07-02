@@ -11,6 +11,7 @@ namespace Industropolis
         public Rectangle InputArea { get; set; }
         public Action<Vector2>? OnClick { get; set; }
         public Action<Vector2>? OnMove { get; set; }
+        public Action<int>? OnScroll { get; set; }
         public Action? OnMouseEnter { get; set; }
         public Action? OnMouseExit { get; set; }
     }
@@ -40,6 +41,10 @@ namespace Industropolis
                         c.OnClick?.Invoke(MouseToAreaPos(scene, _mousePos, c));
                     }
 
+                    // Handle scroll
+                    var scroll = _mouseState.ScrollWheelValue - _prevMouseState.ScrollWheelValue;
+                    if (scroll != 0) c.OnScroll?.Invoke(scroll);
+
                     // Handle movement
                     if (_mousePos != _prevMousePos)
                     {
@@ -66,11 +71,7 @@ namespace Industropolis
             _prevMousePos = _mousePos;
         }
 
-        private Vector2 MouseToScenePos(Scene scene, MouseState state)
-        {
-            var camera = scene.Camera;
-            return new Vector2(state.X + camera.Position.X, state.Y + camera.Position.Y) / camera.Zoom;
-        }
+        public static Vector2 MouseToScenePos(Scene scene, MouseState state) => scene.ScreenToScene(state.Position.ToVector2());
 
         private Vector2 MouseToAreaPos(Scene scene, Vector2 mousePos, MouseInput component)
         {
