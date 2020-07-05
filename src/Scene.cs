@@ -11,11 +11,11 @@ namespace Industropolis.Engine
         void Draw(SpriteBatch spriteBatch);
     }
 
-    public class LayeredScene : IScene
+    public class CompoundScene : IScene
     {
         private Scene[] _scenes;
 
-        public LayeredScene(int layers)
+        public CompoundScene(int layers)
         {
             _scenes = new Scene[layers];
         }
@@ -37,15 +37,18 @@ namespace Industropolis.Engine
 
     public class Scene : IScene
     {
-        private List<IDrawable> _drawable = new List<IDrawable>();
+        private List<IDrawable>[] _drawable;
         private List<IUpdateable> _updateable = new List<IUpdateable>();
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
         protected Camera _camera = new Camera(UI.GameScreen.Width, UI.GameScreen.Height);
 
         public Camera Camera => _camera;
 
-        public Scene()
+        public Scene(int layers)
         {
+            if (layers <= 0) layers = 1;
+            _drawable = new List<IDrawable>[layers];
+            for (int i = 0; i < layers; i++) _drawable[i] = new List<IDrawable>();
             AddNode(_camera);
             AddSystem(new MouseInputSystem());
         }
@@ -55,9 +58,11 @@ namespace Industropolis.Engine
             _systems.Add(system);
         }
 
-        public void AddNode(Node node)
+        public void AddNode(Node node) => AddNode(node, 0);
+
+        public void AddNode(Node node, int layer)
         {
-            if (node is IDrawable d) _drawable.Add(d);
+            if (node is IDrawable d) _drawable[layer].Add(d);
             if (node is IUpdateable u) _updateable.Add(u);
 
             foreach (var component in node.Components) AddComponent(component);
@@ -65,12 +70,18 @@ namespace Industropolis.Engine
             node.ComponentRemoved += RemoveComponent;
             node.Deleted += RemoveNode;
 
-            foreach (var child in node.Children) AddNode(child);
+            foreach (var child in node.Children) AddNode(child, layer);
         }
 
         public void RemoveNode(Node node)
         {
-            if (node is IDrawable d) _drawable.Remove(d);
+            if (node is IDrawable d)
+            {
+                foreach (var layer in _drawable)
+                {
+                    if (layer.Contains(d)) layer.Remove(d);
+                }
+            }
             if (node is IUpdateable u) _updateable.Remove(u);
 
             foreach (var component in node.Components) RemoveComponent(component);
@@ -107,15 +118,18 @@ namespace Industropolis.Engine
             spriteBatch.Begin(transformMatrix: Matrix.CreateScale(Camera.Zoom));
             var viewport = Camera.Viewport;
 
-            foreach (var d in _drawable)
+            foreach (var layer in _drawable)
             {
-                if (!d.Enabled) continue;
-                var pos = d.ScenePosition.Floor();
-                var bounds = d.DrawBounds;
+                foreach (var d in layer)
+                {
+                    if (!d.Enabled) continue;
+                    var pos = d.ScenePosition.Floor();
+                    var bounds = d.DrawBounds;
 
-                if (!(pos.X + bounds.Right < viewport.Left || pos.Y + bounds.Bottom < viewport.Top
-                    || pos.X + bounds.Left > viewport.Right || pos.Y + bounds.Top > viewport.Bottom))
-                    d.Draw(spriteBatch, pos - _camera.Position.Floor());
+                    if (!(pos.X + bounds.Right < viewport.Left || pos.Y + bounds.Bottom < viewport.Top
+                        || pos.X + bounds.Left > viewport.Right || pos.Y + bounds.Top > viewport.Bottom))
+                        d.Draw(spriteBatch, pos - _camera.Position.Floor());
+                }
             }
 
             spriteBatch.End();
