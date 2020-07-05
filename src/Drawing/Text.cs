@@ -9,7 +9,7 @@ namespace Industropolis.Engine
         public Color Color { get; set; } = Color.White;
 
         public static SpriteFont Font { get; set; } = null!;
-        public Vector2 Size => Font.MeasureString(Content);
+        public override Vector2 Size => Font.MeasureString(Content);
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {

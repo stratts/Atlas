@@ -8,7 +8,6 @@ namespace Industropolis.Engine
     {
         private Vector2 _screenPos;
 
-        public Vector2 Size { get; set; } = Vector2.Zero;
         public Rectangle DrawBounds { get; set; }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)

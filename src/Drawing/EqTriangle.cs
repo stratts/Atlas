@@ -5,7 +5,6 @@ namespace Industropolis.Engine
 {
     public class EqTriangle : Node, IDrawable
     {
-        public Vector2 Size { get; set; }
         public Color Color { get; set; }
 
         public EqTriangle(Vector2 size, Color color)

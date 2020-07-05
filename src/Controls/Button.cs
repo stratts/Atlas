@@ -5,8 +5,6 @@ namespace Industropolis.Engine
 {
     public class Button : Node
     {
-        public Vector2 Size { get; }
-
         public event Action? OnPressed;
 
         public Button(string label)

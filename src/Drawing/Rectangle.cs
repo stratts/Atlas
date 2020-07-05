@@ -5,8 +5,8 @@ namespace Industropolis.Engine
 {
     public class Rect : Node, IDrawable
     {
-        public Vector2 Size { get; set; }
         public Color Color { get; set; } = Color.White;
+        public new Vector2 Size { get; set; }
 
         public Rect() { }
 

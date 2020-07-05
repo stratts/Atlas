@@ -13,6 +13,8 @@ namespace Industropolis.Engine
         public Vector2 Position;
         public Vector2 ScenePosition => Parent != null ? Position + Parent.ScenePosition : Position;
 
+        public virtual Vector2 Size { get; protected set; } = Vector2.Zero;
+
         public bool Enabled
         {
             get => _enabled && Parent != null ? Parent.Enabled : _enabled;
@@ -31,7 +33,7 @@ namespace Industropolis.Engine
 
         public event Action<Node>? Deleted;
 
-        public void AddChild(Node node)
+        public virtual void AddChild(Node node)
         {
             node.Parent = this;
             _children.Add(node);
