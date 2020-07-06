@@ -22,7 +22,7 @@ namespace Industropolis.Engine
 
         public static void DrawRect(Vector2 position, Vector2 size, Color color)
         {
-            DrawRect(position + size / 2, size, color, 0);
+            _spriteBatch.Draw(_texture, new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y), color);
         }
 
         public static void DrawRect(Vector2 centrePos, Vector2 size, Color color, float angle)
@@ -47,6 +47,17 @@ namespace Industropolis.Engine
                     (int)position.Y - radius,
                     radius * 2,
                     radius * 2),
+                    color);
+        }
+
+        public static void DrawEllipse(Vector2 position, Vector2 size, Color color)
+        {
+            _spriteBatch.Draw(_circleTexture,
+                new Rectangle(
+                    (int)position.X,
+                    (int)position.Y,
+                    (int)size.X,
+                    (int)size.Y),
                     color);
         }
 

@@ -16,10 +16,11 @@ namespace Industropolis.Engine
                 Content = label,
                 Color = Color.White
             };
-            var rect = new Rect()
+            var rect = new RoundedRect()
             {
                 Color = Color.Black,
-                Size = Text.Font.MeasureString(label) + margin * 2
+                Size = Text.Font.MeasureString(label) + margin * 2,
+                Radius = 4
             };
             Size = rect.Size;
             AddChild(rect);
