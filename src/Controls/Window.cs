@@ -36,7 +36,7 @@ namespace Industropolis.Engine
 
             // Add titlebar input component for dragging window around
             var input = new MouseInput();
-            var inputRect = new Rectangle(0, 0, (int)(_size.X - closeButton.Size.X - 2), _titleSize);
+            var inputRect = new Rectangle(Point.Zero, titleBar.Size.ToPoint());
             input.InputArea = inputRect;
             input.OnMove = (Vector2 pos, Vector2 change) =>
             {
@@ -44,18 +44,25 @@ namespace Industropolis.Engine
                 {
                     Position += change;
                     input.InputArea = Rectangle.Empty;  // Set input area to capture mouse even if it moves outside
+                    input.HandleConsumed = true;        // Capture mouse even if something has already consumed the input
                 }
-                else input.InputArea = inputRect;
+                else
+                {
+                    input.InputArea = inputRect;
+                    input.HandleConsumed = false;
+                }
             };
             titleBar.AddComponent(input);
 
             // Add window background
             var b = 60;
-            AddChild(new Rect()
+            var background = new Rect()
             {
                 Size = _size,
                 Color = new Color(b, b, b)
-            });
+            };
+            background.AddComponent(new MouseInput() { InputArea = new Rectangle(Point.Zero, background.Size.ToPoint()) });
+            AddChild(background);
         }
     }
 }

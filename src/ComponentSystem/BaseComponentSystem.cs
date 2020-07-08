@@ -13,7 +13,7 @@ namespace Industropolis.Engine
         {
             T c = TryCast(component);
             if (_components.Contains(c)) throw new ArgumentException("Component already added to system");
-            _components.Add(c);
+            _components.Insert(0, c);
         }
 
         public void RemoveComponent(Component component)

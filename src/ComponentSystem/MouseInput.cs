@@ -8,6 +8,7 @@ namespace Industropolis.Engine
     public class MouseInput : Component
     {
         public bool ConsumeInput { get; set; } = true;
+        public bool HandleConsumed { get; set; } = false;
         public Rectangle InputArea { get; set; } = Rectangle.Empty;
         public bool ButtonHeld { get; set; } = false;
         public Action<Vector2>? OnClick { get; set; }
@@ -34,7 +35,7 @@ namespace Industropolis.Engine
 
             foreach (var c in components)
             {
-                if (c.Enabled && !InputConsumed && WithinInputArea(scene, _mousePos, c))
+                if (c.Enabled && (!InputConsumed || c.HandleConsumed) && WithinInputArea(scene, _mousePos, c))
                 {
                     if (_mouseState.LeftButton == ButtonState.Pressed) c.ButtonHeld = true;
                     else c.ButtonHeld = false;
