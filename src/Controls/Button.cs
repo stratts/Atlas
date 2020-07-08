@@ -7,9 +7,11 @@ namespace Industropolis.Engine
     {
         public event Action? OnPressed;
 
-        public Button(string label)
+        public Button(string label) : this(label, 8) { }
+
+        public Button(string label, int padding)
         {
-            var margin = new Vector2(8);
+            var margin = new Vector2(padding);
             var text = new Text()
             {
                 Position = margin,

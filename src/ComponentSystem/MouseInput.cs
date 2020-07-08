@@ -9,8 +9,9 @@ namespace Industropolis.Engine
     {
         public bool ConsumeInput { get; set; } = true;
         public Rectangle InputArea { get; set; } = Rectangle.Empty;
+        public bool ButtonHeld { get; set; } = false;
         public Action<Vector2>? OnClick { get; set; }
-        public Action<Vector2>? OnMove { get; set; }
+        public Action<Vector2, Vector2>? OnMove { get; set; }
         public Action<Vector2, int>? OnScroll { get; set; }
         public Action? OnMouseEnter { get; set; }
         public Action? OnMouseExit { get; set; }
@@ -35,6 +36,8 @@ namespace Industropolis.Engine
             {
                 if (c.Enabled && !InputConsumed && WithinInputArea(scene, _mousePos, c))
                 {
+                    if (_mouseState.LeftButton == ButtonState.Pressed) c.ButtonHeld = true;
+                    else c.ButtonHeld = false;
                     // Handle click
                     if (_mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
                     {
@@ -48,7 +51,9 @@ namespace Industropolis.Engine
                     // Handle movement
                     if (_mousePos != _prevMousePos)
                     {
-                        c.OnMove?.Invoke(MouseToAreaPos(scene, _mousePos, c));
+                        var curAreaPos = MouseToAreaPos(scene, _mousePos, c);
+                        var prevAreaPos = MouseToAreaPos(scene, _prevMousePos, c);
+                        c.OnMove?.Invoke(curAreaPos, curAreaPos - prevAreaPos);
 
                         if (c.InputArea != Rectangle.Empty && !_mouseEntered.Contains(c))
                         {
@@ -82,8 +87,10 @@ namespace Industropolis.Engine
 
         private bool WithinInputArea(Scene scene, Vector2 mousePos, MouseInput component)
         {
-            if (component.InputArea == Rectangle.Empty) return true;
-            return component.InputArea.Contains(MouseToAreaPos(scene, mousePos, component));
+            var area = component.InputArea;
+            if (area == Rectangle.Empty) return true;
+            var areaPos = MouseToAreaPos(scene, mousePos, component);
+            return (!(areaPos.X < 0 || areaPos.X > area.Width || areaPos.Y < 0 || areaPos.Y > area.Height));
         }
     }
 }
