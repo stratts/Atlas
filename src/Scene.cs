@@ -125,7 +125,6 @@ namespace Industropolis.Engine
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Begin(transformMatrix: Matrix.CreateScale(Camera.Zoom));
-            var viewport = Camera.Viewport;
 
             foreach (var layer in _drawable)
             {
@@ -134,10 +133,12 @@ namespace Industropolis.Engine
                     if (!d.Enabled) continue;
                     var pos = d.ScenePosition.Floor();
                     var bounds = d.DrawBounds;
+                    bounds.Location += pos.ToPoint();
 
-                    if (!(pos.X + bounds.Right < viewport.Left || pos.Y + bounds.Bottom < viewport.Top
-                        || pos.X + bounds.Left > viewport.Right || pos.Y + bounds.Top > viewport.Bottom))
+                    if (bounds.Intersects(Camera.Viewport) || bounds == Rectangle.Empty)
+                    {
                         d.Draw(spriteBatch, pos - _camera.Position.Floor());
+                    }
                 }
             }
 

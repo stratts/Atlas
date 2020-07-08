@@ -8,7 +8,7 @@ namespace Industropolis.Engine
     {
         private Vector2 _screenPos;
 
-        public Rectangle DrawBounds { get; set; }
+        public Rectangle DrawBounds { get; set; } = Rectangle.Empty;
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
