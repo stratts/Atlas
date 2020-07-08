@@ -18,7 +18,11 @@ namespace Industropolis.Engine
         public bool Enabled
         {
             get => _enabled && Parent != null ? Parent.Enabled : _enabled;
-            set => _enabled = value;
+            set
+            {
+                _enabled = value;
+                if (_enabled) OnEnabled?.Invoke(this);
+            }
         }
 
         public float Opacity { get; set; } = 1f;
@@ -28,21 +32,27 @@ namespace Industropolis.Engine
         public IReadOnlyList<Node> Children => _children;
         public IReadOnlyList<Component> Components => _components;
 
+        public event Action<Node>? ChildAdded;
+        public event Action<Node>? ChildRemoved;
+
         public event Action<Component>? ComponentAdded;
         public event Action<Component>? ComponentRemoved;
 
+        public event Action<Node>? OnEnabled;
         public event Action<Node>? Deleted;
 
         public virtual void AddChild(Node node)
         {
             node.Parent = this;
             _children.Add(node);
+            ChildAdded?.Invoke(node);
         }
 
         public void RemoveChild(Node node)
         {
             node.Parent = null;
             _children.Remove(node);
+            ChildRemoved?.Invoke(node);
         }
 
         public void Delete() => Deleted?.Invoke(this);

@@ -66,6 +66,9 @@ namespace Industropolis.Engine
             if (node is IUpdateable u) _updateable.Add(u);
 
             foreach (var component in node.Components) AddComponent(component);
+
+            node.ChildAdded += AddNode;
+            node.ChildRemoved += RemoveNode;
             node.ComponentAdded += AddComponent;
             node.ComponentRemoved += RemoveComponent;
             node.Deleted += RemoveNode;
@@ -75,6 +78,12 @@ namespace Industropolis.Engine
 
         public void RemoveNode(Node node)
         {
+            node.ChildAdded -= AddNode;
+            node.ChildRemoved -= RemoveNode;
+            node.ComponentAdded -= AddComponent;
+            node.ComponentRemoved -= RemoveComponent;
+            node.Deleted -= RemoveNode;
+
             if (node is IDrawable d)
             {
                 foreach (var layer in _drawable)
