@@ -5,10 +5,10 @@ namespace Industropolis.Engine
     public class Window : Node
     {
         private int _titleSize = 20;
-        private Vector2 _size = new Vector2(400);
 
         public Window(string title, Vector2 size)
         {
+            Size = size;
             // Add title bar
             var titleText = new Text()
             {
@@ -22,7 +22,7 @@ namespace Industropolis.Engine
             var titleBar = new Rect()
             {
                 Color = Color.Black,
-                Size = new Vector2(_size.X, _titleSize),
+                Size = new Vector2(Size.X, _titleSize),
                 Position = new Vector2(0, -_titleSize)
             };
             titleBar.AddChild(titleText);
@@ -58,7 +58,7 @@ namespace Industropolis.Engine
             var b = 60;
             var background = new Rect()
             {
-                Size = _size,
+                Size = Size,
                 Color = new Color(b, b, b)
             };
             background.AddComponent(new MouseInput() { InputArea = new Rectangle(Point.Zero, background.Size.ToPoint()) });

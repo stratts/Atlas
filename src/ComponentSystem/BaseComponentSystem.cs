@@ -6,6 +6,7 @@ namespace Industropolis.Engine
     public abstract class BaseComponentSystem<T> : IComponentSystem where T : Component
     {
         private List<T> _components = new List<T>();
+        private List<T> _readOnlyComponents = new List<T>();
 
         public bool HandlesComponent(Component component) => component is T;
 
@@ -32,7 +33,13 @@ namespace Industropolis.Engine
             );
         }
 
-        public void UpdateComponents(Scene scene, float elapsed) => UpdateComponents(scene, _components, elapsed);
+        public void UpdateComponents(Scene scene, float elapsed)
+        {
+            // Components might be removed during iteration, so operate on a copy
+            _readOnlyComponents.Clear();
+            foreach (var component in _components) _readOnlyComponents.Add(component);
+            UpdateComponents(scene, _readOnlyComponents, elapsed);
+        }
 
         public abstract void UpdateComponents(Scene scene, IReadOnlyList<T> components, float elapsed);
     }
