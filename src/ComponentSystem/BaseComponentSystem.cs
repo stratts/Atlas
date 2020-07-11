@@ -13,15 +13,23 @@ namespace Industropolis.Engine
         public void AddComponent(Component component)
         {
             T c = TryCast(component);
-            if (_components.Contains(c)) throw new ArgumentException("Component already added to system");
-            _actionQueue.Enqueue(() => _components.Insert(0, c));
+
+            _actionQueue.Enqueue(() =>
+            {
+                if (_components.Contains(c)) throw new ArgumentException("Component already added to system");
+                _components.Insert(0, c);
+            });
         }
 
         public void RemoveComponent(Component component)
         {
             T c = TryCast(component);
-            if (!_components.Contains(c)) throw new ArgumentException("Component not added to system");
-            _actionQueue.Enqueue(() => _components.Remove(c));
+
+            _actionQueue.Enqueue(() =>
+            {
+                if (!_components.Contains(c)) throw new ArgumentException("Component not added to system");
+                _components.Remove(c);
+            });
         }
 
         private T TryCast(Component component)

@@ -41,6 +41,8 @@ namespace Industropolis.Engine
         public event Action<Node>? OnEnabled;
         public event Action<Node>? Deleted;
 
+        public event Action<Node>? BroughtToFront;
+
         public virtual void AddChild(Node node)
         {
             node.Parent = this;
@@ -78,6 +80,8 @@ namespace Industropolis.Engine
             }
             return null;
         }
+
+        public void BringToFront() => BroughtToFront?.Invoke(this);
 
         protected Color GetRenderColor(Color color)
         {

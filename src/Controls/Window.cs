@@ -52,6 +52,7 @@ namespace Industropolis.Engine
                     input.HandleConsumed = false;
                 }
             };
+            input.OnClick = (_) => BringToFront();
             titleBar.AddComponent(input);
 
             // Add window background

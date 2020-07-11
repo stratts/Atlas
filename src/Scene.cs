@@ -75,6 +75,7 @@ namespace Industropolis.Engine
             node.ComponentAdded += AddComponent;
             node.ComponentRemoved += RemoveComponent;
             node.Deleted += RemoveNode;
+            node.BroughtToFront += BringNodeToFront;
 
             foreach (var child in node.Children) AddNode(child, layer);
         }
@@ -87,6 +88,7 @@ namespace Industropolis.Engine
             node.ComponentAdded -= AddComponent;
             node.ComponentRemoved -= RemoveComponent;
             node.Deleted -= RemoveNode;
+            node.BroughtToFront -= BringNodeToFront;
 
             if (node is IDrawable d)
             {
@@ -99,6 +101,12 @@ namespace Industropolis.Engine
 
             foreach (var component in node.Components) RemoveComponent(component);
             foreach (var child in node.Children) RemoveNode(child);
+        }
+
+        private void BringNodeToFront(Node node)
+        {
+            RemoveNode(node);
+            AddNode(node);
         }
 
         private void AddComponent(Component component)
