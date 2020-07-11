@@ -6,7 +6,7 @@ namespace Industropolis.Engine
     public abstract class BaseComponentSystem<T> : IComponentSystem where T : Component
     {
         private List<T> _components = new List<T>();
-        private List<T> _readOnlyComponents = new List<T>();
+        private Queue<Action> _actionQueue = new Queue<Action>();
 
         public bool HandlesComponent(Component component) => component is T;
 
@@ -14,14 +14,14 @@ namespace Industropolis.Engine
         {
             T c = TryCast(component);
             if (_components.Contains(c)) throw new ArgumentException("Component already added to system");
-            _components.Insert(0, c);
+            _actionQueue.Enqueue(() => _components.Insert(0, c));
         }
 
         public void RemoveComponent(Component component)
         {
             T c = TryCast(component);
             if (!_components.Contains(c)) throw new ArgumentException("Component not added to system");
-            _components.Remove(c);
+            _actionQueue.Enqueue(() => _components.Remove(c));
         }
 
         private T TryCast(Component component)
@@ -35,10 +35,8 @@ namespace Industropolis.Engine
 
         public void UpdateComponents(Scene scene, float elapsed)
         {
-            // Components might be removed during iteration, so operate on a copy
-            _readOnlyComponents.Clear();
-            foreach (var component in _components) _readOnlyComponents.Add(component);
-            UpdateComponents(scene, _readOnlyComponents, elapsed);
+            while (_actionQueue.TryDequeue(out var action)) action();
+            UpdateComponents(scene, _components, elapsed);
         }
 
         public abstract void UpdateComponents(Scene scene, IReadOnlyList<T> components, float elapsed);
