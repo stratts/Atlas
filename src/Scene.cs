@@ -37,12 +37,14 @@ namespace Industropolis.Engine
 
     public class Scene : IScene
     {
+        private List<Node> _nodes = new List<Node>();
         private List<IDrawable>[] _drawable;
         private List<IUpdateable> _updateable = new List<IUpdateable>();
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
         protected Camera _camera = new Camera(UI.GameScreen.Width, UI.GameScreen.Height);
 
         public Camera Camera => _camera;
+        public IReadOnlyList<Node> Nodes => _nodes;
 
         public Scene(int layers)
         {
@@ -62,6 +64,7 @@ namespace Industropolis.Engine
 
         public void AddNode(Node node, int layer)
         {
+            _nodes.Add(node);
             if (node is IDrawable d) _drawable[layer].Add(d);
             if (node is IUpdateable u) _updateable.Add(u);
 
@@ -78,6 +81,7 @@ namespace Industropolis.Engine
 
         public void RemoveNode(Node node)
         {
+            _nodes.Remove(node);
             node.ChildAdded -= AddNode;
             node.ChildRemoved -= RemoveNode;
             node.ComponentAdded -= AddComponent;

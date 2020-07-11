@@ -14,10 +14,10 @@ namespace Industropolis.Engine
             {
                 Color = Color.White,
                 Content = title,
-                Position = new Vector2(4)
+                Position = new Vector2(6)
             };
 
-            _titleSize = (int)titleText.Size.Y + 8;
+            _titleSize = (int)titleText.Size.Y + 12;
 
             var titleBar = new Rect()
             {
@@ -30,7 +30,7 @@ namespace Industropolis.Engine
 
             // Add close button
             var closeButton = new Button("  x  ", 2);
-            closeButton.Position = new Vector2(titleBar.Size.X - closeButton.Size.X - 2, 2);
+            closeButton.Position = new Vector2(titleBar.Size.X - closeButton.Size.X - 2, 4);
             titleBar.AddChild(closeButton);
             closeButton.OnPressed += () => this.Enabled = false;
 

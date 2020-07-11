@@ -7,12 +7,15 @@ namespace Industropolis.Engine
     public abstract class CustomDrawingNode : Node, IDrawable
     {
         private Vector2 _screenPos;
+        private bool boundsSet = false;
 
         public Rectangle DrawBounds { get; set; } = Rectangle.Empty;
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
             _screenPos = position;
+            DrawBounds = Rectangle.Empty;
+            boundsSet = false;
             Draw();
         }
 
@@ -49,11 +52,12 @@ namespace Industropolis.Engine
         {
             var bounds = DrawBounds;
             int left = bounds.Left, right = bounds.Right, up = bounds.Top, down = bounds.Bottom;
-            if (pos.X < left) left = (int)pos.X;
-            if (pos.Y < up) up = (int)pos.Y;
-            if (pos.X + size.X > right) right = (int)(pos.X + size.X);
-            if (pos.Y + size.Y > down) down = (int)(pos.Y + size.Y);
-            DrawBounds = new Rectangle(left, up, Math.Abs(left) + Math.Abs(right), Math.Abs(up) + Math.Abs(down));
+            if (!boundsSet || pos.X < left) left = (int)pos.X;
+            if (!boundsSet || pos.Y < up) up = (int)pos.Y;
+            if (!boundsSet || pos.X + size.X > right) right = (int)(pos.X + size.X);
+            if (!boundsSet || pos.Y + size.Y > down) down = (int)(pos.Y + size.Y);
+            DrawBounds = new Rectangle(left, up, right - left, down - up);
+            boundsSet = true;
         }
     }
 }
