@@ -15,6 +15,10 @@ namespace Industropolis.Engine
 
         public virtual Vector2 Size { get; protected set; } = Vector2.Zero;
 
+        public int Sort { get; set; }
+        public int Depth { get; set; } = 0;
+        public float SceneSort { get; set; }
+
         public bool Enabled
         {
             get => _enabled && Parent != null ? Parent.Enabled : _enabled;
@@ -45,6 +49,8 @@ namespace Industropolis.Engine
 
         public virtual void AddChild(Node node)
         {
+            node.Depth = Depth + 1;
+            node.Sort = Children.Count + 1;
             node.Parent = this;
             _children.Add(node);
             ChildAdded?.Invoke(node);

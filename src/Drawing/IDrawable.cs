@@ -9,6 +9,7 @@ namespace Industropolis.Engine
         Vector2 Size { get; }
         Rectangle DrawBounds { get { return new Rectangle(0, 0, (int)Size.X, (int)Size.Y); } }
         Vector2 ScenePosition { get; }
+        float SceneSort { get; set; }
         float Opacity { get; set; }
         void Draw(SpriteBatch spriteBatch, Vector2 position);
     }

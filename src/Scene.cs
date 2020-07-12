@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -43,6 +44,9 @@ namespace Industropolis.Engine
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
         protected Camera _camera = new Camera(UI.GameScreen.Width, UI.GameScreen.Height);
 
+        private int _topLevelCount = 0;
+        private bool[] _resortLayer;
+
         public Camera Camera => _camera;
         public IReadOnlyList<Node> Nodes => _nodes;
 
@@ -50,6 +54,7 @@ namespace Industropolis.Engine
         {
             if (layers <= 0) layers = 1;
             _drawable = new List<IDrawable>[layers];
+            _resortLayer = new bool[layers];
             for (int i = 0; i < layers; i++) _drawable[i] = new List<IDrawable>();
             AddNode(_camera);
             AddSystem(new MouseInputSystem());
@@ -65,8 +70,17 @@ namespace Industropolis.Engine
         public void AddNode(Node node, int layer)
         {
             _nodes.Add(node);
+            _resortLayer[layer] = true;
+
             if (node is IDrawable d) _drawable[layer].Add(d);
             if (node is IUpdateable u) _updateable.Add(u);
+
+            if (node.Parent == null)
+            {
+                node.SceneSort = _topLevelCount;
+                _topLevelCount++;
+            }
+            else node.SceneSort = node.Parent.SceneSort + (float)node.Sort / (float)Math.Pow(10, node.Depth);
 
             foreach (var component in node.Components) AddComponent(component);
 
@@ -83,6 +97,7 @@ namespace Industropolis.Engine
         public void RemoveNode(Node node)
         {
             _nodes.Remove(node);
+
             node.ChildAdded -= AddNode;
             node.ChildRemoved -= RemoveNode;
             node.ComponentAdded -= AddComponent;
@@ -92,9 +107,15 @@ namespace Industropolis.Engine
 
             if (node is IDrawable d)
             {
+                int l = 0;
                 foreach (var layer in _drawable)
                 {
-                    if (layer.Contains(d)) layer.Remove(d);
+                    if (layer.Contains(d))
+                    {
+                        _resortLayer[l] = true;
+                        layer.Remove(d);
+                    }
+                    l++;
                 }
             }
             if (node is IUpdateable u) _updateable.Remove(u);
@@ -136,6 +157,16 @@ namespace Industropolis.Engine
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            for (int i = 0; i < _drawable.Length; i++)
+            {
+                if (_resortLayer[i])
+                {
+                    var layer = _drawable[i];
+                    layer.Sort((a, b) => a.SceneSort.CompareTo(b.SceneSort));
+                    _resortLayer[i] = false;
+                }
+            }
+
             spriteBatch.Begin(transformMatrix: Matrix.CreateScale(Camera.Zoom));
 
             foreach (var layer in _drawable)
