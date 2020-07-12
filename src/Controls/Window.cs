@@ -55,14 +55,21 @@ namespace Industropolis.Engine
             input.OnClick = (_) => BringToFront();
             titleBar.AddComponent(input);
 
-            // Add window background
+            // Add window background and border
+            var border = new Rect()
+            {
+                Size = Size,
+                Color = Color.Black
+            };
             var b = 60;
             var background = new Rect()
             {
-                Size = Size,
+                Position = new Vector2(1),
+                Size = Size - new Vector2(2),
                 Color = new Color(b, b, b)
             };
             background.AddComponent(new MouseInput() { InputArea = new Rectangle(Point.Zero, background.Size.ToPoint()) });
+            AddChild(border);
             AddChild(background);
         }
     }
