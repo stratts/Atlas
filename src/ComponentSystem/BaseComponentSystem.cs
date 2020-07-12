@@ -7,6 +7,7 @@ namespace Industropolis.Engine
     {
         private List<T> _components = new List<T>();
         private Queue<Action> _actionQueue = new Queue<Action>();
+        private bool _sort = false;
 
         public bool HandlesComponent(Component component) => component is T;
 
@@ -17,7 +18,8 @@ namespace Industropolis.Engine
             _actionQueue.Enqueue(() =>
             {
                 if (_components.Contains(c)) throw new ArgumentException("Component already added to system");
-                _components.Insert(0, c);
+                _components.Add(c);
+                _sort = true;
             });
         }
 
@@ -29,6 +31,7 @@ namespace Industropolis.Engine
             {
                 if (!_components.Contains(c)) throw new ArgumentException("Component not added to system");
                 _components.Remove(c);
+                _sort = true;
             });
         }
 
@@ -41,9 +44,16 @@ namespace Industropolis.Engine
             );
         }
 
+        public void SortComponents() => _sort = true;
+
         public void UpdateComponents(Scene scene, float elapsed)
         {
             while (_actionQueue.TryDequeue(out var action)) action();
+            if (_sort)
+            {
+                _components.Sort((a, b) => b.Priority.CompareTo(a.Priority));
+                _sort = false;
+            }
             UpdateComponents(scene, _components, elapsed);
         }
 

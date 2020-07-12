@@ -7,5 +7,6 @@ namespace Industropolis.Engine
         void AddComponent(Component component);
         void RemoveComponent(Component component);
         void UpdateComponents(Scene scene, float elapsed);
+        void SortComponents();
     }
 }

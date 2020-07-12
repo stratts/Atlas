@@ -11,5 +11,6 @@ namespace Industropolis.Engine
             get => _enabled && Parent != null ? Parent.Enabled : _enabled;
             set => _enabled = value;
         }
+        public float Priority { get; set; }
     }
 }

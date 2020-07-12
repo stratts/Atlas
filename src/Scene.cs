@@ -69,18 +69,12 @@ namespace Industropolis.Engine
 
         public void AddNode(Node node, int layer)
         {
+            node.Layer = layer;
             _nodes.Add(node);
-            _resortLayer[layer] = true;
+            SetNodeSort(node);
 
             if (node is IDrawable d) _drawable[layer].Add(d);
             if (node is IUpdateable u) _updateable.Add(u);
-
-            if (node.Parent == null)
-            {
-                node.SceneSort = _topLevelCount;
-                _topLevelCount++;
-            }
-            else node.SceneSort = node.Parent.SceneSort + (float)node.Sort / (float)Math.Pow(10, node.Depth);
 
             foreach (var component in node.Components) AddComponent(component);
 
@@ -124,26 +118,55 @@ namespace Industropolis.Engine
             foreach (var child in node.Children) RemoveNode(child);
         }
 
-        private void BringNodeToFront(Node node)
+        private int GetNodeLayer(Node node)
         {
-            RemoveNode(node);
-            AddNode(node);
+            if (node.Layer >= 0) return node.Layer;
+            else if (node.Parent == null) throw new ArgumentException($"{node} has not been assigned a layer");
+            else return GetNodeLayer(node.Parent);
+        }
+
+        private void BringNodeToFront(Node node) => SetNodeSort(node, true);
+
+        private void SetNodeSort(Node node, bool recurse = false)
+        {
+            _resortLayer[GetNodeLayer(node)] = true;
+            if (node.Parent == null)
+            {
+                node.SceneSort = _topLevelCount;
+                _topLevelCount++;
+            }
+            else node.SceneSort = node.Parent.SceneSort + (float)node.Sort / (float)Math.Pow(10, node.Depth);
+
+            foreach (var component in node.Components)
+            {
+                component.Priority = node.SceneSort;
+                GetSystem(component)?.SortComponents();
+            }
+
+            if (recurse)
+            {
+                foreach (var child in node.Children) SetNodeSort(child, true);
+            }
+        }
+
+        private IComponentSystem? GetSystem(Component component)
+        {
+            foreach (var system in _systems)
+            {
+                if (system.HandlesComponent(component)) return system;
+            }
+            return null;
         }
 
         private void AddComponent(Component component)
         {
-            foreach (var system in _systems)
-            {
-                if (system.HandlesComponent(component)) system.AddComponent(component);
-            }
+            component.Priority = component.Parent.SceneSort;
+            GetSystem(component)?.AddComponent(component);
         }
 
         private void RemoveComponent(Component component)
         {
-            foreach (var system in _systems)
-            {
-                if (system.HandlesComponent(component)) system.RemoveComponent(component);
-            }
+            GetSystem(component)?.RemoveComponent(component);
         }
 
         public virtual void Update(float elapsed)

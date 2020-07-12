@@ -15,6 +15,7 @@ namespace Industropolis.Engine
 
         public virtual Vector2 Size { get; protected set; } = Vector2.Zero;
 
+        public int Layer { get; set; } = -1;
         public int Sort { get; set; }
         public int Depth { get; set; } = 0;
         public float SceneSort { get; set; }
