@@ -13,7 +13,7 @@ namespace Industropolis.Engine
         public Vector2 Position;
         public Vector2 ScenePosition => Parent != null ? Position + Parent.ScenePosition : Position;
 
-        public virtual Vector2 Size { get; protected set; } = Vector2.Zero;
+        public virtual Vector2 Size { get; set; } = Vector2.Zero;
 
         public int Layer { get; set; } = -1;
         public int Sort { get; set; }

@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Industropolis.Engine
 {
-    public class EqTriangle : Node, IDrawable
+    public class EqTriangle : Node
     {
         public Color Color { get; set; }
 
@@ -11,6 +11,7 @@ namespace Industropolis.Engine
         {
             Size = size;
             Color = color;
+            AddComponent(new Drawable() { Draw = Draw });
         }
 
         public EqTriangle(Vector2 position, Vector2 size, Color color) : this(size, color)

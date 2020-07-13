@@ -4,13 +4,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Industropolis.Engine
 {
-    public class RoundedRect : Node, IDrawable
+    public class RoundedRect : Node
     {
         public Color Color { get; set; } = Color.White;
         public new Vector2 Size { get; set; }
         public int Radius { get; set; }
 
-        public RoundedRect() { }
+        public RoundedRect()
+        {
+            AddComponent(new Drawable() { Draw = Draw });
+        }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {

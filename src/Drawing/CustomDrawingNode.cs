@@ -4,12 +4,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Industropolis.Engine
 {
-    public abstract class CustomDrawingNode : Node, IDrawable
+    public abstract class CustomDrawingNode : Node
     {
         private Vector2 _screenPos;
         private bool boundsSet = false;
 
         public Rectangle DrawBounds { get; set; } = Rectangle.Empty;
+
+        public CustomDrawingNode()
+        {
+            AddComponent(new Drawable() { Draw = Draw });
+        }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {

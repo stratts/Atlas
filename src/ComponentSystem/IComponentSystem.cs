@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Industropolis.Engine
 {
@@ -8,5 +9,10 @@ namespace Industropolis.Engine
         void RemoveComponent(Component component);
         void UpdateComponents(Scene scene, float elapsed);
         void SortComponents();
+    }
+
+    public interface IRenderSystem : IComponentSystem
+    {
+        void Draw(Scene scene, SpriteBatch spriteBatch);
     }
 }

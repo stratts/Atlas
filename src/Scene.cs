@@ -39,24 +39,19 @@ namespace Industropolis.Engine
     public class Scene : IScene
     {
         private List<Node> _nodes = new List<Node>();
-        private List<IDrawable>[] _drawable;
-        private List<IUpdateable> _updateable = new List<IUpdateable>();
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
         protected Camera _camera = new Camera(UI.GameScreen.Width, UI.GameScreen.Height);
 
         private int _topLevelCount = 0;
-        private bool[] _resortLayer;
 
         public Camera Camera => _camera;
         public IReadOnlyList<Node> Nodes => _nodes;
 
-        public Scene(int layers)
+        public Scene()
         {
-            if (layers <= 0) layers = 1;
-            _drawable = new List<IDrawable>[layers];
-            _resortLayer = new bool[layers];
-            for (int i = 0; i < layers; i++) _drawable[i] = new List<IDrawable>();
             AddNode(_camera);
+            AddSystem(new DrawableSystem());
+            AddSystem(new UpdateSystem());
             AddSystem(new MouseInputSystem());
         }
 
@@ -72,9 +67,6 @@ namespace Industropolis.Engine
             node.Layer = layer;
             _nodes.Add(node);
             SetNodeSort(node);
-
-            if (node is IDrawable d) _drawable[layer].Add(d);
-            if (node is IUpdateable u) _updateable.Add(u);
 
             foreach (var component in node.Components) AddComponent(component);
 
@@ -99,21 +91,6 @@ namespace Industropolis.Engine
             node.Deleted -= RemoveNode;
             node.BroughtToFront -= BringNodeToFront;
 
-            if (node is IDrawable d)
-            {
-                int l = 0;
-                foreach (var layer in _drawable)
-                {
-                    if (layer.Contains(d))
-                    {
-                        _resortLayer[l] = true;
-                        layer.Remove(d);
-                    }
-                    l++;
-                }
-            }
-            if (node is IUpdateable u) _updateable.Remove(u);
-
             foreach (var component in node.Components) RemoveComponent(component);
             foreach (var child in node.Children) RemoveNode(child);
         }
@@ -129,7 +106,6 @@ namespace Industropolis.Engine
 
         private void SetNodeSort(Node node, bool recurse = false)
         {
-            _resortLayer[GetNodeLayer(node)] = true;
             if (node.Parent == null)
             {
                 node.SceneSort = _topLevelCount;
@@ -171,44 +147,15 @@ namespace Industropolis.Engine
 
         public virtual void Update(float elapsed)
         {
-            foreach (var u in _updateable)
-            {
-                if (u.Enabled) u.Update(elapsed);
-            }
             foreach (var system in _systems) system.UpdateComponents(this, elapsed);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            for (int i = 0; i < _drawable.Length; i++)
+            foreach (var system in _systems)
             {
-                if (_resortLayer[i])
-                {
-                    var layer = _drawable[i];
-                    layer.Sort((a, b) => a.SceneSort.CompareTo(b.SceneSort));
-                    _resortLayer[i] = false;
-                }
+                if (system is IRenderSystem r) r.Draw(this, spriteBatch);
             }
-
-            spriteBatch.Begin(transformMatrix: Matrix.CreateScale(Camera.Zoom));
-
-            foreach (var layer in _drawable)
-            {
-                foreach (var d in layer)
-                {
-                    if (!d.Enabled) continue;
-                    var pos = d.ScenePosition.Floor();
-                    var bounds = d.DrawBounds;
-                    bounds.Location += pos.ToPoint();
-
-                    if (bounds.Intersects(Camera.Viewport) || bounds == Rectangle.Empty)
-                    {
-                        d.Draw(spriteBatch, pos - _camera.Position.Floor());
-                    }
-                }
-            }
-
-            spriteBatch.End();
         }
 
         public Vector2 ScreenToScene(Vector2 screenPos)

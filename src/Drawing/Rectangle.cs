@@ -3,14 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Industropolis.Engine
 {
-    public class Rect : Node, IDrawable
+    public class Rect : Node
     {
         public Color Color { get; set; } = Color.White;
-        public new Vector2 Size { get; set; }
 
-        public Rect() { }
+        public Rect() { AddComponent(new Drawable() { Draw = Draw }); }
 
-        public Rect(Vector2 size, Color color)
+        public Rect(Vector2 size, Color color) : this()
         {
             Size = size;
             Color = color;
