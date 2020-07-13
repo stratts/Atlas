@@ -29,6 +29,7 @@ namespace Industropolis.Engine
 
         public void Draw(Scene scene, SpriteBatch spriteBatch)
         {
+            ProcessChanges();
             spriteBatch.Begin(transformMatrix: Matrix.CreateScale(scene.Camera.Zoom));
 
             foreach (var d in _components)

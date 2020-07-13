@@ -50,13 +50,18 @@ namespace Industropolis.Engine
 
         public void UpdateComponents(Scene scene, float elapsed)
         {
-            while (_actionQueue.TryDequeue(out var action)) action();
+            ProcessChanges();
             if (_sort)
             {
                 _components.Sort(SortMethod);
                 _sort = false;
             }
             UpdateComponents(scene, _components, elapsed);
+        }
+
+        protected void ProcessChanges()
+        {
+            while (_actionQueue.TryDequeue(out var action)) action();
         }
 
         public abstract void UpdateComponents(Scene scene, IReadOnlyList<T> components, float elapsed);

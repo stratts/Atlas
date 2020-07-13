@@ -47,4 +47,14 @@ namespace Industropolis.Engine
         }
     }
 
+    public class HStackBox : StackBox
+    {
+        public HStackBox(int spacing = 10) : base(spacing, Direction.Horizontal) { }
+    }
+
+    public class VStackBox : StackBox
+    {
+        public VStackBox(int spacing = 10) : base(spacing, Direction.Vertical) { }
+    }
+
 }
