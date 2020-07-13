@@ -16,9 +16,8 @@ namespace Industropolis.Engine
         public virtual Vector2 Size { get; set; } = Vector2.Zero;
 
         public int Layer { get; set; } = -1;
-        public int Sort { get; set; }
-        public int Depth { get; set; } = 0;
         public float SceneSort { get; set; }
+        public int Depth => Parent != null ? Parent.Depth + 1 : 0;
 
         public bool Enabled
         {
@@ -34,7 +33,7 @@ namespace Industropolis.Engine
         public Color Tint { get; set; } = Color.White;
 
         public Node? Parent { get; set; }
-        public IReadOnlyList<Node> Children => _children;
+        public List<Node> Children => _children;
         public IReadOnlyList<Component> Components => _components;
 
         public event Action<Node>? ChildAdded;
@@ -50,8 +49,6 @@ namespace Industropolis.Engine
 
         public virtual void AddChild(Node node)
         {
-            node.Depth = Depth + 1;
-            node.Sort = Children.Count + 1;
             node.Parent = this;
             _children.Add(node);
             ChildAdded?.Invoke(node);

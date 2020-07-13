@@ -42,7 +42,7 @@ namespace Industropolis.Engine
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
         protected Camera _camera = new Camera(UI.GameScreen.Width, UI.GameScreen.Height);
 
-        private int _topLevelCount = 0;
+        private uint _topLevelCount = 0;
 
         public Camera Camera => _camera;
         public IReadOnlyList<Node> Nodes => _nodes;
@@ -95,13 +95,6 @@ namespace Industropolis.Engine
             foreach (var child in node.Children) RemoveNode(child);
         }
 
-        private int GetNodeLayer(Node node)
-        {
-            if (node.Layer >= 0) return node.Layer;
-            else if (node.Parent == null) throw new ArgumentException($"{node} has not been assigned a layer");
-            else return GetNodeLayer(node.Parent);
-        }
-
         private void BringNodeToFront(Node node) => SetNodeSort(node, true);
 
         private void SetNodeSort(Node node, bool recurse = false)
@@ -111,7 +104,11 @@ namespace Industropolis.Engine
                 node.SceneSort = _topLevelCount;
                 _topLevelCount++;
             }
-            else node.SceneSort = node.Parent.SceneSort + (float)node.Sort / (float)Math.Pow(10, node.Depth);
+            else
+            {
+                var childIndex = node.Parent.Children.IndexOf(node) + 1;
+                node.SceneSort = node.Parent.SceneSort + (float)childIndex / (float)Math.Pow(10, node.Depth);
+            }
 
             foreach (var component in node.Components)
             {
