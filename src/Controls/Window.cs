@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine
@@ -5,6 +6,8 @@ namespace Industropolis.Engine
     public class Window : Node
     {
         private int _titleSize = 20;
+
+        public event Action? Closed;
 
         public Window(string title, Vector2 size)
         {
@@ -33,6 +36,7 @@ namespace Industropolis.Engine
             closeButton.Position = new Vector2(titleBar.Size.X - closeButton.Size.X - 2, 4);
             titleBar.AddChild(closeButton);
             closeButton.OnPressed += () => this.Enabled = false;
+            closeButton.OnPressed += () => Closed?.Invoke();
 
             // Add titlebar input component for dragging window around
             var input = new MouseInput();
