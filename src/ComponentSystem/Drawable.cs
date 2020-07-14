@@ -42,6 +42,7 @@ namespace Industropolis.Engine
                 if (bounds.Intersects(scene.Camera.Viewport) || bounds == Rectangle.Empty)
                 {
                     d.Draw?.Invoke(spriteBatch, pos - scene.Camera.Position.Floor());
+                    //CustomDrawing.DrawRect(bounds.Location.ToVector2() - scene.Camera.Position.Floor(), bounds.Size.ToVector2(), Color.Red * 0.5f);
                 }
             }
 

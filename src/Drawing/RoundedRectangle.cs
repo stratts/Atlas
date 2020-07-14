@@ -7,7 +7,6 @@ namespace Industropolis.Engine
     public class RoundedRect : Node
     {
         public Color Color { get; set; } = Color.White;
-        public new Vector2 Size { get; set; }
         public int Radius { get; set; }
 
         public RoundedRect()

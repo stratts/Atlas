@@ -8,18 +8,20 @@ namespace Industropolis.Engine
     {
         private Vector2 _screenPos;
         private bool boundsSet = false;
+        private Drawable _drawable;
 
-        public Rectangle DrawBounds { get; set; } = Rectangle.Empty;
+        protected Drawable Drawable => _drawable;
 
         public CustomDrawingNode()
         {
-            AddComponent(new Drawable() { Draw = Draw });
+            _drawable = new Drawable() { Draw = Draw };
+            AddComponent(_drawable);
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
             _screenPos = position;
-            DrawBounds = Rectangle.Empty;
+            _drawable.DrawBounds = Rectangle.Empty;
             boundsSet = false;
             Draw();
         }
@@ -40,6 +42,12 @@ namespace Industropolis.Engine
             UpdateDrawBounds(position - new Vector2(radius), new Vector2(radius) * 2);
         }
 
+        public void DrawEllipse(Vector2 position, Vector2 size, Color color)
+        {
+            CustomDrawing.DrawEllipse(_screenPos + position, size, color);
+            UpdateDrawBounds(position, size);
+        }
+
         public void DrawEqTriangle(Vector2 basePos, Vector2 size, Color color)
         {
             CustomDrawing.DrawEqTriangle(_screenPos + basePos, size, GetRenderColor(color));
@@ -55,13 +63,13 @@ namespace Industropolis.Engine
 
         private void UpdateDrawBounds(Vector2 pos, Vector2 size)
         {
-            var bounds = DrawBounds;
+            var bounds = _drawable.DrawBounds;
             int left = bounds.Left, right = bounds.Right, up = bounds.Top, down = bounds.Bottom;
             if (!boundsSet || pos.X < left) left = (int)pos.X;
             if (!boundsSet || pos.Y < up) up = (int)pos.Y;
             if (!boundsSet || pos.X + size.X > right) right = (int)(pos.X + size.X);
             if (!boundsSet || pos.Y + size.Y > down) down = (int)(pos.Y + size.Y);
-            DrawBounds = new Rectangle(left, up, right - left, down - up);
+            _drawable.DrawBounds = new Rectangle(left, up, right - left, down - up);
             boundsSet = true;
         }
     }
