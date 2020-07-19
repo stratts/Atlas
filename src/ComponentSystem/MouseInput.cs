@@ -9,6 +9,7 @@ namespace Industropolis.Engine
     {
         public bool ConsumeInput { get; set; } = true;
         public bool HandleConsumed { get; set; } = false;
+        public bool CaptureGlobal { get; set; } = false;
         public Rectangle InputArea { get; set; } = Rectangle.Empty;
         public bool ButtonHeld { get; set; } = false;
         public Action<Vector2>? OnClick { get; set; }
@@ -89,7 +90,7 @@ namespace Industropolis.Engine
         private bool WithinInputArea(Scene scene, Vector2 mousePos, MouseInput component)
         {
             var area = component.InputArea;
-            if (area == Rectangle.Empty) return true;
+            if (area == Rectangle.Empty || component.CaptureGlobal) return true;
             var areaPos = MouseToAreaPos(scene, mousePos, component);
             return (!(areaPos.X < 0 || areaPos.X > area.Width || areaPos.Y < 0 || areaPos.Y > area.Height));
         }
