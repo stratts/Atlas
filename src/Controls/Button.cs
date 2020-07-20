@@ -31,7 +31,6 @@ namespace Industropolis.Engine
             AddComponent(new MouseInput()
             {
                 OnClick = (Vector2 _) => OnPressed?.Invoke(),
-                InputArea = new Rectangle(Point.Zero, Size.ToPoint()),
                 OnMouseEnter = () => rect.Color = Color.DimGray,
                 OnMouseExit = () => rect.Color = Color.Black,
             });

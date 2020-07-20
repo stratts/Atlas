@@ -26,6 +26,8 @@ namespace Industropolis.Engine
         public static Vector2 Round(this Vector2 v) => new Vector2((float)Math.Round(v.X), (float)Math.Round(v.Y));
 
         public static Vector2 ToXna(this System.Numerics.Vector2 v) => new Vector2(v.X, v.Y);
+
+        public static Rectangle ToRectangle(this Vector2 v) => new Rectangle(Point.Zero, v.ToPoint());
     }
 
     public struct ColorHsv

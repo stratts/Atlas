@@ -5,9 +5,8 @@ namespace Industropolis.Engine
 {
     public class Camera : Node
     {
-        private Vector2 _size;
         public float Zoom { get; set; } = 1f;
-        public Rectangle Viewport => new Rectangle(Position.ToPoint(), (_size / Zoom).ToPoint());
+        public Rectangle Viewport => new Rectangle(Position.ToPoint(), (Size / Zoom).ToPoint());
 
         public Vector2 Centre
         {
@@ -17,7 +16,7 @@ namespace Industropolis.Engine
 
         public Camera(int width, int height)
         {
-            _size = new Vector2(width, height);
+            Size = new Vector2(width, height);
         }
 
         public void ZoomTowards(Vector2 pos, float zoom)

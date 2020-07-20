@@ -89,8 +89,8 @@ namespace Industropolis.Engine
 
         private bool WithinInputArea(Scene scene, Vector2 mousePos, MouseInput component)
         {
-            var area = component.InputArea;
-            if (area == Rectangle.Empty || component.CaptureGlobal) return true;
+            var area = component.InputArea != Rectangle.Empty ? component.InputArea : component.Parent.Size.ToRectangle();
+            if (component.CaptureGlobal) return true;
             var areaPos = MouseToAreaPos(scene, mousePos, component);
             return (!(areaPos.X < 0 || areaPos.X > area.Width || areaPos.Y < 0 || areaPos.Y > area.Height));
         }

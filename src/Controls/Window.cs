@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine
 {
-    public class Window : Control
+    public class Window : Node
     {
         private int _titleSize;
         private Rect _border;
@@ -33,12 +33,19 @@ namespace Industropolis.Engine
             };
             _titleBar.AddChild(titleText);
             AddChild(_titleBar);
+            _titleBar.AddComponent(new Layout() { Fill = new Vector2(1, 0) });
+            _titleBar.Size = new Vector2(0, _titleSize);
 
             // Add close button
             _closeButton = new Button("  x  ", 2);
             _titleBar.AddChild(_closeButton);
             _closeButton.OnPressed += () => this.Enabled = false;
             _closeButton.OnPressed += () => Closed?.Invoke();
+            _closeButton.AddComponent(new Layout()
+            {
+                HAlign = HAlign.Right,
+                VAlign = VAlign.Top
+            });
 
             // Add titlebar input component for dragging window around
             var input = new MouseInput();
@@ -64,6 +71,7 @@ namespace Industropolis.Engine
             {
                 Color = Color.Black
             };
+            _border.AddComponent(new Layout() { Container = this, Fill = new Vector2(1) });
             var b = 60;
             _background = new Rect()
             {
@@ -71,6 +79,7 @@ namespace Industropolis.Engine
                 Color = new Color(b, b, b)
             };
             _background.AddComponent(new MouseInput());
+            _background.AddComponent(new Layout() { Container = this, Fill = new Vector2(1) });
             AddChild(_border);
             AddChild(_background);
 
@@ -100,26 +109,14 @@ namespace Industropolis.Engine
             };
             resizeInput.InputArea = new Rectangle(Point.Zero, new Point(10));
             _resize.AddComponent(resizeInput);
+            _resize.AddComponent(new Layout()
+            {
+                HAlign = HAlign.Right,
+                VAlign = VAlign.Bottom
+            });
             AddChild(_resize);
 
             Size = size;
-        }
-
-        protected override void OnSizeChanged(Vector2 size)
-        {
-            _titleBar.Size = new Vector2(size.X, _titleSize);
-            _closeButton.Position = new Vector2(_titleBar.Size.X - _closeButton.Size.X - 2, 4);
-            _border.Size = size;
-            _background.Size = size - new Vector2(2);
-            if (_titleBar.GetComponent<MouseInput>() is MouseInput tInput)
-            {
-                tInput.InputArea = new Rectangle(Point.Zero, _titleBar.Size.ToPoint());
-            }
-            if (_background.GetComponent<MouseInput>() is MouseInput m)
-            {
-                m.InputArea = new Rectangle(Point.Zero, _background.Size.ToPoint());
-            }
-            _resize.Position = size - _resize.Size;
         }
     }
 }

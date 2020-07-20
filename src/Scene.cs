@@ -53,6 +53,7 @@ namespace Industropolis.Engine
             AddSystem(new DrawableSystem());
             AddSystem(new UpdateSystem());
             AddSystem(new MouseInputSystem());
+            AddSystem(new LayoutSystem());
         }
 
         public void AddSystem(IComponentSystem system)
