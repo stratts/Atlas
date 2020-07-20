@@ -57,7 +57,7 @@ namespace Industropolis.Engine
                         var prevAreaPos = MouseToAreaPos(scene, _prevMousePos, c);
                         c.OnMove?.Invoke(curAreaPos, curAreaPos - prevAreaPos);
 
-                        if (c.InputArea != Rectangle.Empty && !_mouseEntered.Contains(c))
+                        if (!_mouseEntered.Contains(c))
                         {
                             _mouseEntered.Add(c);
                             c.OnMouseEnter?.Invoke();

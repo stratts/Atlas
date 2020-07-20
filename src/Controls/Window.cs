@@ -29,11 +29,10 @@ namespace Industropolis.Engine
             _titleBar = new Rect()
             {
                 Color = Color.Black,
-                Position = new Vector2(0, -_titleSize)
             };
             _titleBar.AddChild(titleText);
             AddChild(_titleBar);
-            _titleBar.AddComponent(new Layout() { Fill = new Vector2(1, 0) });
+            _titleBar.AddComponent(new Layout() { Fill = new Vector2(1, 0), Offset = new Vector2(0, -_titleSize) });
             _titleBar.Size = new Vector2(0, _titleSize);
 
             // Add close button
@@ -44,7 +43,8 @@ namespace Industropolis.Engine
             _closeButton.AddComponent(new Layout()
             {
                 HAlign = HAlign.Right,
-                VAlign = VAlign.Top
+                VAlign = VAlign.Top,
+                Margin = new LayoutBorder(right: 2, top: 4)
             });
 
             // Add titlebar input component for dragging window around
@@ -71,15 +71,24 @@ namespace Industropolis.Engine
             {
                 Color = Color.Black
             };
-            _border.AddComponent(new Layout() { Container = this, Fill = new Vector2(1) });
+            _border.AddComponent(new Layout()
+            {
+                Fill = new Vector2(1)
+            });
+
             var b = 60;
             _background = new Rect()
             {
-                Position = new Vector2(1),
                 Color = new Color(b, b, b)
             };
             _background.AddComponent(new MouseInput());
-            _background.AddComponent(new Layout() { Container = this, Fill = new Vector2(1) });
+            _background.AddComponent(new Layout()
+            {
+                HAlign = HAlign.Left,
+                VAlign = VAlign.Top,
+                Margin = new LayoutBorder(1),
+                Fill = new Vector2(1)
+            });
             AddChild(_border);
             AddChild(_background);
 
