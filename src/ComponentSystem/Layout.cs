@@ -27,17 +27,18 @@ namespace Industropolis.Engine
 
     public interface IContainer
     {
-        Vector2 Offset => Vector2.Zero;
-        LayoutBorder Padding => LayoutBorder.None;
+        Vector2 Offset { get; }
+        LayoutBorder Padding { get; }
         Vector2 Size { get; }
+
         Vector2 PaddedSize => Size - Padding.Size;
         float Left => Offset.X + Padding.Left;
-        float Right => Offset.X + Size.X - Padding.Left - Padding.Right;
+        float Right => Offset.X + Size.X - Padding.Right;
         float Top => Offset.Y + Padding.Top;
-        float Bottom => Offset.Y + Size.Y - Padding.Top - Padding.Bottom;
+        float Bottom => Offset.Y + Size.Y - Padding.Bottom;
     }
 
-    public enum HAlign { None, Left, Right }
+    public enum HAlign { None, Left, Right, Centre }
     public enum VAlign { None, Top, Bottom }
 
     public class Layout : Component
@@ -56,6 +57,7 @@ namespace Industropolis.Engine
         private struct Container : IContainer
         {
             public Vector2 Offset { get; }
+            public LayoutBorder Padding => LayoutBorder.None;
             public Vector2 Size { get; }
 
             public Container(Vector2 size) : this(Vector2.Zero, size) { }
@@ -97,6 +99,7 @@ namespace Industropolis.Engine
                 {
                     HAlign.Left => container.Left + c.Margin.Left + c.Offset.X,
                     HAlign.Right => container.Right - parent.Size.X - c.Margin.Right + c.Offset.X,
+                    HAlign.Centre => container.Left + c.Margin.Left + c.Offset.X + (container.PaddedSize.X / 2 - c.Parent.Size.X / 2),
                     _ => container.Left + c.Margin.Left + c.Offset.X
                 };
 

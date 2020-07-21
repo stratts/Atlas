@@ -15,6 +15,7 @@ namespace Industropolis.Engine
         public event Action? Closed;
 
         public LayoutBorder Padding { get; } = new LayoutBorder(10);
+        public Vector2 Offset => Vector2.Zero;
 
         public Window(string title, Vector2 size)
         {
