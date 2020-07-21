@@ -24,6 +24,7 @@ namespace Industropolis.Engine
                 Size = Text.Font.MeasureString(label) + margin * 2,
                 Radius = 4
             };
+            rect.AddComponent(new Layout() { Fill = new Vector2(1) });
             Size = rect.Size;
             AddChild(rect);
             AddChild(text);

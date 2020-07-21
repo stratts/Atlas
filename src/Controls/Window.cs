@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine
 {
-    public class Window : Node
+    public class Window : Node, IContainer
     {
         private int _titleSize;
         private Rect _border;
@@ -13,6 +13,8 @@ namespace Industropolis.Engine
         private Rect _resize;
 
         public event Action? Closed;
+
+        public LayoutBorder Padding { get; } = new LayoutBorder(10);
 
         public Window(string title, Vector2 size)
         {
@@ -32,7 +34,12 @@ namespace Industropolis.Engine
             };
             _titleBar.AddChild(titleText);
             AddChild(_titleBar);
-            _titleBar.AddComponent(new Layout() { Fill = new Vector2(1, 0), Offset = new Vector2(0, -_titleSize) });
+            _titleBar.AddComponent(new Layout()
+            {
+                Fill = new Vector2(1, 0),
+                Offset = new Vector2(0, -_titleSize),
+                IgnorePadding = true
+            });
             _titleBar.Size = new Vector2(0, _titleSize);
 
             // Add close button
@@ -73,7 +80,8 @@ namespace Industropolis.Engine
             };
             _border.AddComponent(new Layout()
             {
-                Fill = new Vector2(1)
+                Fill = new Vector2(1),
+                IgnorePadding = true
             });
 
             var b = 60;
@@ -84,10 +92,9 @@ namespace Industropolis.Engine
             _background.AddComponent(new MouseInput());
             _background.AddComponent(new Layout()
             {
-                HAlign = HAlign.Left,
-                VAlign = VAlign.Top,
                 Margin = new LayoutBorder(1),
-                Fill = new Vector2(1)
+                Fill = new Vector2(1),
+                IgnorePadding = true,
             });
             AddChild(_border);
             AddChild(_background);
@@ -121,7 +128,8 @@ namespace Industropolis.Engine
             _resize.AddComponent(new Layout()
             {
                 HAlign = HAlign.Right,
-                VAlign = VAlign.Bottom
+                VAlign = VAlign.Bottom,
+                IgnorePadding = true
             });
             AddChild(_resize);
 
