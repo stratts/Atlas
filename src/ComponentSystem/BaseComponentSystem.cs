@@ -8,6 +8,9 @@ namespace Industropolis.Engine
         protected List<T> _components = new List<T>();
         private Queue<Action> _actionQueue = new Queue<Action>();
         private bool _sort = false;
+        private bool _update = false;
+
+        protected bool UpdateEveryTick { get; set; } = true;
 
         public bool HandlesComponent(Component component) => component is T;
 
@@ -20,6 +23,7 @@ namespace Industropolis.Engine
                 if (_components.Contains(c)) throw new ArgumentException("Component already added to system");
                 _components.Add(c);
                 _sort = true;
+                _update = true;
             });
         }
 
@@ -32,6 +36,7 @@ namespace Industropolis.Engine
                 if (!_components.Contains(c)) throw new ArgumentException("Component not added to system");
                 _components.Remove(c);
                 _sort = true;
+                _update = true;
             });
         }
 
@@ -56,7 +61,11 @@ namespace Industropolis.Engine
                 _components.Sort(SortMethod);
                 _sort = false;
             }
-            UpdateComponents(scene, _components, elapsed);
+            if (_update || UpdateEveryTick)
+            {
+                UpdateComponents(scene, _components, elapsed);
+                _update = false;
+            }
         }
 
         protected void ProcessChanges()

@@ -14,6 +14,7 @@ namespace Industropolis.Engine
         public Text()
         {
             AddComponent(new Drawable() { Draw = Draw });
+            AddComponent<Modulate>();
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)

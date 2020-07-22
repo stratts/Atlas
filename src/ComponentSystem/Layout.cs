@@ -95,19 +95,19 @@ namespace Industropolis.Engine
                     parent.Size = new Vector2(parent.Size.X, (container.PaddedSize.Y - c.Margin.Top - c.Margin.Bottom) * c.Fill.Y);
                 }
 
-                parent.Position.X = c.HAlign switch
+                parent.Position.X = c.Offset.X + c.HAlign switch
                 {
-                    HAlign.Left => container.Left + c.Margin.Left + c.Offset.X,
-                    HAlign.Right => container.Right - parent.Size.X - c.Margin.Right + c.Offset.X,
-                    HAlign.Centre => container.Left + c.Margin.Left + c.Offset.X + (container.PaddedSize.X / 2 - c.Parent.Size.X / 2),
-                    _ => container.Left + c.Margin.Left + c.Offset.X
+                    HAlign.Left => container.Left + c.Margin.Left,
+                    HAlign.Right => container.Right - parent.Size.X - c.Margin.Right,
+                    HAlign.Centre => container.Left + c.Margin.Left + (container.PaddedSize.X / 2 - c.Parent.Size.X / 2),
+                    _ => container.Left + c.Margin.Left
                 };
 
-                parent.Position.Y = c.VAlign switch
+                parent.Position.Y = c.Offset.Y + c.VAlign switch
                 {
-                    VAlign.Top => container.Top + c.Margin.Top + c.Offset.Y,
-                    VAlign.Bottom => container.Bottom - parent.Size.Y - c.Margin.Bottom + c.Offset.Y,
-                    _ => container.Top + c.Margin.Top + c.Offset.Y
+                    VAlign.Top => container.Top + c.Margin.Top,
+                    VAlign.Bottom => container.Bottom - parent.Size.Y - c.Margin.Bottom,
+                    _ => container.Top + c.Margin.Top
                 };
             }
         }

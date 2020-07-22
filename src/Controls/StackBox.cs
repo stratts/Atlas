@@ -43,8 +43,8 @@ namespace Industropolis.Engine
                 node.AddComponent(layout);
             }
 
-            var width = node.Size.X;
-            var height = node.Size.Y;
+            var width = node.Size.X + layout.Margin.Size.X;
+            var height = node.Size.Y + layout.Margin.Size.Y;
             float space = _direction == Direction.Horizontal ? width + _spacing : height + _spacing;
 
             layout.Container = stretch ? _container.AddSection(space) : _container.AddSection(space, space);

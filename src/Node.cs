@@ -29,9 +29,6 @@ namespace Industropolis.Engine
             }
         }
 
-        public float Opacity { get; set; } = 1f;
-        public Color Tint { get; set; } = Color.White;
-
         public Node? Parent { get; set; }
         public List<Node> Children => _children;
         public IReadOnlyList<Component> Components => _components;
@@ -70,6 +67,13 @@ namespace Industropolis.Engine
             ComponentAdded?.Invoke(component);
         }
 
+        public T AddComponent<T>() where T : Component, new()
+        {
+            var c = new T();
+            AddComponent(c);
+            return c;
+        }
+
         public void RemoveComponent(Component component)
         {
             _components.Remove(component);
@@ -87,20 +91,6 @@ namespace Industropolis.Engine
 
         public void BringToFront() => BroughtToFront?.Invoke(this);
 
-        protected Color GetRenderColor(Color color)
-        {
-            var opacity = Parent != null ? Opacity * Parent.Opacity : Opacity;
-            var tint = Parent != null && Parent.Tint != Color.White ? Parent.Tint : Tint;
-            var c = color;
-            if (tint != Color.White)
-            {
-                var tHsv = tint.ToHsv();
-                var cHsv = c.ToHsv();
-                cHsv.Hue = tHsv.Hue;
-                cHsv.Saturation = tHsv.Saturation;
-                c = cHsv.ToRgb();
-            }
-            return c * opacity;
-        }
+        public Color GetRenderColor(Color c) => GetComponent<Modulate>() is Modulate m ? m.ModulateColor(c) : c;
     }
 }

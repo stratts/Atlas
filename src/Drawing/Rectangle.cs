@@ -13,6 +13,7 @@ namespace Industropolis.Engine
         {
             Size = size;
             Color = color;
+            AddComponent<Modulate>();
         }
 
         public Rect(Vector2 position, Vector2 size, Color color) : this(size, color)
