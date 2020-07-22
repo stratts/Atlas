@@ -28,26 +28,27 @@ namespace Industropolis.Engine
             else _container = new RowContainer();
         }
 
-        public override void AddChild(Node node) => AddChild(node, false);
+        public override void AddChild(Node node) => AddChild(node);
 
-        public void AddChild(Node node, bool stretch)
+        public void AddChild(Node node, float minSize = -1, float maxSize = -1)
         {
             base.AddChild(node);
 
             Layout layout;
 
             if (node.GetComponent<Layout>() is Layout l) layout = l;
-            else
-            {
-                layout = new Layout();
-                node.AddComponent(layout);
-            }
+            else layout = node.AddComponent<Layout>();
 
             var width = node.Size.X + layout.Margin.Size.X;
             var height = node.Size.Y + layout.Margin.Size.Y;
-            float space = _direction == Direction.Horizontal ? width + _spacing : height + _spacing;
+            var size = _direction == Direction.Horizontal ? width : height;
 
-            layout.Container = stretch ? _container.AddSection(space) : _container.AddSection(space, space);
+            if (maxSize == -1) maxSize = size + _spacing;
+            else maxSize = maxSize + _spacing;
+            if (minSize == -1) minSize = size + _spacing;
+            else minSize = minSize + _spacing;
+
+            layout.Container = _container.AddSection(minSize, maxSize);
             _container.Layout();
 
             _size = _container.Size;
