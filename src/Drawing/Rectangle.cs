@@ -7,13 +7,16 @@ namespace Industropolis.Engine
     {
         public Color Color { get; set; } = Color.White;
 
-        public Rect() { AddComponent(new Drawable() { Draw = Draw }); }
+        public Rect()
+        {
+            AddComponent(new Drawable() { Draw = Draw });
+            AddComponent<Modulate>();
+        }
 
         public Rect(Vector2 size, Color color) : this()
         {
             Size = size;
             Color = color;
-            AddComponent<Modulate>();
         }
 
         public Rect(Vector2 position, Vector2 size, Color color) : this(size, color)
