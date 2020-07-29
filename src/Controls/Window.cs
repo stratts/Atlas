@@ -6,8 +6,6 @@ namespace Industropolis.Engine
     public class Window : Node, IContainer
     {
         private int _titleSize;
-        private Rect _border;
-        private Rect _background;
         private Rect _titleBar;
         private Button _closeButton;
         private Rect _resize;
@@ -74,31 +72,10 @@ namespace Industropolis.Engine
             input.OnClick = (_) => BringToFront();
             _titleBar.AddComponent(input);
 
-            // Add window background and border
-            _border = new Rect()
-            {
-                Color = Color.Black
-            };
-            _border.AddComponent(new Layout()
-            {
-                Fill = new Vector2(1),
-                IgnorePadding = true
-            });
-
-            var b = 60;
-            _background = new Rect()
-            {
-                Color = new Color(b, b, b)
-            };
-            _background.AddComponent(new MouseInput());
-            _background.AddComponent(new Layout()
-            {
-                Margin = new LayoutBorder(1),
-                Fill = new Vector2(1),
-                IgnorePadding = true,
-            });
-            AddChild(_border);
-            AddChild(_background);
+            // Add panel
+            var panel = new Panel();
+            panel.AddComponent(new Layout() { Fill = new Vector2(1), IgnorePadding = true });
+            AddChild(panel);
 
             // Add window resize grabber
             _resize = new Rect()
