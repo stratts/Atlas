@@ -29,7 +29,11 @@ namespace Industropolis.Engine
 
         public abstract void Draw();
 
-        public void DrawRect(Vector2 position, Vector2 size, Color color) => DrawRect(position, size, color);
+        public void DrawRect(Vector2 position, Vector2 size, Color color)
+        {
+            CustomDrawing.DrawRect(_screenPos + position, size, color);
+            UpdateDrawBounds(position, size);
+        }
 
         public void DrawRect(Vector2 centrePos, Vector2 size, Color color, float angle)
         {

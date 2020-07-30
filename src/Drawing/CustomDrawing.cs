@@ -65,7 +65,8 @@ namespace Industropolis.Engine
         {
             _spriteBatch.Draw(
                 _triangleTexture,
-                destinationRectangle: new Rectangle((int)basePos.X, (int)basePos.Y, (int)size.X, (int)size.Y),
+                destinationRectangle: new Rectangle(
+                    (int)basePos.X - (int)size.X / 2, (int)basePos.Y - (int)size.Y, (int)size.X, (int)size.Y),
                 sourceRectangle: null,
                 color: color,
                 rotation: 0,
