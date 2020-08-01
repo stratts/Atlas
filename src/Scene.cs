@@ -42,7 +42,7 @@ namespace Industropolis.Engine
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
         protected Camera _camera = new Camera(UI.GameScreen.Width, UI.GameScreen.Height);
 
-        private uint _topLevelCount = 0;
+        private Dictionary<int, uint> _topLevelCount = new Dictionary<int, uint>();
 
         public Camera Camera => _camera;
         public IReadOnlyList<Node> Nodes => _nodes;
@@ -66,6 +66,8 @@ namespace Industropolis.Engine
 
         public void AddNode(Node node, int layer)
         {
+            if (!_topLevelCount.ContainsKey(layer)) _topLevelCount[layer] = 0;
+
             node.Layer = layer;
             _nodes.Add(node);
             SetNodeSort(node);
@@ -103,8 +105,9 @@ namespace Industropolis.Engine
         {
             if (node.Parent == null)
             {
-                node.SceneSort = _topLevelCount;
-                _topLevelCount++;
+                var layer = node.Layer;
+                node.SceneSort = ushort.MaxValue * layer + _topLevelCount[layer];
+                _topLevelCount[layer]++;
             }
             else
             {

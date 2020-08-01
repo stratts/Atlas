@@ -17,6 +17,7 @@ namespace Industropolis.Engine
 
         public int Layer { get; set; } = -1;
         public float SceneSort { get; set; }
+
         public int Depth => Parent != null ? Parent.Depth + 1 : 0;
 
         public bool Enabled

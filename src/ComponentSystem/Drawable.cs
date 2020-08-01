@@ -22,8 +22,6 @@ namespace Industropolis.Engine
 
         protected override int SortMethod(Drawable a, Drawable b)
         {
-            int layer = a.Parent.Layer.CompareTo(b.Parent.Layer);
-            if (layer != 0) return layer;
             return a.Priority.CompareTo(b.Priority);
         }
 
