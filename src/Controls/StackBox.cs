@@ -28,6 +28,11 @@ namespace Industropolis.Engine
             else _container = new RowContainer();
         }
 
+        public void AddChildren(params Node[] children)
+        {
+            foreach (var c in children) AddChild(c);
+        }
+
         public override void AddChild(Node node) => AddChild(node);
 
         public void AddChild(Node node, float minSize = -1, float maxSize = -1)
@@ -44,7 +49,7 @@ namespace Industropolis.Engine
             var size = _direction == Direction.Horizontal ? width : height;
 
             if (maxSize == -1) maxSize = size + _spacing;
-            else maxSize = maxSize + _spacing;
+            else if (maxSize > 0) maxSize = maxSize + _spacing;
             if (minSize == -1) minSize = size + _spacing;
             else minSize = minSize + _spacing;
 

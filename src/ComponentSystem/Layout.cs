@@ -1,5 +1,7 @@
+using System;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Industropolis.Engine
 {
@@ -23,6 +25,17 @@ namespace Industropolis.Engine
         }
 
         public LayoutBorder(float border) : this(border, border, border, border) { }
+
+        public static bool operator ==(LayoutBorder a, LayoutBorder b) => (a.Left, a.Right, a.Top, a.Bottom) == (b.Left, b.Right, b.Top, b.Bottom);
+        public static bool operator !=(LayoutBorder a, LayoutBorder b) => !(a == b);
+
+        public override bool Equals(object? other)
+        {
+            if (!(other is LayoutBorder l)) return false;
+            else return this == l;
+        }
+
+        public override int GetHashCode() => (Left, Right, Top, Bottom).GetHashCode();
     }
 
     public interface IContainer
@@ -39,7 +52,7 @@ namespace Industropolis.Engine
     }
 
     public enum HAlign { None, Left, Right, Centre }
-    public enum VAlign { None, Top, Bottom }
+    public enum VAlign { None, Top, Bottom, Centre }
 
     public class Layout : Component
     {
@@ -107,6 +120,7 @@ namespace Industropolis.Engine
                 {
                     VAlign.Top => container.Top + c.Margin.Top,
                     VAlign.Bottom => container.Bottom - parent.Size.Y - c.Margin.Bottom,
+                    VAlign.Centre => container.Top + c.Margin.Top + (container.PaddedSize.Y / 2 - c.Parent.Size.Y / 2),
                     _ => container.Top + c.Margin.Top
                 };
             }
