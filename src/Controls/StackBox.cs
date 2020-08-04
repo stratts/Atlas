@@ -1,10 +1,11 @@
 using Microsoft.Xna.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Industropolis.Engine
 {
-    public class StackBox : Node
+    public class StackBox : Node, IEnumerable<Node>
     {
         private int _spacing;
         private Vector2 _size = Vector2.Zero;
@@ -28,12 +29,17 @@ namespace Industropolis.Engine
             else _container = new RowContainer();
         }
 
-        public void AddChildren(params Node[] children)
+        public void AddChildren(params Node?[] children)
         {
-            foreach (var c in children) AddChild(c);
+            foreach (var c in children)
+            {
+                if (c != null) AddChild(c);
+            }
         }
 
         public override void AddChild(Node node) => AddChild(node);
+
+        public void Add(Node node) => AddChild(node);
 
         public void AddChild(Node node, float minSize = -1, float maxSize = -1)
         {
@@ -73,6 +79,9 @@ namespace Industropolis.Engine
             for (int i = Children.Count - 1; i >= 0; i--) RemoveChild(Children[i]);
             Size = Vector2.Zero;
         }
+
+        public IEnumerator<Node> GetEnumerator() => Children.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => Children.GetEnumerator();
     }
 
     public class HStackBox : StackBox

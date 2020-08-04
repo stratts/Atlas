@@ -4,6 +4,15 @@ using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine
 {
+    public static class NodeExtensions
+    {
+        public static T InitComponents<T>(this T node, params Component[] components) where T : Node
+        {
+            foreach (var c in components) node.AddComponent(c);
+            return node;
+        }
+    }
+
     public class Node
     {
         private List<Node> _children = new List<Node>();
