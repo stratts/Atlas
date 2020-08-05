@@ -9,6 +9,7 @@ namespace Industropolis.Engine
         public LayoutBorder Padding { get; private set; }
 
         public event Action? OnPressed;
+        public Action? OnClick { get; set; }
 
         public Button(string label) : this(label, 8) { }
 
@@ -34,7 +35,7 @@ namespace Industropolis.Engine
 
             AddComponent(new MouseInput()
             {
-                OnClick = (Vector2 _) => OnPressed?.Invoke(),
+                OnClick = (Vector2 _) => { OnPressed?.Invoke(); OnClick?.Invoke(); },
                 OnMouseEnter = () => rect.Color = Color.DimGray,
                 OnMouseExit = () => rect.Color = Color.Black,
             });
