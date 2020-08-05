@@ -7,6 +7,8 @@ namespace Industropolis.Engine
 {
     public class StackBox : Node, IEnumerable<Node>
     {
+        public class Expand : Component { }
+
         private int _spacing;
         private Vector2 _size = Vector2.Zero;
         private Vector2 _currentOffset = Vector2.Zero;
@@ -54,7 +56,11 @@ namespace Industropolis.Engine
             var height = node.Size.Y + layout.Margin.Size.Y;
             var size = _direction == Direction.Horizontal ? width : height;
 
-            if (maxSize == -1) maxSize = size + _spacing;
+            if (maxSize == -1)
+            {
+                if (node.GetComponent<Expand>() != null) maxSize = 0;
+                else maxSize = size + _spacing;
+            }
             else if (maxSize > 0) maxSize = maxSize + _spacing;
             if (minSize == -1) minSize = size + _spacing;
             else minSize = minSize + _spacing;

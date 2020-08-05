@@ -95,22 +95,3 @@ namespace Industropolis.Engine
         public Color GetRenderColor(Color c) => GetComponent<Modulate>() is Modulate m ? m.ModulateColor(c) : c;
     }
 }
-
-namespace Industropolis.Engine.UI
-{
-    public static class NodeExtensions
-    {
-        public static T InitComponents<T>(this T node, params Component[] components) where T : Node
-        {
-            foreach (var c in components) node.AddComponent(c);
-            return node;
-        }
-
-        public static T WithUpdate<T>(this T node, Action<T> func) where T : Node
-        {
-            func?.Invoke(node);
-            node.AddComponent(new Updateable() { UpdateMethod = (elapsed) => func?.Invoke(node) });
-            return node;
-        }
-    }
-}
