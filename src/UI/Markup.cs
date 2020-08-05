@@ -3,20 +3,10 @@ namespace Industropolis.Engine.UI
 {
     public static class Markup
     {
-        public static Button Button(string label) => new Button(label);
-        public static Text Text(string content = "") => new Text() { Content = content };
-        public static VStackBox VBox(params Node[] children)
-        {
-            var box = new VStackBox();
-            box.AddChildren(children);
-            return box;
-        }
-
-        public static HStackBox HBox(params Node[] children)
-        {
-            var box = new HStackBox();
-            box.AddChildren(children);
-            return box;
-        }
+        public static ButtonView Button(string label) => new ButtonView(label);
+        public static TextView Text(string content = "") => new TextView() { Content = content };
+        public static VBoxView VBox(params View[] children) => new VBoxView(children);
+        public static HBoxView HBox(params View[] children) => new HBoxView(children);
+        public static NodeView Node(Node node) => new NodeView(node);
     }
 }
