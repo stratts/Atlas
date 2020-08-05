@@ -70,5 +70,7 @@ namespace Industropolis.Engine.UI
         }
 
         public static T Expand<T>(this T view) where T : View => Modify(view, view => view.AddComponent<StackBox.Expand>());
+
+        public static T? ShowIf<T>(this T view, bool condition) where T : View => condition == true ? view : null;
     }
 }

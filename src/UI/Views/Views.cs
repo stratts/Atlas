@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine.UI
@@ -38,13 +39,26 @@ namespace Industropolis.Engine.UI
         public BoxView(StackBox.Direction direction, params View?[] children)
         {
             _box = new StackBox(10, direction);
-            foreach (var c in children)
-            {
-                if (c != null) _box.AddChild(c);
-            }
+            AddChildren(children);
         }
 
         public void AddChild(View view) => _box.AddChild(view);
+
+        private BoxView AddChildren(IEnumerable<View?>? children)
+        {
+            if (children != null)
+            {
+                foreach (var c in children)
+                {
+                    if (c != null)
+                    {
+                        if (c is MultiView m) AddChildren(m.Views);
+                        else AddChild(c);
+                    }
+                }
+            }
+            return this;
+        }
     }
 
     public class HBoxView : BoxView
@@ -62,5 +76,16 @@ namespace Industropolis.Engine.UI
         protected override Node Node { get; }
 
         public NodeView(Node node) => Node = node;
+    }
+
+    public class MultiView : View
+    {
+        protected override Node Node => throw new NotImplementedException();
+        public IEnumerable<View> Views { get; }
+
+        public MultiView(IEnumerable<View> views)
+        {
+            Views = views;
+        }
     }
 }
