@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Industropolis.Engine.UI
+namespace Industropolis.Engine.UI.Views
 {
     public class TextView : View
     {
@@ -42,7 +42,7 @@ namespace Industropolis.Engine.UI
             AddChildren(children);
         }
 
-        public void AddChild(View view) => _box.AddChild(view);
+        public void AddChild(View view) => _box.AddChild(view.GetNode());
 
         private BoxView AddChildren(IEnumerable<View?>? children)
         {

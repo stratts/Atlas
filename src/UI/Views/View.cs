@@ -6,11 +6,10 @@ namespace Industropolis.Engine.UI
     {
         protected abstract Node Node { get; }
 
-        public static implicit operator Node(View v)
+        public Node GetNode()
         {
-            var node = v.Node;
-            if (node.GetComponent<Layout>() is null) node.AddComponent<Layout>();
-            return node;
+            if (Node.GetComponent<Layout>() is null) Node.AddComponent<Layout>();
+            return Node;
         }
 
         protected static T Modify<T>(T obj, Action func) where T : View

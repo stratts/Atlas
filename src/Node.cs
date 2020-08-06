@@ -59,13 +59,6 @@ namespace Industropolis.Engine
             ChildRemoved?.Invoke(node);
         }
 
-        public Node ReplaceChild(Node? child, Node replacement)
-        {
-            if (child != null) RemoveChild(child);
-            AddChild(replacement);
-            return replacement;
-        }
-
         public void Delete() => Deleted?.Invoke(this);
 
         public void AddComponent(Component component)

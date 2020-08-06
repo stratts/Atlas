@@ -7,17 +7,17 @@ namespace Industropolis.Engine.UI
     {
         private static T? GetComponent<T>(this View view) where T : Component
         {
-            return ((Node)view).GetComponent<T>();
+            return view.GetNode().GetComponent<T>();
         }
 
         private static T AddComponent<T>(this View view) where T : Component, new()
         {
-            return ((Node)view).AddComponent<T>();
+            return view.GetNode().AddComponent<T>();
         }
 
         private static void AddComponent(this View view, Component c)
         {
-            ((Node)view).AddComponent(c);
+            view.GetNode().AddComponent(c);
         }
 
         private static T Modify<T>(T obj, Action<T> func)

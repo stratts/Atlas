@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Industropolis.Engine.UI.Views;
 
 namespace Industropolis.Engine.UI
 {
@@ -11,7 +12,7 @@ namespace Industropolis.Engine.UI
         public static VBoxView VBox(params View?[] children) => new VBoxView(children);
         public static HBoxView HBox(params View?[] children) => new HBoxView(children);
         public static NodeView Node(Node node) => new NodeView(node);
-        public static MultiView? Foreach<T>(IEnumerable<T>? enumerator, Func<T, View> func)
+        public static MultiView? ForEach<T>(IEnumerable<T>? enumerator, Func<T, View> func)
         {
             if (enumerator == null) return null;
             else return new MultiView(enumerator.Select(func));
