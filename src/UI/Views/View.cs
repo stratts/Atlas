@@ -1,10 +1,13 @@
 using System;
+using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine.UI
 {
     public abstract class View
     {
         protected abstract Node Node { get; }
+
+        public Vector2 Size => Node.Size;
 
         public Node GetNode()
         {

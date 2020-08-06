@@ -112,7 +112,7 @@ namespace Industropolis.Engine
             else
             {
                 var childIndex = node.Parent.Children.IndexOf(node) + 1;
-                node.SceneSort = node.Parent.SceneSort + (float)childIndex / (float)Math.Pow(10, node.Depth);
+                node.SceneSort = node.Parent.SceneSort + (double)childIndex / Math.Pow(10, node.Depth);
             }
 
             foreach (var component in node.Components)

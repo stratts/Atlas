@@ -4,6 +4,11 @@ using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine.UI.Views
 {
+    public interface IPaddableView
+    {
+        void SetPadding(LayoutBorder padding);
+    }
+
     public class TextView : View
     {
         private Text _node = new Text();
@@ -15,7 +20,7 @@ namespace Industropolis.Engine.UI.Views
         public TextView Color(Color c) => Modify(this, () => _node.Color = c);
     }
 
-    public class ButtonView : View
+    public class ButtonView : View, IPaddableView
     {
         private Button _button;
 
@@ -28,6 +33,8 @@ namespace Industropolis.Engine.UI.Views
             _button.OnClick = onClick;
             return this;
         }
+
+        void IPaddableView.SetPadding(LayoutBorder padding) => _button.Padding = padding;
     }
 
     public class BoxView : View
@@ -76,6 +83,37 @@ namespace Industropolis.Engine.UI.Views
         protected override Node Node { get; }
 
         public NodeView(Node node) => Node = node;
+    }
+
+    public class ContainerView : View, IPaddableView
+    {
+        private View _view;
+        private Container _container;
+        protected override Node Node => _container;
+
+        public ContainerView(View view, LayoutBorder padding = default(LayoutBorder))
+        {
+            _view = view;
+            var node = view.GetNode();
+            var container = new Container(view.Size + padding.Size, padding);
+            container.AddChild(node);
+            _container = container;
+        }
+
+        public ContainerView Background(Color color)
+        {
+            _container.AddComponent(new Drawable()
+            {
+                Draw = (_, position) => CustomDrawing.DrawRect(position, Size, color)
+            });
+            return this;
+        }
+
+        void IPaddableView.SetPadding(LayoutBorder padding)
+        {
+            _container.Size = _view.Size + padding.Size;
+            _container.Padding = padding;
+        }
     }
 
     public class MultiView : View

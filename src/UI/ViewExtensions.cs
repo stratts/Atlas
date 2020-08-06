@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using Industropolis.Engine.UI.Views;
 
 namespace Industropolis.Engine.UI
 {
@@ -50,9 +51,19 @@ namespace Industropolis.Engine.UI
             return view;
         }
 
+        public static T Margin<T>(this T view, float margin) where T : View => Margin(view, margin, margin, margin, margin);
+        public static T Margin<T>(this T view, float horizontal = 0, float vertical = 0) where T : View => Margin(view, horizontal, horizontal, vertical, vertical);
         public static T Margin<T>(this T view, float left = 0, float right = 0, float top = 0, float bottom = 0) where T : View
         {
             view.GetLayout().Margin = new LayoutBorder(left, right, top, bottom);
+            return view;
+        }
+
+        public static T Padding<T>(this T view, float margin) where T : View, IPaddableView => Padding(view, margin, margin, margin, margin);
+        public static T Padding<T>(this T view, float horizontal = 0, float vertical = 0) where T : View, IPaddableView => Padding(view, horizontal, horizontal, vertical, vertical);
+        public static T Padding<T>(this T view, float left = 0, float right = 0, float top = 0, float bottom = 0) where T : View, IPaddableView
+        {
+            view.SetPadding(new LayoutBorder(left, right, top, bottom));
             return view;
         }
 

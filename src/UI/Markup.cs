@@ -12,6 +12,7 @@ namespace Industropolis.Engine.UI
         public static VBoxView VBox(params View?[] children) => new VBoxView(children);
         public static HBoxView HBox(params View?[] children) => new HBoxView(children);
         public static NodeView Node(Node node) => new NodeView(node);
+        public static ContainerView Container(View view) => new ContainerView(view);
         public static MultiView? ForEach<T>(IEnumerable<T>? enumerator, Func<T, View> func)
         {
             if (enumerator == null) return null;
