@@ -46,25 +46,11 @@ namespace Industropolis.Engine.UI.Views
         public BoxView(StackBox.Direction direction, params View?[] children)
         {
             _box = new StackBox(10, direction);
-            AddChildren(children);
-        }
 
-        public void AddChild(View view) => _box.AddChild(view.GetNode());
-
-        private BoxView AddChildren(IEnumerable<View?>? children)
-        {
-            if (children != null)
+            foreach (var c in children)
             {
-                foreach (var c in children)
-                {
-                    if (c != null)
-                    {
-                        if (c is MultiView m) AddChildren(m.Views);
-                        else AddChild(c);
-                    }
-                }
+                if (c != null) _box.AddChild(c.GetNode());
             }
-            return this;
         }
     }
 
@@ -113,17 +99,6 @@ namespace Industropolis.Engine.UI.Views
         {
             _container.Size = _view.Size + padding.Size;
             _container.Padding = padding;
-        }
-    }
-
-    public class MultiView : View
-    {
-        protected override Node Node => throw new NotImplementedException();
-        public IEnumerable<View> Views { get; }
-
-        public MultiView(IEnumerable<View> views)
-        {
-            Views = views;
         }
     }
 }
