@@ -26,12 +26,10 @@ namespace Industropolis.Engine.UI.Views
 
         protected override Node Node => _button;
 
-        public ButtonView(string label) => _button = new Button(label);
-
-        public ButtonView OnClick(Action onClick)
+        public ButtonView(string label, Action? onClick)
         {
+            _button = new Button(label);
             _button.OnClick = onClick;
-            return this;
         }
 
         void IPaddableView.SetPadding(LayoutBorder padding) => _button.Padding = padding;
@@ -39,13 +37,14 @@ namespace Industropolis.Engine.UI.Views
 
     public class BoxView : View
     {
-        private StackBox _box;
+        protected StackBox _box;
 
         protected override Node Node => _box;
 
         public BoxView(StackBox.Direction direction, params View?[] children)
         {
             _box = new StackBox(10, direction);
+            this.Fill(width: 1);
 
             foreach (var c in children)
             {
