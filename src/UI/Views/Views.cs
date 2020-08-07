@@ -85,6 +85,12 @@ namespace Industropolis.Engine.UI.Views
             _container = container;
         }
 
+        public ContainerView Height(int height)
+        {
+            _container.Size = new Vector2(_container.Size.X, height);
+            return this;
+        }
+
         public ContainerView Background(Color color)
         {
             _container.AddComponent(new Drawable()
