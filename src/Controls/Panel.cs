@@ -2,12 +2,11 @@ using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine
 {
-    public class Panel : Node, IContainer
+    public class Panel : Container
     {
-        public LayoutBorder Padding { get; } = new LayoutBorder(10);
-        public Vector2 Offset => Vector2.Zero;
+        public Panel() : this(Vector2.Zero, new LayoutBorder(10)) { }
 
-        public Panel()
+        public Panel(Vector2 size, LayoutBorder padding) : base(size, padding)
         {
             // Add background and border
             var border = new Rect()

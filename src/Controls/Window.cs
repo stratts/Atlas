@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine
 {
-    public class Window : Node, IContainer
+    public class Window : Container
     {
         private int _titleSize;
         private Rect _titleBar;
@@ -12,10 +12,7 @@ namespace Industropolis.Engine
 
         public event Action? Closed;
 
-        public LayoutBorder Padding { get; } = new LayoutBorder(10);
-        public Vector2 Offset => Vector2.Zero;
-
-        public Window(string title, Vector2 size)
+        public Window(string title, Vector2 size) : base(size, new LayoutBorder(10))
         {
             // Add title bar
             var titleText = new Text()

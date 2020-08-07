@@ -70,6 +70,29 @@ namespace Industropolis.Engine.UI.Views
         public NodeView(Node node) => Node = node;
     }
 
+    public class PanelView : View, IPaddableView
+    {
+        private View _view;
+        private Panel _panel;
+        protected override Node Node => _panel;
+
+        public PanelView(View view, LayoutBorder? padding = null)
+        {
+            _view = view;
+            var node = view.GetNode();
+            if (padding == null) padding = new LayoutBorder(10);
+            var panel = new Panel(view.Size + padding.Value.Size, padding.Value);
+            panel.AddChild(node);
+            _panel = panel;
+        }
+
+        void IPaddableView.SetPadding(LayoutBorder padding)
+        {
+            _panel.Size = _view.Size + padding.Size;
+            _panel.Padding = padding;
+        }
+    }
+
     public class ContainerView : View, IPaddableView
     {
         private View _view;

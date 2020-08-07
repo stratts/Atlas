@@ -11,6 +11,8 @@ namespace Industropolis.Engine.UI
             AddComponent(new Layout() { Fill = new Vector2(1, 1) });
         }
 
+        public ViewNode(View view) => Update(view);
+
         public void Update(View newView)
         {
             if (_view != null) RemoveChild(_view.GetNode());

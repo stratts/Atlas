@@ -15,6 +15,7 @@ namespace Industropolis.Engine.UI
         public static HBoxView HBox(params View?[] children) => new HBoxView(children);
         public static NodeView Node(Node node) => new NodeView(node);
         public static ContainerView Container(View view) => new ContainerView(view);
+        public static PanelView Panel(View view) => new PanelView(view);
         public static VBoxView? ListView<T>(IEnumerable<T>? enumerator, Func<T, View> func)
         {
             if (enumerator == null) return null;
