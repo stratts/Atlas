@@ -4,6 +4,8 @@ using Industropolis.Engine.UI.Views;
 
 namespace Industropolis.Engine.UI
 {
+    public delegate T Style<T>(T view) where T : View;
+
     public static class ViewExtensions
     {
         private static T? GetComponent<T>(this View view) where T : Component
@@ -72,6 +74,8 @@ namespace Industropolis.Engine.UI
             view.GetLayout().Fill = new Vector2(width, height);
             return view;
         }
+
+        public static T Style<T>(this T view, Style<T> style) where T : View => style(view);
 
         public static T Align<T>(this T view, HAlign h = HAlign.None, VAlign v = VAlign.None) where T : View
         {
