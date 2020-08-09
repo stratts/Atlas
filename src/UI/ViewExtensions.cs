@@ -83,6 +83,8 @@ namespace Industropolis.Engine.UI
             view.GetLayout().VAlign = v;
             return view;
         }
+        public static T _HAlign<T>(this T view, HAlign align) where T : View => Modify(view, view => view.GetLayout().HAlign = align);
+        public static T _VAlign<T>(this T view, VAlign align) where T : View => Modify(view, view => view.GetLayout().VAlign = align);
 
         public static T Expand<T>(this T view) where T : View => Modify(view, view => view.AddComponent<StackBox.Expand>());
 
