@@ -17,10 +17,15 @@ namespace Industropolis.Engine.UI
         public static NodeView Node(Node node) => new NodeView(node);
         public static ContainerView Container(View view) => new ContainerView(view);
         public static PanelView Panel(View view) => new PanelView(view);
-        public static VBoxView? ListView<T>(IEnumerable<T>? enumerator, Func<T, View> func)
+        public static VBoxView ListView<T>(IEnumerable<T>? enumerator, Func<T, View> func)
         {
-            if (enumerator == null) return null;
+            if (enumerator == null) return VBox();
             else return new VBoxView(enumerator.Select(func).ToArray()).Fill(width: 1);
+        }
+        public static HBoxView HListView<T>(IEnumerable<T>? enumerator, Func<T, View> func)
+        {
+            if (enumerator == null) return HBox();
+            else return new HBoxView(enumerator.Select(func).ToArray()).Fill(width: 1);
         }
     }
 }
