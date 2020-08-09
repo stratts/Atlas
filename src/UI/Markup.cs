@@ -8,6 +8,7 @@ namespace Industropolis.Engine.UI
     public static class Markup
     {
         public static ButtonView Button(string label, Action? onClick) => new ButtonView(label, onClick);
+        public static ButtonView Button(View label, Action? onClick) => new ButtonView(label, onClick);
         public static TextView Text(string content = "") => new TextView() { Content = content };
         public static TextView Text(Func<string> updateFunction) =>
             new TextView().WithUpdate(text => text.Content = updateFunction());

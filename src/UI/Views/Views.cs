@@ -32,6 +32,12 @@ namespace Industropolis.Engine.UI.Views
             _button.OnClick = onClick;
         }
 
+        public ButtonView(View label, Action? onClick)
+        {
+            _button = new Button(label.GetNode());
+            _button.OnClick = onClick;
+        }
+
         void IPaddableView.SetPadding(LayoutBorder padding) => _button.Padding = padding;
     }
 

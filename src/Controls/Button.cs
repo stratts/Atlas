@@ -6,7 +6,7 @@ namespace Industropolis.Engine
     public class Button : Node, IContainer
     {
         private LayoutBorder _padding;
-        private string _label;
+        private Node _label;
 
         public Vector2 Offset => Vector2.Zero;
         public LayoutBorder Padding { get => _padding; set => SetPadding(value); }
@@ -14,18 +14,14 @@ namespace Industropolis.Engine
         public event Action? OnPressed;
         public Action? OnClick { get; set; }
 
-        public Button(string label) : this(label, 8) { }
+        public Button(string label, int padding = 8)
+            : this(new Text() { Content = label, Color = Color.White }, padding) { }
 
-        public Button(string label, int padding)
+        public Button(Node label, int padding = 8)
         {
             _label = label;
 
-            var text = new Text()
-            {
-                Content = label,
-                Color = Color.White
-            };
-            text.AddComponent(new Layout());
+            _label.AddComponent(new Layout());
             var rect = new RoundedRect()
             {
                 Color = Color.Black,
@@ -33,7 +29,7 @@ namespace Industropolis.Engine
             };
             rect.AddComponent(new Layout() { Fill = new Vector2(1), IgnorePadding = true });
             AddChild(rect);
-            AddChild(text);
+            AddChild(_label);
 
             AddComponent(new MouseInput()
             {
@@ -48,7 +44,7 @@ namespace Industropolis.Engine
         private void SetPadding(LayoutBorder padding)
         {
             _padding = padding;
-            Size = Text.Font.MeasureString(_label) + padding.Size;
+            Size = _label.Size + padding.Size;
         }
     }
 }
