@@ -10,6 +10,9 @@ namespace Industropolis.Engine
         private bool _sort = false;
         private bool _update = false;
 
+        public event Action<T>? ComponentAdded;
+        public event Action<T>? ComponentRemoved;
+
         protected bool UpdateEveryTick { get; set; } = true;
 
         public bool HandlesComponent(Component component) => component is T;
@@ -24,6 +27,7 @@ namespace Industropolis.Engine
                 _components.Add(c);
                 _sort = true;
                 _update = true;
+                ComponentAdded?.Invoke(c);
             });
         }
 
@@ -37,6 +41,7 @@ namespace Industropolis.Engine
                 _components.Remove(c);
                 _sort = true;
                 _update = true;
+                ComponentRemoved?.Invoke(c);
             });
         }
 

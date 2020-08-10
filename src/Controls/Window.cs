@@ -108,6 +108,7 @@ namespace Industropolis.Engine
             });
             AddChild(_resize);
 
+            AddComponent(new Scissor() { Bounds = new LayoutBorder(top: -_titleSize) });
             Size = size;
         }
     }
