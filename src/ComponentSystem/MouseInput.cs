@@ -26,6 +26,7 @@ namespace Industropolis.Engine
         private Vector2 _mousePos;
         private Vector2 _prevMousePos;
         private HashSet<MouseInput> _mouseEntered = new HashSet<MouseInput>();
+        private static Node? _consumedBy;
 
         public static bool InputConsumed { get; set; } = false;
 
@@ -36,7 +37,7 @@ namespace Industropolis.Engine
 
             foreach (var c in components)
             {
-                if (c.Enabled && (!InputConsumed || c.HandleConsumed) && WithinInputArea(scene, _mousePos, c))
+                if (c.Enabled && (!InputConsumed || c.HandleConsumed || _consumedBy == c.Parent) && WithinInputArea(scene, _mousePos, c))
                 {
                     if (_mouseState.LeftButton == ButtonState.Pressed) c.ButtonHeld = true;
                     else c.ButtonHeld = false;
@@ -65,7 +66,11 @@ namespace Industropolis.Engine
                     }
 
                     // Mark input as consumed
-                    if (c.ConsumeInput) InputConsumed = true;
+                    if (c.ConsumeInput)
+                    {
+                        _consumedBy = c.Parent;
+                        InputConsumed = true;
+                    }
                 }
                 else if (_mouseEntered.Contains(c))
                 {
