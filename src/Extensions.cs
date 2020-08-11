@@ -32,15 +32,17 @@ namespace Industropolis.Engine
 
     public struct ColorHsv
     {
-        public float Hue { get; set; }
-        public float Saturation { get; set; }
-        public float Value { get; set; }
+        private float _hue, _saturation, _value;
+
+        public float Hue { get => _hue; set => _hue = Math.Clamp(value, 0, 1); }
+        public float Saturation { get => _saturation; set => _saturation = Math.Clamp(value, 0, 1); }
+        public float Value { get => _value; set => _value = Math.Clamp(value, 0, 1); }
 
         public ColorHsv(float hue, float saturation, float value)
         {
-            Hue = hue;
-            Saturation = saturation;
-            Value = value;
+            _hue = hue;
+            _saturation = saturation;
+            _value = value;
         }
 
         public Color ToRgb()
