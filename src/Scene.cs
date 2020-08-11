@@ -100,6 +100,14 @@ namespace Industropolis.Engine
             foreach (var child in node.Children) RemoveNode(child);
         }
 
+        public IEnumerable<T> GetNodes<T>() where T : Node
+        {
+            foreach (var node in Nodes)
+            {
+                if (node is T n) yield return n;
+            }
+        }
+
         private void BringNodeToFront(Node node) => SetNodeSort(node, true);
 
         private void SetNodeSort(Node node, bool recurse = false)

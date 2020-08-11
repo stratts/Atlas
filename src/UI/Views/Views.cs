@@ -101,9 +101,12 @@ namespace Industropolis.Engine.UI.Views
 
     public class ContainerView : View, IPaddableView
     {
+        private Color _background = Color.Transparent;
         private View _view;
         private Container _container;
         protected override Node Node => _container;
+
+        public Color BackgroundColor { get; private set; }
 
         public ContainerView(View view, LayoutBorder padding = default(LayoutBorder))
         {
@@ -112,6 +115,10 @@ namespace Industropolis.Engine.UI.Views
             var container = new Container(view.Size + padding.Size, padding);
             container.AddChild(node);
             _container = container;
+            _container.AddComponent(new Drawable()
+            {
+                Draw = (_, position) => CustomDrawing.DrawRect(position, Size, BackgroundColor)
+            });
         }
 
         public ContainerView Height(int height)
@@ -122,9 +129,18 @@ namespace Industropolis.Engine.UI.Views
 
         public ContainerView Background(Color color)
         {
-            _container.AddComponent(new Drawable()
+            _background = color;
+            BackgroundColor = _background;
+            return this;
+        }
+
+        public ContainerView HoverBackground(Color color)
+        {
+            _container.AddComponent(new MouseInput()
             {
-                Draw = (_, position) => CustomDrawing.DrawRect(position, Size, color)
+                ConsumeInput = false,
+                OnMouseEnter = () => BackgroundColor = color,
+                OnMouseExit = () => BackgroundColor = _background
             });
             return this;
         }

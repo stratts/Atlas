@@ -89,5 +89,21 @@ namespace Industropolis.Engine.UI
         public static T Expand<T>(this T view) where T : View => Modify(view, view => view.AddComponent<StackBox.Expand>());
 
         public static T? ShowIf<T>(this T view, bool condition) where T : View => condition == true ? view : null;
+
+        public static T OnClick<T>(this T view, Action<T> func) where T : View
+        {
+            AddComponent(view, new MouseInput() { OnClick = _ => func?.Invoke(view) });
+            return view;
+        }
+
+        public static T OnHover<T>(this T view, Action onEnter, Action onExit) where T : View
+        {
+            AddComponent(view, new MouseInput()
+            {
+                OnMouseEnter = onEnter,
+                OnMouseExit = onExit
+            });
+            return view;
+        }
     }
 }

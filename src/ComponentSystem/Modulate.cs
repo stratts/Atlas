@@ -8,6 +8,7 @@ namespace Industropolis.Engine
         public Modulate? InheritFrom { get; set; } = null;
         public float Opacity { get; set; } = 1f;
         public Color Tint { get; set; } = Color.White;
+        public float Brightness = 0f;
 
         public Color ModulateColor(Color color)
         {
@@ -21,6 +22,7 @@ namespace Industropolis.Engine
                 var cHsv = c.ToHsv();
                 cHsv.Hue = tHsv.Hue;
                 cHsv.Saturation = tHsv.Saturation;
+                cHsv.Value += Brightness;
                 c = cHsv.ToRgb();
             }
             return c * opacity;
