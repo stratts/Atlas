@@ -106,6 +106,7 @@ namespace Industropolis.Engine
                 VAlign = VAlign.Bottom,
                 IgnorePadding = true
             });
+            _resize.Layer = 0;
             AddChild(_resize);
 
             AddComponent(new Scissor() { Bounds = new LayoutBorder(top: -_titleSize) });

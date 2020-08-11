@@ -63,13 +63,12 @@ namespace Industropolis.Engine
             _systems.Add(system);
         }
 
-        public void AddNode(Node node) => AddNode(node, 0);
+        public void AddNode(Node node) => AddNode(node, null);
 
-        public void AddNode(Node node, int layer)
+        public void AddNode(Node node, int? layer)
         {
-            if (!_topLevelCount.ContainsKey(layer)) _topLevelCount[layer] = 0;
+            if (layer.HasValue) node.Layer = layer.Value;
 
-            node.Layer = layer;
             _nodes.Add(node);
             SetNodeSort(node);
 
@@ -82,7 +81,7 @@ namespace Industropolis.Engine
             node.Deleted += RemoveNode;
             node.BroughtToFront += BringNodeToFront;
 
-            foreach (var child in node.Children) AddNode(child, layer);
+            foreach (var child in node.Children) AddNode(child);
         }
 
         public void RemoveNode(Node node)
@@ -115,13 +114,16 @@ namespace Industropolis.Engine
             if (node.Parent == null)
             {
                 var layer = node.Layer;
+                if (!_topLevelCount.ContainsKey(layer)) _topLevelCount[layer] = 0;
                 node.SceneSort = ushort.MaxValue * layer + _topLevelCount[layer];
                 _topLevelCount[layer]++;
             }
             else
             {
-                var childIndex = node.Parent.Children.IndexOf(node) + 1;
-                node.SceneSort = node.Parent.SceneSort + (double)childIndex / Math.Pow(10, node.Depth);
+                int index;
+                if (node.Layer != -1) index = 20 + 20 * node.Layer + node.Parent.Children.IndexOf(node);
+                else index = node.Parent.Children.IndexOf(node) + 1;
+                node.SceneSort = node.Parent.SceneSort + (double)index / Math.Pow(10, node.Depth);
             }
 
             foreach (var component in node.Components)
