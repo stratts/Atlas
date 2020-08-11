@@ -39,14 +39,14 @@ namespace Industropolis.Engine
             foreach (var d in _components)
             {
                 if (!d.Enabled) continue;
-                var pos = d.Parent.ScenePosition.Floor();
+                var pos = d.Parent.ScenePosition.Floored();
                 var bounds = d.DrawBounds != Rectangle.Empty ? d.DrawBounds : new Rectangle(Point.Zero, d.Parent.Size.ToPoint());
                 bounds.Location += pos.ToPoint();
 
                 if (d.ScissorArea.HasValue)
                 {
                     var r = d.ScissorArea.Value;
-                    r.Offset(pos - scene.Camera.Position.Floor());
+                    r.Offset(pos - Vector2.Floor(scene.Camera.Position));
 
                     if (r != _currentScissor)
                     {
@@ -69,7 +69,7 @@ namespace Industropolis.Engine
 
                 if (bounds.Intersects(scene.Camera.Viewport) || bounds == Rectangle.Empty)
                 {
-                    d.Draw?.Invoke(spriteBatch, pos - scene.Camera.Position.Floor());
+                    d.Draw?.Invoke(spriteBatch, pos - scene.Camera.Position.Floored());
                     //CustomDrawing.DrawRect(bounds.Location.ToVector2() - scene.Camera.Position.Floor(), bounds.Size.ToVector2(), Color.Red * 0.5f);
                     /*if (d.ScissorArea.HasValue)
                     {

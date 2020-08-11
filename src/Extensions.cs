@@ -5,7 +5,7 @@ namespace Industropolis.Engine
 {
     public static class VectorExtensions
     {
-        public static Vector2 Floor(this Vector2 v) => new Vector2((int)v.X, (int)v.Y);
+        public static Vector2 Floored(this Vector2 v) => Vector2.Floor(v);
 
         public static Vector2 DirectionTo(this Vector2 v, Vector2 dest) => Vector2.Normalize(dest - v);
 
@@ -23,7 +23,7 @@ namespace Industropolis.Engine
 
         public static Vector2 Normalized(this Vector2 v) => Vector2.Normalize(v);
 
-        public static Vector2 Round(this Vector2 v) => new Vector2((float)Math.Round(v.X), (float)Math.Round(v.Y));
+        public static Vector2 Rounded(this Vector2 v) => new Vector2((float)Math.Round(v.X), (float)Math.Round(v.Y));
 
         public static Vector2 ToXna(this System.Numerics.Vector2 v) => new Vector2(v.X, v.Y);
 
