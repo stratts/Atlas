@@ -6,11 +6,6 @@ namespace Industropolis.Engine
 {
     public delegate void DrawMethod(SpriteBatch spriteBatch, Vector2 position);
 
-    public class Scissor : Component
-    {
-        public LayoutBorder Bounds { get; set; }
-    }
-
     public class Drawable : Component
     {
         public Rectangle DrawBounds { get; set; } = Rectangle.Empty;
@@ -19,44 +14,10 @@ namespace Industropolis.Engine
         public Rectangle? ScissorArea { get; set; }
     }
 
-    public class ScissorSystem : BaseComponentSystem<Scissor>
-    {
-        public ScissorSystem()
-        {
-            ComponentRemoved += c => DisableScissor(c.Parent);
-        }
-
-        public override void UpdateComponents(Scene scene, IReadOnlyList<Scissor> components, float elapsed)
-        {
-            foreach (var c in components)
-            {
-                var areaPos = new Vector2(c.Bounds.Left, c.Bounds.Top);
-                var areaSize = (c.Parent.Size - areaPos - new Vector2(c.Bounds.Right, c.Bounds.Bottom)).ToPoint();
-                EnableScissor(c.Parent, new Rectangle(areaPos.ToPoint(), areaSize));
-            }
-        }
-
-        private void DisableScissor(Node node)
-        {
-            if (node.GetComponent<Drawable>() is Drawable d) d.ScissorArea = null;
-            foreach (var child in node.Children) DisableScissor(node);
-        }
-
-        private void EnableScissor(Node node, Rectangle area)
-        {
-            if (node.GetComponent<Drawable>() is Drawable d) d.ScissorArea = area;
-
-            foreach (var child in node.Children)
-            {
-                var offsetArea = area;
-                offsetArea.Offset(-child.Position);
-                EnableScissor(child, offsetArea);
-            }
-        }
-    }
-
     public class DrawableSystem : BaseComponentSystem<Drawable>, IRenderSystem
     {
+        private Rectangle? _currentScissor;
+
         public IEnumerable<Drawable> Components => _components;
 
         public override void UpdateComponents(Scene scene, IReadOnlyList<Drawable> components, float elapsed)
@@ -84,16 +45,26 @@ namespace Industropolis.Engine
 
                 if (d.ScissorArea.HasValue)
                 {
-                    spriteBatch.End();
-                    spriteBatch.Begin(transformMatrix: matrix,
-                        rasterizerState: new RasterizerState() { ScissorTestEnable = true });
-
                     var r = d.ScissorArea.Value;
                     r.Offset(pos - scene.Camera.Position.Floor());
+
+                    if (r != _currentScissor)
+                    {
+                        spriteBatch.End();
+                        spriteBatch.Begin(transformMatrix: matrix,
+                            rasterizerState: new RasterizerState() { ScissorTestEnable = true });
+                        _currentScissor = r;
+                    }
 
                     spriteBatch.GraphicsDevice.ScissorRectangle = new Rectangle(
                         Vector2.Transform(r.Location.ToVector2(), matrix).ToPoint(),
                         Vector2.Transform(r.Size.ToVector2(), matrix).ToPoint());
+                }
+                else if (_currentScissor != null)
+                {
+                    spriteBatch.End();
+                    spriteBatch.Begin(transformMatrix: matrix);
+                    _currentScissor = null;
                 }
 
                 if (bounds.Intersects(scene.Camera.Viewport) || bounds == Rectangle.Empty)
@@ -105,12 +76,6 @@ namespace Industropolis.Engine
                         var s = d.ScissorArea.Value;
                         CustomDrawing.DrawRect(s.Location.ToVector2() + pos - scene.Camera.Position.Floor(), s.Size.ToVector2(), Color.Blue * 0.5f);
                     }*/
-                }
-
-                if (d.ScissorArea.HasValue)
-                {
-                    spriteBatch.End();
-                    spriteBatch.Begin(transformMatrix: matrix);
                 }
             }
 
