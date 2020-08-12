@@ -15,8 +15,8 @@ namespace Industropolis.Engine
 
         public virtual Vector2 Size { get; set; } = Vector2.Zero;
 
-        public int Layer { get; set; } = -1;
-        public double SceneSort { get; set; }
+        public uint? Layer { get; set; }
+        public ulong SceneSort { get; set; }
 
         public int Depth => Parent != null ? Parent.Depth + 1 : 0;
 
@@ -30,6 +30,7 @@ namespace Industropolis.Engine
             }
         }
 
+        public Node? RootNode { get; set; }
         public Node? Parent { get; set; }
         public List<Node> Children => _children;
         public IReadOnlyList<Component> Components => _components;
@@ -48,6 +49,7 @@ namespace Industropolis.Engine
         public virtual void AddChild(Node node)
         {
             node.Parent = this;
+            node.RootNode = RootNode != null ? RootNode : this;
             _children.Add(node);
             ChildAdded?.Invoke(node);
         }

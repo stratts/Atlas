@@ -42,7 +42,7 @@ namespace Industropolis.Engine
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
         protected Camera _camera = new Camera(Industropolis.UI.GameScreen.Width, Industropolis.UI.GameScreen.Height);
 
-        private Dictionary<int, uint> _topLevelCount = new Dictionary<int, uint>();
+        private Dictionary<uint, uint> _topLevelCount = new Dictionary<uint, uint>();
 
         public Camera Camera => _camera;
         public IReadOnlyList<Node> Nodes => _nodes;
@@ -65,7 +65,7 @@ namespace Industropolis.Engine
 
         public void AddNode(Node node) => AddNode(node, null);
 
-        public void AddNode(Node node, int? layer)
+        public void AddNode(Node node, uint? layer)
         {
             if (layer.HasValue) node.Layer = layer.Value;
 
@@ -107,24 +107,31 @@ namespace Industropolis.Engine
             }
         }
 
+        public IEnumerable<Node> GetNodesAt(Vector2 position)
+        {
+            foreach (var node in Nodes)
+            {
+                if (new Rectangle(node.ScenePosition.ToPoint(), node.Size.ToPoint()).Contains(position))
+                    yield return node;
+            }
+        }
+
         private void BringNodeToFront(Node node) => SetNodeSort(node, true);
 
         private void SetNodeSort(Node node, bool recurse = false)
         {
+            const ulong maxNodes = uint.MaxValue;
+            const ulong maxChildren = ushort.MaxValue;
+            const ulong layerSize = maxNodes * maxChildren;
+
             if (node.Parent == null)
             {
-                var layer = node.Layer;
+                uint layer = node.Layer.HasValue ? node.Layer.Value + 1 : 0;
                 if (!_topLevelCount.ContainsKey(layer)) _topLevelCount[layer] = 0;
-                node.SceneSort = ushort.MaxValue * layer + _topLevelCount[layer];
+                node.SceneSort = (ulong)layer * layerSize + (ulong)_topLevelCount[layer] * maxChildren;
                 _topLevelCount[layer]++;
             }
-            else
-            {
-                int index;
-                if (node.Layer != -1) index = 20 + 20 * node.Layer + node.Parent.Children.IndexOf(node);
-                else index = node.Parent.Children.IndexOf(node) + 1;
-                node.SceneSort = node.Parent.SceneSort + (double)index / Math.Pow(10, node.Depth);
-            }
+            else if (node.RootNode != null) SetChildSort(node.RootNode, node.RootNode.SceneSort);
 
             foreach (var component in node.Components)
             {
@@ -136,6 +143,24 @@ namespace Industropolis.Engine
             {
                 foreach (var child in node.Children) SetNodeSort(child, true);
             }
+        }
+
+        private ulong SetChildSort(Node node, ulong current)
+        {
+            var children = new List<Node>(node.Children);
+            children.Sort(
+                   (a, b) =>
+                   {
+                       int layerA = a.Layer.HasValue ? (int)a.Layer.Value : -1;
+                       int layerB = b.Layer.HasValue ? (int)b.Layer.Value : -1;
+                       return layerA.CompareTo(layerB);
+                   });
+
+            node.SceneSort = current;
+
+            foreach (var child in children) current = SetChildSort(child, current + 1);
+
+            return current;
         }
 
         private IComponentSystem? GetSystem(Component component)
