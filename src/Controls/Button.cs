@@ -14,6 +14,9 @@ namespace Industropolis.Engine
         public event Action? OnPressed;
         public Action? OnClick { get; set; }
 
+        private Color _baseColor = Color.Black;
+        private Color _hoverColor = Color.DimGray;
+
         public Button(string label, int padding = 8)
             : this(new Text() { Content = label, Color = Color.White }, padding) { }
 
@@ -24,7 +27,7 @@ namespace Industropolis.Engine
             _label.AddComponent(new Layout());
             var rect = new RoundedRect()
             {
-                Color = Color.Black,
+                Color = _baseColor,
                 Radius = 4
             };
             rect.AddComponent(new Layout() { Fill = new Vector2(1), IgnorePadding = true });
@@ -34,11 +37,21 @@ namespace Industropolis.Engine
             AddComponent(new MouseInput()
             {
                 OnClick = (Vector2 _) => { OnPressed?.Invoke(); OnClick?.Invoke(); },
-                OnMouseEnter = () => rect.Color = Color.DimGray,
-                OnMouseExit = () => rect.Color = Color.Black,
+                OnMouseEnter = () => rect.Color = _hoverColor,
+                OnMouseExit = () => rect.Color = _baseColor,
             });
 
             Padding = new LayoutBorder(padding);
+        }
+
+        public void SetColor(Color color)
+        {
+            _baseColor = color;
+            _hoverColor = new Color(color.R + 80, color.G + 80, color.B + 80);
+            foreach (var child in Children)
+            {
+                if (child is RoundedRect r) r.Color = color;
+            }
         }
 
         private void SetPadding(LayoutBorder padding)

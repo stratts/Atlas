@@ -38,6 +38,8 @@ namespace Industropolis.Engine.UI.Views
             _button.OnClick = onClick;
         }
 
+        public ButtonView Color(Color c) => Modify(this, () => _button.SetColor(c));
+
         void IPaddableView.SetPadding(LayoutBorder padding) => _button.Padding = padding;
     }
 

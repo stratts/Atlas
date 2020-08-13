@@ -6,12 +6,12 @@ namespace Industropolis.Engine.UI
     {
         private View? _view;
 
-        public ViewNode()
+        public ViewNode(bool fill = true)
         {
-            AddComponent(new Layout() { Fill = new Vector2(1, 1) });
+            if (fill) AddComponent(new Layout() { Fill = new Vector2(1, 1) });
         }
 
-        public ViewNode(View view) => Update(view);
+        public ViewNode(View view, bool fill = true) : this(fill) => Update(view);
 
         public void Update(View newView)
         {
