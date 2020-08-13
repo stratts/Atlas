@@ -4,11 +4,30 @@ using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine
 {
+    public struct Tag
+    {
+        private static ulong _currentTag = 1;
+
+        public ulong Value { get; }
+
+        private Tag(ulong value) => Value = value;
+
+        public static Tag New()
+        {
+            var curr = _currentTag;
+            _currentTag *= 2;
+            return new Tag(curr);
+        }
+
+        public static Tag operator |(Tag a, Tag b) => new Tag(a.Value | b.Value);
+    }
+
     public class Node
     {
         private List<Node> _children = new List<Node>();
         private List<Component> _components = new List<Component>();
         private bool _enabled = true;
+        private ulong _tags = 0;
 
         public Vector2 Position;
         public Vector2 ScenePosition => Parent != null ? Position + Parent.ScenePosition : Position;
@@ -95,5 +114,11 @@ namespace Industropolis.Engine
         public void BringToFront() => BroughtToFront?.Invoke(this);
 
         public Color GetRenderColor(Color c) => GetComponent<Modulate>() is Modulate m ? m.ModulateColor(c) : c;
+
+        public void AddTag(Tag tag) => _tags = _tags | tag.Value;
+
+        public void RemoveTag(Tag tag) => _tags = _tags ^ tag.Value;
+
+        public bool HasTag(Tag tag) => (_tags & tag.Value) > 0;
     }
 }

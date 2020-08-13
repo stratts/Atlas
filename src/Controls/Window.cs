@@ -14,8 +14,6 @@ namespace Industropolis.Engine
 
         public Window(string title, Vector2 size) : base(size, new LayoutBorder(10))
         {
-
-
             // Add title bar
             var titleText = new Text()
             {
@@ -34,6 +32,7 @@ namespace Industropolis.Engine
                 Margin = new LayoutBorder(top: -_titleSize + 10, bottom: -5, left: -5, right: -5),
                 IgnorePadding = true
             });
+            shadow.AddTag(Scissor.Ignore);
             AddChild(shadow);
 
             _titleBar = new Rect()
@@ -49,6 +48,7 @@ namespace Industropolis.Engine
                 IgnorePadding = true
             });
             _titleBar.Size = new Vector2(0, _titleSize);
+            _titleBar.AddTag(Scissor.Ignore);
 
             // Add close button
             _closeButton = new Button("  x  ", 2);
@@ -78,11 +78,11 @@ namespace Industropolis.Engine
                     input.HandleConsumed = false;
                 }
             };
-            input.OnClick = (_) => BringToFront();
             _titleBar.AddComponent(input);
 
             // Add panel
             var panel = new Panel();
+            panel.AddTag(Scissor.Ignore);
             panel.AddComponent(new Layout() { Fill = new Vector2(1), IgnorePadding = true });
             AddChild(panel);
 
@@ -119,9 +119,17 @@ namespace Industropolis.Engine
                 IgnorePadding = true
             });
             _resize.Layer = 0;
+            _resize.AddTag(Scissor.Ignore);
             AddChild(_resize);
 
-            //AddComponent(new Scissor() { Bounds = new LayoutBorder(top: -_titleSize) });
+            // Add invisible node to bring window to front
+            var node = new Node();
+            node.Layer = uint.MaxValue;
+            node.AddComponent(new MouseInput() { OnClick = _ => BringToFront(), ConsumeInput = false });
+            node.AddComponent(new Layout() { Fill = new Vector2(1), Margin = new LayoutBorder(top: -_titleSize), IgnorePadding = true });
+            AddChild(node);
+
+            AddComponent(new Scissor());
             Size = size;
         }
     }

@@ -5,6 +5,8 @@ namespace Industropolis.Engine
 {
     public class Scissor : Component
     {
+        public static Tag Ignore = Tag.New();
+
         public LayoutBorder Bounds { get; set; }
     }
 
@@ -33,6 +35,7 @@ namespace Industropolis.Engine
 
         private void EnableScissor(Node node, Rectangle area)
         {
+            if (node.HasTag(Scissor.Ignore)) return;
             if (node.GetComponent<Drawable>() is Drawable d) d.ScissorArea = area;
 
             foreach (var child in node.Children)
