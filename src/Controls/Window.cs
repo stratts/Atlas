@@ -14,6 +14,8 @@ namespace Industropolis.Engine
 
         public Window(string title, Vector2 size) : base(size, new LayoutBorder(10))
         {
+
+
             // Add title bar
             var titleText = new Text()
             {
@@ -24,9 +26,19 @@ namespace Industropolis.Engine
 
             _titleSize = (int)titleText.Size.Y + 12;
 
+            // Add shadow
+            var shadow = new Rect() { Color = Color.Black * 0.1f };
+            shadow.AddComponent(new Layout()
+            {
+                Fill = new Vector2(1),
+                Margin = new LayoutBorder(top: -_titleSize + 10, bottom: -5, left: -5, right: -5),
+                IgnorePadding = true
+            });
+            AddChild(shadow);
+
             _titleBar = new Rect()
             {
-                Color = Color.Black,
+                Color = Color.Black * 0.9f,
             };
             _titleBar.AddChild(titleText);
             AddChild(_titleBar);
@@ -109,7 +121,7 @@ namespace Industropolis.Engine
             _resize.Layer = 0;
             AddChild(_resize);
 
-            AddComponent(new Scissor() { Bounds = new LayoutBorder(top: -_titleSize) });
+            //AddComponent(new Scissor() { Bounds = new LayoutBorder(top: -_titleSize) });
             Size = size;
         }
     }
