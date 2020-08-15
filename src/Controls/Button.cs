@@ -24,7 +24,7 @@ namespace Industropolis.Engine
         {
             _label = label;
 
-            _label.AddComponent(new Layout());
+            if (!(_label.GetComponent<Layout>() is Layout l)) _label.AddComponent(new Layout());
             var rect = new RoundedRect()
             {
                 Color = _baseColor,

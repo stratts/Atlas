@@ -19,6 +19,7 @@ namespace Industropolis.Engine
 
         private void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
+            FontService.SetSize(FontSize);
             Vector2 pos = position + new Vector2(0, FontService.Ascender);
             foreach (var c in Content)
             {
@@ -27,7 +28,7 @@ namespace Industropolis.Engine
                     pos = new Vector2(position.X, pos.Y + FontService.Height);
                     continue;
                 }
-                var glyph = FontService.GetGlyph(c, FontSize);
+                var glyph = FontService.GetGlyph(c);
 
                 var bitmap = FontService.GetBitmap(glyph, spriteBatch.GraphicsDevice);
                 spriteBatch.Draw(bitmap.Texture, pos - new Vector2(-bitmap.Left, bitmap.Top), Color);
@@ -38,6 +39,7 @@ namespace Industropolis.Engine
 
         private Vector2 MeasureSize()
         {
+            FontService.SetSize(FontSize);
             Vector2 pos = new Vector2(0, FontService.Ascender);
             foreach (var c in Content)
             {
@@ -46,7 +48,7 @@ namespace Industropolis.Engine
                     pos = new Vector2(0, pos.Y + FontService.Height);
                     continue;
                 }
-                var glyph = FontService.GetGlyph(c, FontSize);
+                var glyph = FontService.GetGlyph(c);
                 pos.X += glyph.Advance + glyph.Kerning;
             }
             return new Vector2(pos.X, pos.Y + FontService.NominalHeight - FontService.Ascender);

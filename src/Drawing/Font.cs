@@ -11,11 +11,9 @@ namespace Industropolis.Engine
         public char Character { get; }
         public float Kerning { get; }
         public int Advance { get; }
-        public int Size { get; }
 
-        public Glyph(char character, int size, int advance, float kerning = 0)
+        public Glyph(char character, int advance, float kerning = 0)
         {
-            Size = size;
             Character = character;
             Advance = advance;
             Kerning = kerning;
@@ -38,6 +36,7 @@ namespace Industropolis.Engine
 
     public static class FontService
     {
+        private static int _size;
         private static Library _library = new Library();
         private static Face _face = new Face(_library, "Content/FreeSans.ttf");
         private static Dictionary<int, Dictionary<char, GlyphBitmap>> _textures = new Dictionary<int, Dictionary<char, GlyphBitmap>>();
@@ -46,24 +45,28 @@ namespace Industropolis.Engine
         public static int Ascender => _face.Size.Metrics.Ascender.ToInt32();
         public static int Height => _face.Size.Metrics.Height.ToInt32();
 
-
-        public static Glyph GetGlyph(char character, int size)
+        public static void SetSize(int size)
         {
             _face.SetPixelSizes(0, (uint)size);
+            _size = size;
+        }
+
+        public static Glyph GetGlyph(char character)
+        {
             var index = _face.GetCharIndex(character);
             var advance = _face.GetAdvance(index, LoadFlags.Default);
-            return new Glyph(character, size, advance.ToInt32());
+            return new Glyph(character, advance.ToInt32());
         }
 
         public static GlyphBitmap GetBitmap(Glyph glyph, GraphicsDevice device)
         {
             var character = glyph.Character;
-            bool rendered = GetTextures(glyph.Size).TryGetValue(character, out var texture);
+            bool rendered = GetTextures(_size).TryGetValue(character, out var texture);
             if (!rendered)
             {
                 var index = _face.GetCharIndex(character);
                 texture = RenderGlyph(glyph, device);
-                GetTextures(glyph.Size)[character] = texture;
+                GetTextures(_size)[character] = texture;
             }
             return texture;
         }
@@ -76,7 +79,6 @@ namespace Industropolis.Engine
 
         private static GlyphBitmap RenderGlyph(Glyph glyph, GraphicsDevice device)
         {
-            _face.SetPixelSizes(0, (uint)glyph.Size);
             var index = _face.GetCharIndex(glyph.Character);
             _face.LoadGlyph(index, LoadFlags.Render, LoadTarget.Normal);
             var bitmap = _face.Glyph.Bitmap;

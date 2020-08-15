@@ -71,6 +71,8 @@ namespace Industropolis.Engine.UI.Views
     public class VBoxView : BoxView
     {
         public VBoxView(params View?[] children) : base(StackBox.Direction.Vertical, children) { }
+
+        public VBoxView Width(int width) => Modify(this, () => _box.Size = new Vector2(width, _box.Size.Y));
     }
 
     public class NodeView : View

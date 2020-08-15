@@ -28,7 +28,10 @@ namespace Industropolis.Engine
 
         public virtual void Update(float elapsed)
         {
-            foreach (var scene in _scenes) scene?.Update(elapsed);
+            foreach (var scene in _scenes)
+            {
+                if (scene.EnableUpdate) scene?.Update(elapsed);
+            }
         }
 
         public Scene GetScene(int layer) => _scenes[layer];
@@ -46,6 +49,9 @@ namespace Industropolis.Engine
 
         public Camera Camera => _camera;
         public IReadOnlyList<Node> Nodes => _nodes;
+
+        public bool EnableUpdate { get; set; } = true;
+        public bool EnableRender { get; set; } = true;
 
         public Scene()
         {
@@ -190,6 +196,7 @@ namespace Industropolis.Engine
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            if (!EnableRender) return;
             foreach (var system in _systems)
             {
                 if (system is IRenderSystem r) r.Draw(this, spriteBatch);
