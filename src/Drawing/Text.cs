@@ -7,9 +7,9 @@ namespace Industropolis.Engine
     {
         public string Content { get; set; } = "";
         public Color Color { get; set; } = Color.White;
+        public int FontSize { get; set; } = 16;
 
-        public static SpriteFont Font { get; set; } = null!;
-        public override Vector2 Size => new Vector2(Font.MeasureString(Content).X, FontService.NominalHeight);
+        public override Vector2 Size => MeasureSize();
 
         public Text()
         {
@@ -17,25 +17,39 @@ namespace Industropolis.Engine
             AddComponent<Modulate>();
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position)
+        private void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
             Vector2 pos = position + new Vector2(0, FontService.Ascender);
-            for (int i = 0; i < Content.Length; i++)
+            foreach (var c in Content)
             {
-                char c = Content[i];
                 if (c == '\n')
                 {
                     pos = new Vector2(position.X, pos.Y + FontService.Height);
                     continue;
                 }
+                var glyph = FontService.GetGlyph(c, FontSize);
 
-                Glyph glyph;
-                if (i < Content.Length - 1) glyph = FontService.GetGlyph(c, Content[i + 1], spriteBatch.GraphicsDevice);
-                else glyph = FontService.GetGlyph(c, spriteBatch.GraphicsDevice);
+                var bitmap = FontService.GetBitmap(glyph, spriteBatch.GraphicsDevice);
+                spriteBatch.Draw(bitmap.Texture, pos - new Vector2(-bitmap.Left, bitmap.Top), Color);
 
-                spriteBatch.Draw(glyph.Bitmap.Texture, pos - new Vector2(-glyph.Bitmap.Left, glyph.Bitmap.Top), Color.White);
                 pos.X += glyph.Advance + glyph.Kerning;
             }
+        }
+
+        private Vector2 MeasureSize()
+        {
+            Vector2 pos = new Vector2(0, FontService.Ascender);
+            foreach (var c in Content)
+            {
+                if (c == '\n')
+                {
+                    pos = new Vector2(0, pos.Y + FontService.Height);
+                    continue;
+                }
+                var glyph = FontService.GetGlyph(c, FontSize);
+                pos.X += glyph.Advance + glyph.Kerning;
+            }
+            return new Vector2(pos.X, pos.Y + FontService.NominalHeight - FontService.Ascender);
         }
     }
 }

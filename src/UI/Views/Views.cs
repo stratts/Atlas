@@ -18,6 +18,8 @@ namespace Industropolis.Engine.UI.Views
         protected override Node Node => _node;
 
         public TextView Color(Color c) => Modify(this, () => _node.Color = c);
+
+        public TextView FontSize(int size) => Modify(this, () => _node.FontSize = size);
     }
 
     public class ButtonView : View, IPaddableView
