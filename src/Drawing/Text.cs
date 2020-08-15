@@ -9,7 +9,7 @@ namespace Industropolis.Engine
         public Color Color { get; set; } = Color.White;
 
         public static SpriteFont Font { get; set; } = null!;
-        public override Vector2 Size => Font.MeasureString(Content);
+        public override Vector2 Size => new Vector2(Font.MeasureString(Content).X, FontService.NominalHeight);
 
         public Text()
         {
@@ -19,7 +19,23 @@ namespace Industropolis.Engine
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-            spriteBatch.DrawString(Font, Content, position, GetRenderColor(Color));
+            Vector2 pos = position + new Vector2(0, FontService.Ascender);
+            for (int i = 0; i < Content.Length; i++)
+            {
+                char c = Content[i];
+                if (c == '\n')
+                {
+                    pos = new Vector2(position.X, pos.Y + FontService.Height);
+                    continue;
+                }
+
+                Glyph glyph;
+                if (i < Content.Length - 1) glyph = FontService.GetGlyph(c, Content[i + 1], spriteBatch.GraphicsDevice);
+                else glyph = FontService.GetGlyph(c, spriteBatch.GraphicsDevice);
+
+                spriteBatch.Draw(glyph.Bitmap.Texture, pos - new Vector2(-glyph.Bitmap.Left, glyph.Bitmap.Top), Color.White);
+                pos.X += glyph.Advance + glyph.Kerning;
+            }
         }
     }
 }
