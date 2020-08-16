@@ -12,6 +12,7 @@ namespace Industropolis.Engine.UI
         public static TextView Text(string content = "") => new TextView() { Content = content };
         public static TextView Text(Func<string> updateFunction) =>
             new TextView().WithUpdate(text => text.Content = updateFunction());
+        public static View TextInput() => new NodeView(new TextInput());
         public static VBoxView VBox(params View?[] children) => new VBoxView(children);
         public static HBoxView HBox(params View?[] children) => new HBoxView(children);
         public static NodeView Node(Node node) => new NodeView(node);

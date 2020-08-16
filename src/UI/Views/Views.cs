@@ -86,6 +86,8 @@ namespace Industropolis.Engine.UI.Views
     {
         private View _view;
         private Panel _panel;
+        private Vector2 _size;
+
         protected override Node Node => _panel;
 
         public PanelView(View view, LayoutBorder? padding = null)
@@ -93,14 +95,22 @@ namespace Industropolis.Engine.UI.Views
             _view = view;
             var node = view.GetNode();
             if (padding == null) padding = new LayoutBorder(10);
-            var panel = new Panel(view.Size + padding.Value.Size, padding.Value);
+            _size = view.Size;
+            var panel = new Panel(_size + padding.Value.Size, padding.Value);
             panel.AddChild(node);
             _panel = panel;
         }
 
+        public PanelView WithSize(Vector2 size)
+        {
+            _size = size;
+            _panel.Size = size + _panel.Padding.Size;
+            return this;
+        }
+
         void IPaddableView.SetPadding(LayoutBorder padding)
         {
-            _panel.Size = _view.Size + padding.Size;
+            _panel.Size = _size + padding.Size;
             _panel.Padding = padding;
         }
     }

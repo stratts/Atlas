@@ -32,6 +32,7 @@ namespace Industropolis.Engine
 
             input.OnMove = (pos, _) => HandleMove(input, pos);
             AddComponent(input);
+            Size = _text.Size;
         }
 
         public override void Draw()
@@ -78,7 +79,6 @@ namespace Industropolis.Engine
                 input.CaptureGlobal = true;
                 var selectTo = _text.IndexAt(pos.X);
                 _selected = (Math.Min(_pointer, selectTo), Math.Max(_pointer, selectTo));
-                Console.WriteLine(_selected);
             }
             else
             {
@@ -115,7 +115,7 @@ namespace Industropolis.Engine
                 _text.Content = _text.Content.Insert(_pointer, character.ToString());
                 _pointer++;
             }
-            Size = _text.Size;
+            Size = new Vector2(Math.Min(Size.X, _text.Size.X), _text.Size.Y);
         }
     }
 }

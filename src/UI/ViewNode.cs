@@ -6,6 +6,8 @@ namespace Industropolis.Engine.UI
     {
         private View? _view;
 
+        public bool HasView => _view != null;
+
         public ViewNode(bool fill = true)
         {
             if (fill) AddComponent(new Layout() { Fill = new Vector2(1, 1) });
@@ -15,11 +17,17 @@ namespace Industropolis.Engine.UI
 
         public void Update(View newView)
         {
-            if (_view != null) RemoveChild(_view.GetNode());
+            ClearView();
             var node = newView.GetNode();
             AddChild(node);
             Size = node.Size;
             _view = newView;
+        }
+
+        public void ClearView()
+        {
+            if (_view != null) RemoveChild(_view.GetNode());
+            _view = null;
         }
     }
 }
