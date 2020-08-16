@@ -167,4 +167,37 @@ namespace Industropolis.Engine.UI.Views
             _container.Padding = padding;
         }
     }
+
+    public class TextInputView : View
+    {
+        private TextInput _input = new TextInput();
+        private string _text = "";
+
+        protected override Node Node => _input;
+
+        public TextInputView Bind(Action<string> set, Func<string>? get = null)
+        {
+            _input.AddComponent(new Updateable()
+            {
+                UpdateMethod = _ =>
+                {
+                    if (_text != _input.Content)
+                    {
+                        _text = _input.Content;
+                        set?.Invoke(_text);
+                    }
+                    else if (get != null)
+                    {
+                        var str = get.Invoke();
+                        if (_text != str)
+                        {
+                            _text = str;
+                            _input.Content = _text;
+                        }
+                    }
+                }
+            });
+            return this;
+        }
+    }
 }

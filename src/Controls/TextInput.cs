@@ -11,6 +11,17 @@ namespace Industropolis.Engine
         private KeyboardState prevState;
         private (int, int)? _selected;
 
+        public string Content
+        {
+            get => _text.Content;
+            set
+            {
+                _text.Content = value;
+                _pointer = value.Length;
+                _selected = (0, value.Length);
+            }
+        }
+
         public TextInput()
         {
             _text = new Text();
