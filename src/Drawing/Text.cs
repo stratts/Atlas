@@ -73,7 +73,7 @@ namespace Industropolis.Engine
                 var glyph = FontService.GetGlyph(c);
 
                 var bitmap = FontService.GetBitmap(glyph, spriteBatch.GraphicsDevice);
-                spriteBatch.Draw(bitmap.Texture, pos - new Vector2(-bitmap.Left, bitmap.Top), Color);
+                spriteBatch.Draw(bitmap.Texture, pos - new Vector2(-bitmap.Left, bitmap.Top), GetRenderColor(Color));
 
                 pos.X += glyph.Advance + glyph.Kerning;
             }
