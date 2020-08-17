@@ -7,6 +7,11 @@ namespace Industropolis.Engine
     {
         public Color Color { get; set; }
 
+        public EqTriangle()
+        {
+            AddComponent(new Drawable() { Draw = Draw });
+        }
+
         public EqTriangle(Vector2 size, Color color)
         {
             Size = size;
