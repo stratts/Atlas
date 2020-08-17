@@ -199,5 +199,7 @@ namespace Industropolis.Engine.UI.Views
             });
             return this;
         }
+
+        public TextInputView EnableInput(bool enabled) => Modify(this, () => _input.EnableInput = enabled);
     }
 }

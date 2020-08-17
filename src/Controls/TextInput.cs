@@ -11,6 +11,8 @@ namespace Industropolis.Engine
         private KeyboardState prevState;
         private (int, int)? _selected;
 
+        public bool EnableInput { get; set; } = true;
+
         public string Content
         {
             get => _text.Content;
@@ -48,6 +50,7 @@ namespace Industropolis.Engine
 
         public override void Draw()
         {
+            if (!EnableInput) return;
             if (_selected.HasValue)
             {
                 var start = GetPositionAt(_selected.Value.Item1);
@@ -69,6 +72,7 @@ namespace Industropolis.Engine
 
         private void Update(float elapsed)
         {
+            if (!EnableInput) return;
             var state = Keyboard.GetState();
             if (state.IsKeyDown(Keys.Left) && !prevState.IsKeyDown(Keys.Left) && _pointer > 0)
             {
@@ -108,6 +112,7 @@ namespace Industropolis.Engine
 
         private void HandleInput(char character, Keys key)
         {
+            if (!EnableInput) return;
             if (Char.IsControl(character))
             {
                 if (key == Keys.Back)
