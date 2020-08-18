@@ -14,11 +14,11 @@ namespace Industropolis.Engine
 
     public class CompoundScene : IScene
     {
-        private Scene[] _scenes;
+        private IScene[] _scenes;
 
         public CompoundScene(int layers)
         {
-            _scenes = new Scene[layers];
+            _scenes = new IScene[layers];
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -30,11 +30,11 @@ namespace Industropolis.Engine
         {
             foreach (var scene in _scenes)
             {
-                if (scene.EnableUpdate) scene?.Update(elapsed);
+                scene?.Update(elapsed);
             }
         }
 
-        public Scene GetScene(int layer) => _scenes[layer];
+        public IScene GetScene(int layer) => _scenes[layer];
 
         public void SetScene(int layer, Scene scene) => _scenes[layer] = scene;
     }
