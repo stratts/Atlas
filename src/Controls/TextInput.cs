@@ -29,10 +29,13 @@ namespace Industropolis.Engine
             _text = new Text();
             AddChild(_text);
 
-            IndustropolisGame.CurrentWindow.TextInput += (obj, args) =>
+            if (Config.CurrentWindow != null)
             {
-                HandleInput(args.Character, args.Key);
-            };
+                Config.CurrentWindow.TextInput += (obj, args) =>
+                {
+                    HandleInput(args.Character, args.Key);
+                };
+            }
 
             AddComponent(new Updateable() { UpdateMethod = Update });
 

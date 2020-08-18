@@ -38,12 +38,17 @@ namespace Industropolis.Engine
     {
         private static int _size;
         private static Library _library = new Library();
-        private static Face _face = new Face(_library, "Content/FreeSans.ttf");
+        private static Face _face = null!;
         private static Dictionary<int, Dictionary<char, GlyphBitmap>> _textures = new Dictionary<int, Dictionary<char, GlyphBitmap>>();
 
         public static int NominalHeight => _face.Size.Metrics.NominalHeight;
         public static int Ascender => _face.Size.Metrics.Ascender.ToInt32();
         public static int Height => _face.Size.Metrics.Height.ToInt32();
+
+        public static void SetFont(string path)
+        {
+            _face = new Face(_library, path);
+        }
 
         public static void SetSize(int size)
         {

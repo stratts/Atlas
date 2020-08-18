@@ -43,7 +43,7 @@ namespace Industropolis.Engine
     {
         private List<Node> _nodes = new List<Node>();
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
-        protected Camera _camera = new Camera(Industropolis.UI.GameScreen.Width, Industropolis.UI.GameScreen.Height);
+        protected Camera _camera = new Camera(Config.ScreenSize.X, Config.ScreenSize.Y);
 
         private Dictionary<uint, uint> _topLevelCount = new Dictionary<uint, uint>();
 
