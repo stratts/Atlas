@@ -10,11 +10,16 @@ namespace Industropolis.Engine
     {
         void Update(float elapsed);
         void Draw(SpriteBatch spriteBatch);
+        bool EnableUpdate { get; }
+        bool EnableDraw { get; }
     }
 
     public class CompoundScene : IScene
     {
         private IScene[] _scenes;
+
+        public bool EnableUpdate { get; set; } = true;
+        public bool EnableDraw { get; set; } = true;
 
         public CompoundScene(int layers)
         {
@@ -23,20 +28,26 @@ namespace Industropolis.Engine
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            for (int i = _scenes.Length - 1; i >= 0; i--) _scenes[i]?.Draw(spriteBatch);
+            for (int i = _scenes.Length - 1; i >= 0; i--)
+            {
+                var s = _scenes[i];
+                if (!s.EnableDraw) continue;
+                s?.Draw(spriteBatch);
+            }
         }
 
         public virtual void Update(float elapsed)
         {
             foreach (var scene in _scenes)
             {
+                if (!scene.EnableUpdate) continue;
                 scene?.Update(elapsed);
             }
         }
 
         public IScene GetScene(int layer) => _scenes[layer];
 
-        public void SetScene(int layer, Scene scene) => _scenes[layer] = scene;
+        public void SetScene(int layer, IScene scene) => _scenes[layer] = scene;
     }
 
     public class Scene : IScene
@@ -51,7 +62,7 @@ namespace Industropolis.Engine
         public IReadOnlyList<Node> Nodes => _nodes;
 
         public bool EnableUpdate { get; set; } = true;
-        public bool EnableRender { get; set; } = true;
+        public bool EnableDraw { get; set; } = true;
 
         public Scene()
         {
@@ -196,7 +207,6 @@ namespace Industropolis.Engine
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (!EnableRender) return;
             foreach (var system in _systems)
             {
                 if (system is IRenderSystem r) r.Draw(this, spriteBatch);

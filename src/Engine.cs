@@ -94,14 +94,14 @@ namespace Industropolis.Engine
         protected override void Update(GameTime gameTime)
         {
             MouseInputSystem.InputConsumed = false;
-            MainScene?.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            if (MainScene?.EnableUpdate ?? false) MainScene?.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            MainScene?.Draw(_spriteBatch);
+            if (MainScene?.EnableDraw ?? false) MainScene?.Draw(_spriteBatch);
             base.Draw(gameTime);
         }
     }
