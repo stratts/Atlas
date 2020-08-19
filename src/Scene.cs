@@ -70,6 +70,7 @@ namespace Industropolis.Engine
             AddSystem(new DrawableSystem());
             AddSystem(new ModulateSystem());
             AddSystem(new UpdateSystem());
+            AddSystem(new AnimationSystem());
             AddSystem(new MouseInputSystem());
             AddSystem(new LayoutSystem());
             AddSystem(new ScissorSystem());
