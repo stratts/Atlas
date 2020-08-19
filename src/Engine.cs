@@ -21,6 +21,7 @@ namespace Industropolis.Engine
             {
                 g.ScreenSize = ScreenSize;
                 g.Content.RootDirectory = ContentDirectory;
+                Config.ContentPath = ContentDirectory;
                 FontService.SetFont(Path.Join(ContentDirectory, Font));
                 if (_scene != null)
                 {
@@ -36,6 +37,7 @@ namespace Industropolis.Engine
     {
         public static Point ScreenSize { get; set; }
         public static GameWindow? CurrentWindow { get; set; }
+        public static string ContentPath { get; set; } = ".";
     }
 
 #nullable disable

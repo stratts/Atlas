@@ -16,6 +16,7 @@ namespace Industropolis.Engine
         public Sprite(string path, Point size)
         {
             _size = size;
+            Size = _size.ToVector2();
             _path = path;
             AddComponent(new Drawable { Draw = Draw });
             AddComponent(new Modulate());
@@ -26,7 +27,7 @@ namespace Industropolis.Engine
             Texture2D? texture;
             if (!_textures.TryGetValue(_path, out texture))
             {
-                using (var f = File.OpenRead(Path.Join("Content", _path)))
+                using (var f = File.OpenRead(Path.Join(Config.ContentPath, _path)))
                 {
                     texture = Texture2D.FromStream(spriteBatch.GraphicsDevice, f);
                     _textures[_path] = texture;
@@ -38,15 +39,15 @@ namespace Industropolis.Engine
             if (CurrentFrame.HasValue)
             {
                 var framesX = texture.Width / _size.X;
-                var pos = new Point(CurrentFrame.Value % framesX, CurrentFrame.Value / framesX);
-                sourceRect = new Rectangle(pos, _size);
+                var framePos = new Point(CurrentFrame.Value % framesX, CurrentFrame.Value / framesX);
+                sourceRect = new Rectangle(new Point(framePos.X * _size.X, framePos.Y * _size.Y), _size);
             }
             else sourceRect = new Rectangle(Point.Zero, new Point(texture.Width, texture.Height));
 
             spriteBatch.Draw(
                 texture,
+                new Rectangle(position.ToPoint(), Size.ToPoint()),
                 sourceRect,
-                new Rectangle(Position.ToPoint(), Size.ToPoint()),
                 GetRenderColor(Color.White)
             );
         }
