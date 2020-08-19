@@ -5,6 +5,21 @@ using static Industropolis.Engine.Collision.Direction;
 
 namespace Industropolis.Engine
 {
+    internal static class DirectionExtensions
+    {
+        public static Collision.Direction Invert(this Collision.Direction direction)
+        {
+            return direction switch
+            {
+                Left => Right,
+                Right => Left,
+                Top => Bottom,
+                Bottom => Top,
+                _ => direction
+            };
+        }
+    }
+
     public struct CollisionInfo
     {
         public Collision.Direction Direction { get; }
@@ -19,7 +34,9 @@ namespace Industropolis.Engine
 
     public class Collision : Component
     {
-        public enum Direction { Left, Right, Top, Bottom }
+        [Flags]
+        public enum Direction { Left = 1, Right = 2, Top = 4, Bottom = 8 }
+        public Direction? RestrictDirection { get; set; }
         public Rectangle? Area { get; set; }
         public Action<CollisionInfo>? OnCollision { get; set; }
     }
@@ -41,7 +58,10 @@ namespace Industropolis.Engine
 
                     if (boxA.Intersects(boxB))
                     {
-                        a.OnCollision?.Invoke(GetInfo(boxA, boxB));
+                        var info = GetInfo(boxA, boxB);
+                        if (a.RestrictDirection.HasValue && !a.RestrictDirection.Value.HasFlag(info.Direction)) continue;
+                        if (b.RestrictDirection.HasValue && !b.RestrictDirection.Value.HasFlag(info.Direction.Invert())) continue;
+                        a.OnCollision?.Invoke(info);
                     }
                 }
             }
