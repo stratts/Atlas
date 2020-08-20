@@ -64,6 +64,8 @@ namespace Industropolis.Engine
         public bool EnableUpdate { get; set; } = true;
         public bool EnableDraw { get; set; } = true;
 
+        public bool NearestNeighbour { get; set; } = false;
+
         public Scene()
         {
             AddNode(_camera);

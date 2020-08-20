@@ -34,7 +34,10 @@ namespace Industropolis.Engine
         {
             ProcessChanges();
             var matrix = Matrix.CreateScale(scene.Camera.Zoom);
-            spriteBatch.Begin(transformMatrix: matrix);
+            spriteBatch.Begin(
+                transformMatrix: matrix,
+                samplerState: scene.NearestNeighbour ? SamplerState.PointClamp : null
+                );
 
             foreach (var d in _components)
             {
