@@ -8,7 +8,17 @@ namespace Industropolis.Engine
 
     public class Animated : Component
     {
-        public IAnimation? CurrentAnimation { get; set; }
+        private IAnimation? _currentAnimation;
+        public IAnimation? CurrentAnimation
+        {
+            get => _currentAnimation;
+            set
+            {
+                if (_currentAnimation == value) return;
+                _currentAnimation = value;
+                CurrentTime = 0;
+            }
+        }
         public float CurrentTime { get; set; } = 0;
     }
 

@@ -12,6 +12,7 @@ namespace Industropolis.Engine
         private Point _size;
 
         public int? CurrentFrame { get; set; } = null;
+        public bool HFlip { get; set; } = false;
 
         public Sprite(string path, Point size)
         {
@@ -48,7 +49,11 @@ namespace Industropolis.Engine
                 texture,
                 new Rectangle(position.ToPoint(), Size.ToPoint()),
                 sourceRect,
-                GetRenderColor(Color.White)
+                GetRenderColor(Color.White),
+                rotation: 0,
+                origin: Vector2.Zero,
+                HFlip ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                layerDepth: 0
             );
         }
     }
