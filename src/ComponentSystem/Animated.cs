@@ -57,26 +57,24 @@ namespace Industropolis.Engine.Anim
         public IEnumerator GetEnumerator() => ((IEnumerable)_animations).GetEnumerator();
     }
 
-    public class Animation : IAnimation
-    {
-        private List<IAnimationTrack> _tracks = new List<IAnimationTrack>();
-
-        public void AddTrack(IAnimationTrack track) => _tracks.Add(track);
-
-        public void Update(float time)
-        {
-            foreach (var track in _tracks) track.Update(time);
-        }
-    }
-
     public interface IAnimation
     {
         void Update(float time);
     }
 
-    public interface IAnimationTrack : IAnimation { }
+    public class CompoundAnimation : IAnimation
+    {
+        private List<IAnimation> _animations = new List<IAnimation>();
 
-    public class Track<T> : IAnimationTrack where T : struct
+        public void AddAnimation(IAnimation track) => _animations.Add(track);
+
+        public void Update(float time)
+        {
+            foreach (var track in _animations) track.Update(time);
+        }
+    }
+
+    public class Animation<T> : IAnimation where T : struct
     {
         private Action<T> _setter;
         private List<(float time, T value)> _frames = new List<(float time, T value)>();
@@ -84,7 +82,7 @@ namespace Industropolis.Engine.Anim
         public bool Loop { get; set; } = false;
         public float? Length { get; set; }
 
-        public Track(Action<T> setter)
+        public Animation(Action<T> setter)
         {
             _setter = setter;
         }
@@ -122,13 +120,13 @@ namespace Industropolis.Engine.Anim
 
     public static class AnimationExtensions
     {
-        public static Track<int> FrameAnimation(this Sprite sprite, int start, int end, float interval, bool loop = true)
+        public static Animation<int> AnimateFrame(this Sprite sprite, int start, int end, float interval, bool loop = true)
         {
-            var track = new Track<int>(value => sprite.CurrentFrame = value);
-            track.Length = interval * (end - start + 1);
-            track.Loop = loop;
-            for (int i = start; i <= end; i++) track.AddFrame(interval * (i - start), i);
-            return track;
+            var animation = new Animation<int>(value => sprite.CurrentFrame = value);
+            animation.Length = interval * (end - start + 1);
+            animation.Loop = loop;
+            for (int i = start; i <= end; i++) animation.AddFrame(interval * (i - start), i);
+            return animation;
         }
     }
 }
