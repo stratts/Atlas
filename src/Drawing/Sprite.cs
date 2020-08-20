@@ -8,45 +8,43 @@ namespace Industropolis.Engine
     public class Sprite : Node
     {
         private static Dictionary<string, Texture2D> _textures = new Dictionary<string, Texture2D>();
-        private string _path;
         private Point _size;
+        private Texture2D _texture;
 
         public int? CurrentFrame { get; set; } = null;
         public bool HFlip { get; set; } = false;
 
         public Sprite(string path, Point size)
         {
+            Texture2D? texture;
+            if (!_textures.TryGetValue(path, out texture))
+            {
+                texture = Texture2D.FromFile(Config.GraphicsDevice, Path.Join(Config.ContentPath, path));
+                _textures[path] = texture;
+                if (Size == Vector2.Zero) Size = new Vector2(texture.Width, texture.Height);
+            }
+            _texture = texture;
+
             _size = size;
             Size = _size.ToVector2();
-            _path = path;
+
             AddComponent(new Drawable { Draw = Draw });
             AddComponent(new Modulate());
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-            Texture2D? texture;
-            if (!_textures.TryGetValue(_path, out texture))
-            {
-                using (var f = File.OpenRead(Path.Join(Config.ContentPath, _path)))
-                {
-                    texture = Texture2D.FromStream(spriteBatch.GraphicsDevice, f);
-                    _textures[_path] = texture;
-                    if (Size == Vector2.Zero) Size = new Vector2(texture.Width, texture.Height);
-                }
-            }
-
             Rectangle sourceRect;
             if (CurrentFrame.HasValue)
             {
-                var framesX = texture.Width / _size.X;
+                var framesX = _texture.Width / _size.X;
                 var framePos = new Point(CurrentFrame.Value % framesX, CurrentFrame.Value / framesX);
                 sourceRect = new Rectangle(new Point(framePos.X * _size.X, framePos.Y * _size.Y), _size);
             }
-            else sourceRect = new Rectangle(Point.Zero, new Point(texture.Width, texture.Height));
+            else sourceRect = new Rectangle(Point.Zero, new Point(_texture.Width, _texture.Height));
 
             spriteBatch.Draw(
-                texture,
+                _texture,
                 new Rectangle(position.ToPoint(), Size.ToPoint()),
                 sourceRect,
                 GetRenderColor(Color.White),

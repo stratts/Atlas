@@ -7,37 +7,30 @@ namespace Industropolis.Engine
 {
     public class EngineCore
     {
-        private Type? _scene;
-
         public Point ScreenSize { get; set; }
         public string ContentDirectory { get; set; } = ".";
         public string Font { get; set; } = "";
 
-        public void SetScene<T>() where T : IScene, new() => _scene = typeof(T);
-
-        public void Start()
+        public void Start<T>() where T : IScene, new()
         {
             using (var g = new MainGame())
             {
                 g.ScreenSize = ScreenSize;
                 g.Content.RootDirectory = ContentDirectory;
+                g.SceneBuilder = () => new T();
                 Config.ContentPath = ContentDirectory;
                 FontService.SetFont(Path.Join(ContentDirectory, Font));
-                if (_scene != null)
-                {
-                    var s = Activator.CreateInstance(_scene);
-                    if (s != null) g.MainScene = (IScene)s;
-                }
                 g.Run();
             }
         }
     }
 
-    internal static class Config
+    public static class Config
     {
-        public static Point ScreenSize { get; set; }
-        public static GameWindow? CurrentWindow { get; set; }
-        public static string ContentPath { get; set; } = ".";
+        public static Point ScreenSize { get; internal set; }
+        public static GameWindow? CurrentWindow { get; internal set; }
+        public static string ContentPath { get; internal set; } = ".";
+        public static GraphicsDevice GraphicsDevice { get; internal set; } = null!;
     }
 
 #nullable disable
@@ -47,6 +40,7 @@ namespace Industropolis.Engine
         private Point _screenSize;
         private GraphicsDeviceManager _gdm;
         private SpriteBatch _spriteBatch;
+        private IScene _scene;
 
         public Point ScreenSize
         {
@@ -59,18 +53,19 @@ namespace Industropolis.Engine
                 Config.ScreenSize = value;
             }
         }
-        public IScene MainScene { get; set; }
+
+        public Func<IScene> SceneBuilder { get; set; }
 
         public MainGame()
         {
             _gdm = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
             _spriteBatch = new SpriteBatch(this.GraphicsDevice);
+            Config.GraphicsDevice = GraphicsDevice;
 
             _gdm.IsFullScreen = false;
             _gdm.SynchronizeWithVerticalRetrace = true;
@@ -84,6 +79,8 @@ namespace Industropolis.Engine
         protected override void LoadContent()
         {
             CustomDrawing.Init(_spriteBatch);
+            _scene = SceneBuilder();
+
             base.LoadContent();
         }
 
@@ -96,14 +93,14 @@ namespace Industropolis.Engine
         protected override void Update(GameTime gameTime)
         {
             MouseInputSystem.InputConsumed = false;
-            if (MainScene?.EnableUpdate ?? false) MainScene?.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            if (_scene != null && _scene.EnableUpdate) _scene.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            if (MainScene?.EnableDraw ?? false) MainScene?.Draw(_spriteBatch);
+            if (_scene != null && _scene.EnableDraw) _scene.Draw(_spriteBatch);
             base.Draw(gameTime);
         }
     }
