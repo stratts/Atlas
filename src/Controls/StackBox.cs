@@ -14,6 +14,7 @@ namespace Industropolis.Engine
         private Vector2 _currentOffset = Vector2.Zero;
         private Direction _direction;
         private BaseSplitContainer _container;
+        private Dictionary<Node, (float? min, float? max)> _sizes = new Dictionary<Node, (float?, float?)>();
 
         public override Vector2 Size
         {
@@ -43,34 +44,45 @@ namespace Industropolis.Engine
 
         public void Add(Node node) => AddChild(node);
 
-        public void AddChild(Node node, float minSize = -1, float maxSize = -1)
+        public void AddChild(Node node, float? minSize = null, float? maxSize = null)
         {
             base.AddChild(node);
+            _sizes[node] = (minSize, maxSize);
+            Layout();
+        }
 
-            Layout layout;
+        private void Layout()
+        {
+            _container.ClearSections();
 
-            if (node.GetComponent<Layout>() is Layout l) layout = l;
-            else layout = node.AddComponent<Layout>();
-
-            var width = node.Size.X + layout.Margin.Size.X;
-            var height = node.Size.Y + layout.Margin.Size.Y;
-            var size = _direction == Direction.Horizontal ? width : height;
-
-            if (maxSize == -1)
+            for (int i = 0; i < Children.Count; i++)
             {
-                if (node.GetComponent<Expand>() != null) maxSize = 0;
-                else maxSize = size + _spacing;
+                var node = Children[i];
+                var (min, max) = _sizes[node];
+                var layout = node.GetComponent<Layout>() is Layout l ? l : node.AddComponent<Layout>();
+
+                var width = node.Size.X + layout.Margin.Size.X;
+                var height = node.Size.Y + layout.Margin.Size.Y;
+                var size = _direction == Direction.Horizontal ? width : height;
+
+                var spacing = i < Children.Count - 1 ? _spacing : 0;
+                float minSpace = (min.HasValue ? min.Value : size) + spacing;
+                float? maxSpace = null;
+
+                if (!max.HasValue && node.GetComponent<Expand>() == null)
+                {
+                    maxSpace = size + spacing;
+                }
+                else if (max > 0) maxSpace = max + spacing;
+
+                layout.Container = _container.AddSection(minSpace, maxSpace);
+
+                _size = _container.Size;
+                if (width > Size.X) Size = new Vector2(width, Size.Y);
+                if (height > Size.Y) Size = new Vector2(Size.X, height);
             }
-            else if (maxSize > 0) maxSize = maxSize + _spacing;
-            if (minSize == -1) minSize = size + _spacing;
-            else minSize = minSize + _spacing;
 
-            layout.Container = _container.AddSection(minSize, maxSize);
             _container.Layout();
-
-            _size = _container.Size;
-            if (width > Size.X) Size = new Vector2(width, Size.Y);
-            if (height > Size.Y) Size = new Vector2(Size.X, height);
         }
 
         private void SetSize(Vector2 size)
@@ -81,6 +93,7 @@ namespace Industropolis.Engine
 
         public void Clear()
         {
+            _sizes.Clear();
             _container.ClearSections();
             for (int i = Children.Count - 1; i >= 0; i--) RemoveChild(Children[i]);
             Size = Vector2.Zero;

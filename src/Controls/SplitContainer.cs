@@ -12,7 +12,7 @@ namespace Industropolis.Engine
             public Vector2 Offset;
             public Vector2 Size;
             public float MinSpace { get; set; }
-            public float MaxSpace { get; set; }
+            public float? MaxSpace { get; set; }
             public LayoutBorder Padding { get; set; } = LayoutBorder.None;
 
             LayoutBorder IContainer.Padding => Padding;
@@ -28,7 +28,7 @@ namespace Industropolis.Engine
         protected abstract ref float Primary(ref Vector2 v);
         protected abstract ref float Secondary(ref Vector2 v);
 
-        public IContainer AddSection(float minSpace = 0, float maxSpace = 0, LayoutBorder padding = default(LayoutBorder))
+        public IContainer AddSection(float minSpace = 0, float? maxSpace = null, LayoutBorder padding = default(LayoutBorder))
         {
             var section = new Section();
             section.MinSpace = minSpace;
@@ -48,7 +48,7 @@ namespace Industropolis.Engine
 
             Func<Section, float> MaxSpace = (s) =>
             {
-                var maxSpace = s.MaxSpace == 0 ? Primary(ref _size) : s.MaxSpace;
+                var maxSpace = !s.MaxSpace.HasValue ? Primary(ref _size) : s.MaxSpace.Value;
                 return Math.Max(0, maxSpace - s.MinSpace);
             };
 
