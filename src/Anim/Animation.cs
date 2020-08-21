@@ -64,6 +64,7 @@ namespace Industropolis.Engine.Anim
 
         public bool Loop { get; set; } = false;
         public float? Length { get; set; }
+        public EaseType EaseType { get; set; } = EaseType.None;
 
         public Animation(Action<T> setter, bool interpolate = false)
         {
@@ -100,6 +101,7 @@ namespace Industropolis.Engine.Anim
                     {
                         var nextFrame = _frames[i + 1];
                         var interpolateAmount = (time - current) / (next - current);
+                        if (EaseType != EaseType.None) interpolateAmount = Easings.Interpolate(interpolateAmount, EaseType);
                         value = _interpolateFunc.Invoke(frame.value, nextFrame.value, interpolateAmount);
                     }
                     else value = frame.value;
