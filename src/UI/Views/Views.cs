@@ -61,6 +61,8 @@ namespace Industropolis.Engine.UI.Views
                 if (c != null) _box.AddChild(c.GetNode());
             }
         }
+
+        public BoxView Spacing(int spacing) { _box.Spacing = spacing; return this; }
     }
 
     public class HBoxView : BoxView

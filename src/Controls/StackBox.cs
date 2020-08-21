@@ -22,6 +22,12 @@ namespace Industropolis.Engine
             set { SetSize(value); }
         }
 
+        public int Spacing
+        {
+            get => _spacing;
+            set { _spacing = value; Layout(); }
+        }
+
         public enum Direction { Vertical, Horizontal }
 
         public StackBox(int spacing, Direction direction)
@@ -54,6 +60,7 @@ namespace Industropolis.Engine
         private void Layout()
         {
             _container.ClearSections();
+            _container.Spacing = _spacing;
 
             for (int i = 0; i < Children.Count; i++)
             {
@@ -65,24 +72,17 @@ namespace Industropolis.Engine
                 var height = node.Size.Y + layout.Margin.Size.Y;
                 var size = _direction == Direction.Horizontal ? width : height;
 
-                var spacing = i < Children.Count - 1 ? _spacing : 0;
-                float minSpace = (min.HasValue ? min.Value : size) + spacing;
-                float? maxSpace = null;
-
-                if (!max.HasValue && node.GetComponent<Expand>() == null)
-                {
-                    maxSpace = size + spacing;
-                }
-                else if (max > 0) maxSpace = max + spacing;
+                float minSpace = min.HasValue ? min.Value : size;
+                float? maxSpace = !max.HasValue && node.GetComponent<Expand>() == null ? size : max;
 
                 layout.Container = _container.AddSection(minSpace, maxSpace);
 
-                _size = _container.Size;
                 if (width > Size.X) Size = new Vector2(width, Size.Y);
                 if (height > Size.Y) Size = new Vector2(Size.X, height);
             }
 
             _container.Layout();
+            _size = _container.Size;
         }
 
         private void SetSize(Vector2 size)

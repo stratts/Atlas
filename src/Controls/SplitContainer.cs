@@ -24,6 +24,7 @@ namespace Industropolis.Engine
         private List<Section> _sections = new List<Section>();
 
         public Vector2 Size { get => _size; set => Resize(value); }
+        public int Spacing { get; set; }
 
         protected abstract ref float Primary(ref Vector2 v);
         protected abstract ref float Secondary(ref Vector2 v);
@@ -43,7 +44,7 @@ namespace Industropolis.Engine
 
         public void Layout()
         {
-            float fixedSpace = _sections.Select(c => c.MinSpace).Sum();
+            float fixedSpace = _sections.Select(c => c.MinSpace).Sum() + (Spacing * (_sections.Count - 1));
             if (Primary(ref _size) < fixedSpace) Primary(ref _size) = fixedSpace;
 
             Func<Section, float> MaxSpace = (s) =>
@@ -58,7 +59,7 @@ namespace Industropolis.Engine
             foreach (var container in _sections)
             {
                 float allocatedSpace = 0;
-                if (container.MaxSpace == 0 || container.MaxSpace > container.MinSpace)
+                if (!container.MaxSpace.HasValue || container.MaxSpace > container.MinSpace)
                 {
                     allocatedSpace = MaxSpace(container) / totalRequestedSpace;
                 }
@@ -69,7 +70,7 @@ namespace Industropolis.Engine
             for (int i = 1; i < _sections.Count; i++)
             {
                 var c = _sections[i];
-                Primary(ref c.Offset) = Primary(ref _sections[i - 1].Offset) + Primary(ref _sections[i - 1].Size);
+                Primary(ref c.Offset) = Primary(ref _sections[i - 1].Offset) + Primary(ref _sections[i - 1].Size) + Spacing;
                 Secondary(ref c.Offset) = 0;
             }
         }
