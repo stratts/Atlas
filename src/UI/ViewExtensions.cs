@@ -105,5 +105,12 @@ namespace Industropolis.Engine.UI
             });
             return view;
         }
+
+        public static T Scale<T>(this T view, float amount) where T : View
+        {
+            var node = view.GetNode();
+            node.Size *= amount;
+            return view;
+        }
     }
 }
