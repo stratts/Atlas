@@ -69,14 +69,17 @@ namespace Industropolis.Engine
         public Scene()
         {
             AddNode(_camera);
-            AddSystem(new DrawableSystem());
-            AddSystem(new ModulateSystem());
-            AddSystem(new UpdateSystem());
-            AddSystem(new AnimationSystem());
             AddSystem(new MouseInputSystem());
-            AddSystem(new LayoutSystem());
-            AddSystem(new ScissorSystem());
+
             AddSystem(new CollisionSystem());
+            AddSystem(new AnimationSystem());
+            AddSystem(new UpdateSystem());
+
+
+            AddSystem(new LayoutSystem());
+            AddSystem(new ModulateSystem());
+            AddSystem(new ScissorSystem());
+            AddSystem(new DrawableSystem());
         }
 
         public void AddSystem(IComponentSystem system)

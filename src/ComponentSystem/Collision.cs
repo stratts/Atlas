@@ -22,11 +22,17 @@ namespace Industropolis.Engine
 
     public struct CollisionInfo
     {
+        public Collision Component { get; }
+        public Collision Source { get; }
         public Collision.Direction Direction { get; }
+        public Vector2 Vector { get; }
         public float Coordinate { get; }
 
-        public CollisionInfo(float coordinate, Collision.Direction direction)
+        public CollisionInfo(Collision component, Collision collided, Vector2 vector, float coordinate, Collision.Direction direction)
         {
+            Vector = vector;
+            Component = component;
+            Source = collided;
             Coordinate = coordinate;
             Direction = direction;
         }
@@ -39,6 +45,15 @@ namespace Industropolis.Engine
         public Direction? RestrictDirection { get; set; }
         public Rectangle? Area { get; set; }
         public Action<CollisionInfo>? OnCollision { get; set; }
+        public Rectangle CollisionBox
+        {
+            get
+            {
+                var area = Area.HasValue ? Area.Value : new Rectangle(Point.Zero, Parent.Size.ToPoint());
+                return new Rectangle(area.Location + Parent.ScenePosition.ToPoint(), area.Size);
+            }
+        }
+        public bool CollidingWith(Collision other) => CollisionBox.Intersects(other.CollisionBox);
     }
 
     public class CollisionSystem : BaseComponentSystem<Collision>
@@ -47,27 +62,23 @@ namespace Industropolis.Engine
         {
             foreach (var a in components)
             {
-                var areaA = a.Area.HasValue ? a.Area.Value : new Rectangle(Point.Zero, a.Parent.Size.ToPoint());
-                var boxA = new Rectangle(areaA.Location + a.Parent.ScenePosition.ToPoint(), areaA.Size);
-
                 foreach (var b in components)
                 {
                     if (a == b) continue;
-                    var areaB = b.Area.HasValue ? b.Area.Value : new Rectangle(Point.Zero, b.Parent.Size.ToPoint());
-                    var boxB = new Rectangle(areaB.Location + b.Parent.ScenePosition.ToPoint(), areaB.Size);
 
-                    if (boxA.Intersects(boxB))
+                    if (a.CollidingWith(b))
                     {
-                        var info = GetInfo(boxA, boxB);
-                        if (a.RestrictDirection.HasValue && !a.RestrictDirection.Value.HasFlag(info.Direction)) continue;
-                        if (b.RestrictDirection.HasValue && !b.RestrictDirection.Value.HasFlag(info.Direction.Invert())) continue;
-                        a.OnCollision?.Invoke(info);
+                        var info = GetInfo(b.Parent, a.CollisionBox, b.CollisionBox);
+                        var collisionInfo = new CollisionInfo(a, b, info.vector, info.coord, info.dir);
+                        if (a.RestrictDirection.HasValue && !a.RestrictDirection.Value.HasFlag(info.dir)) continue;
+                        if (b.RestrictDirection.HasValue && !b.RestrictDirection.Value.HasFlag(info.dir.Invert())) continue;
+                        a.OnCollision?.Invoke(collisionInfo);
                     }
                 }
             }
         }
 
-        private CollisionInfo GetInfo(Rectangle a, Rectangle b)
+        private (float coord, Collision.Direction dir, Vector2 vector) GetInfo(Node source, Rectangle a, Rectangle b)
         {
             // Find edges of the two boxes that are closest
             Span<(Collision.Direction dir, int dist)> distances = stackalloc[] {
@@ -99,7 +110,9 @@ namespace Industropolis.Engine
                 _ => 0
             };
 
-            return new CollisionInfo(coordinate, direction);
+            var vector = a.Center.ToVector2().DirectionTo(Rectangle.Intersect(a, b).Center.ToVector2());
+
+            return (coordinate, direction, vector);
         }
     }
 }
