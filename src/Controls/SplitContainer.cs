@@ -40,7 +40,11 @@ namespace Industropolis.Engine
             return section;
         }
 
-        public void ClearSections() => _sections.Clear();
+        public void ClearSections()
+        {
+            Primary(ref _size) = 0;
+            _sections.Clear();
+        }
 
         public void Layout()
         {
