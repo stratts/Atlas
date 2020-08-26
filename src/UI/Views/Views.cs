@@ -20,6 +20,12 @@ namespace Industropolis.Engine.UI.Views
         public TextView Color(Color c) => Modify(this, () => _node.Color = c);
 
         public TextView FontSize(int size) => Modify(this, () => _node.FontSize = size);
+
+        public TextView Bind(Func<string> getContent)
+        {
+            _node.AddComponent(new Updateable() { UpdateMethod = _ => Content = getContent() });
+            return this;
+        }
     }
 
     public class ButtonView : View, IPaddableView
@@ -201,6 +207,8 @@ namespace Industropolis.Engine.UI.Views
             });
             return this;
         }
+
+        public TextInputView Color(Color color) { _input.Color = color; return this; }
 
         public TextInputView EnableInput(bool enabled) => Modify(this, () => _input.EnableInput = enabled);
     }

@@ -24,6 +24,8 @@ namespace Industropolis.Engine
             }
         }
 
+        public Color Color { get => _text.Color; set => _text.Color = value; }
+
         public TextInput()
         {
             _text = new Text();
