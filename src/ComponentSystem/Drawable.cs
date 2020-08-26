@@ -32,12 +32,10 @@ namespace Industropolis.Engine
 
         public void Draw(Scene scene, SpriteBatch spriteBatch)
         {
+            var samplerState = scene.NearestNeighbour ? SamplerState.PointClamp : null;
             ProcessChanges();
             var matrix = Matrix.CreateScale(scene.Camera.Zoom);
-            spriteBatch.Begin(
-                transformMatrix: matrix,
-                samplerState: scene.NearestNeighbour ? SamplerState.PointClamp : null
-                );
+            spriteBatch.Begin(transformMatrix: matrix, samplerState: samplerState);
 
             foreach (var d in _components)
             {
@@ -54,7 +52,7 @@ namespace Industropolis.Engine
                     if (r != _currentScissor)
                     {
                         spriteBatch.End();
-                        spriteBatch.Begin(transformMatrix: matrix,
+                        spriteBatch.Begin(transformMatrix: matrix, samplerState: samplerState,
                             rasterizerState: new RasterizerState() { ScissorTestEnable = true });
                         _currentScissor = r;
                     }
@@ -66,7 +64,7 @@ namespace Industropolis.Engine
                 else if (_currentScissor != null)
                 {
                     spriteBatch.End();
-                    spriteBatch.Begin(transformMatrix: matrix);
+                    spriteBatch.Begin(transformMatrix: matrix, samplerState: samplerState);
                     _currentScissor = null;
                 }
 
