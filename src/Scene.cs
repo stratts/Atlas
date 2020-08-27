@@ -181,6 +181,7 @@ namespace Industropolis.Engine
                    });
 
             node.SceneSort = current;
+            foreach (var component in node.Components) component.Priority = node.SceneSort;
 
             foreach (var child in children) current = SetChildSort(child, current + 1);
 
