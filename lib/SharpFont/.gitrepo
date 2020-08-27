@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/stratts/SharpFont
+	branch = master
+	commit = b16a27a32a1be63695da7e794ba05fb86dd4be61
+	parent = bad9df6047cc0fad14593fc4423a5fc1854e014f
+	method = merge
+	cmdver = 0.4.1
