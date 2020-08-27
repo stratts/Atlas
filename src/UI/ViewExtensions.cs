@@ -77,14 +77,8 @@ namespace Industropolis.Engine.UI
 
         public static T Style<T>(this T view, Style<T> style) where T : View => style(view);
 
-        public static T Align<T>(this T view, HAlign h = HAlign.None, VAlign v = VAlign.None) where T : View
-        {
-            view.GetLayout().HAlign = h;
-            view.GetLayout().VAlign = v;
-            return view;
-        }
-        public static T _HAlign<T>(this T view, HAlign align) where T : View => Modify(view, view => view.GetLayout().HAlign = align);
-        public static T _VAlign<T>(this T view, VAlign align) where T : View => Modify(view, view => view.GetLayout().VAlign = align);
+        public static T HAlign<T>(this T view, HAlign align) where T : View { view.GetLayout().HAlign = align; return view; }
+        public static T VAlign<T>(this T view, VAlign align) where T : View { view.GetLayout().VAlign = align; return view; }
 
         public static T Expand<T>(this T view) where T : View => Modify(view, view => view.AddComponent<StackBox.Expand>());
 
