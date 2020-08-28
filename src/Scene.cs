@@ -71,10 +71,9 @@ namespace Industropolis.Engine
             AddNode(_camera);
             AddSystem(new MouseInputSystem());
 
-            AddSystem(new CollisionSystem());
             AddSystem(new AnimationSystem());
             AddSystem(new UpdateSystem());
-
+            AddSystem(new CollisionSystem());
 
             AddSystem(new LayoutSystem());
             AddSystem(new ModulateSystem());
