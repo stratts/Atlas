@@ -53,6 +53,7 @@ namespace Industropolis.Engine
                 return new Rectangle(area.Location + Parent.ScenePosition.ToPoint(), area.Size);
             }
         }
+        public int? Mask { get; set; }
         public bool CollidingWith(Collision other) => CollisionBox.Intersects(other.CollisionBox);
     }
 
@@ -64,7 +65,7 @@ namespace Industropolis.Engine
             {
                 foreach (var b in components)
                 {
-                    if (a == b) continue;
+                    if (a == b || (a.Mask == b.Mask && a.Mask.HasValue && b.Mask.HasValue)) continue;
 
                     if (a.CollidingWith(b))
                     {
