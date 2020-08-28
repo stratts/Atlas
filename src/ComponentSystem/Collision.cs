@@ -59,21 +59,52 @@ namespace Industropolis.Engine
 
     public class CollisionSystem : BaseComponentSystem<Collision>
     {
+        private const int _gridSize = 128;
+        private Dictionary<(int, int), List<Collision>> _grid = new Dictionary<(int, int), List<Collision>>();
+
         public override void UpdateComponents(Scene scene, IReadOnlyList<Collision> components, float elapsed)
         {
-            foreach (var a in components)
-            {
-                foreach (var b in components)
-                {
-                    if (a == b || (a.Mask == b.Mask && a.Mask.HasValue && b.Mask.HasValue)) continue;
+            foreach (var list in _grid.Values) list.Clear();
 
-                    if (a.CollidingWith(b))
+            // Assign components to grid cells
+            foreach (var c in components)
+            {
+                var box = c.CollisionBox;
+
+                for (int x = box.Left / _gridSize; x < box.Right / _gridSize + 1; x++)
+                {
+                    for (int y = box.Top / _gridSize; y < box.Bottom / _gridSize + 1; y++)
                     {
-                        var info = GetInfo(b.Parent, a.CollisionBox, b.CollisionBox);
-                        var collisionInfo = new CollisionInfo(a, b, info.vector, info.coord, info.dir);
-                        if (a.RestrictDirection.HasValue && !a.RestrictDirection.Value.HasFlag(info.dir)) continue;
-                        if (b.RestrictDirection.HasValue && !b.RestrictDirection.Value.HasFlag(info.dir.Invert())) continue;
-                        a.OnCollision?.Invoke(collisionInfo);
+                        if (!_grid.TryGetValue((x, y), out var list))
+                        {
+                            list = new List<Collision>();
+                            _grid[(x, y)] = list;
+                        }
+
+                        list.Add(c);
+                    }
+                }
+            }
+
+            // Check collisions within each cell
+            foreach (var cell in _grid.Values)
+            {
+                foreach (var a in cell)
+                {
+                    if (a.OnCollision == null) continue;
+
+                    foreach (var b in cell)
+                    {
+                        if (a == b || (a.Mask == b.Mask && a.Mask.HasValue && b.Mask.HasValue)) continue;
+
+                        if (a.CollidingWith(b))
+                        {
+                            var info = GetInfo(b.Parent, a.CollisionBox, b.CollisionBox);
+                            var collisionInfo = new CollisionInfo(a, b, info.vector, info.coord, info.dir);
+                            if (a.RestrictDirection.HasValue && !a.RestrictDirection.Value.HasFlag(info.dir)) continue;
+                            if (b.RestrictDirection.HasValue && !b.RestrictDirection.Value.HasFlag(info.dir.Invert())) continue;
+                            a.OnCollision?.Invoke(collisionInfo);
+                        }
                     }
                 }
             }
