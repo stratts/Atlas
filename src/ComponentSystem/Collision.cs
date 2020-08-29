@@ -41,7 +41,7 @@ namespace Industropolis.Engine
     public class Collision : Component
     {
         [Flags]
-        public enum Direction { Left = 1, Right = 2, Top = 4, Bottom = 8 }
+        public enum Direction { None = 0, Left = 1, Right = 2, Top = 4, Bottom = 8 }
         public Direction? RestrictDirection { get; set; }
         public Rectangle? Area { get; set; }
         public Action<CollisionInfo>? OnCollision { get; set; }
