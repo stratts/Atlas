@@ -17,6 +17,8 @@ namespace Industropolis.Engine
         public Action<Vector2, int>? OnScroll { get; set; }
         public Action? OnMouseEnter { get; set; }
         public Action? OnMouseExit { get; set; }
+        public Action? OnFocusEnter { get; set; }
+        public Action? OnFocusExit { get; set; }
     }
 
     public class MouseInputSystem : BaseComponentSystem<MouseInput>
@@ -27,6 +29,7 @@ namespace Industropolis.Engine
         private Vector2 _prevMousePos;
         private HashSet<MouseInput> _mouseEntered = new HashSet<MouseInput>();
         private static Node? _consumedBy;
+        private static MouseInput? _focused;
 
         public static bool InputConsumed { get; set; } = false;
 
@@ -45,6 +48,13 @@ namespace Industropolis.Engine
                     if (_mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
                     {
                         c.OnClick?.Invoke(MouseToAreaPos(scene, _mousePos, c));
+
+                        if (_focused != c)
+                        {
+                            c.OnFocusEnter?.Invoke();
+                            _focused?.OnFocusExit?.Invoke();
+                            _focused = c;
+                        }
                     }
 
                     // Handle scroll

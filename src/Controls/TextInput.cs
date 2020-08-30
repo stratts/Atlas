@@ -6,12 +6,16 @@ namespace Industropolis.Engine
 {
     public class TextInput : CustomDrawingNode
     {
+        private string _bindContent = "";
         private Text _text;
         private int _pointer = 0;
         private KeyboardState prevState;
         private (int, int)? _selected;
+        private bool _focused = false;
+        private Action? _bindMethod;
 
         public bool EnableInput { get; set; } = true;
+        public bool NumbersOnly { get; set; } = false;
 
         public string Content
         {
@@ -46,6 +50,12 @@ namespace Industropolis.Engine
             {
                 _selected = null;
                 _pointer = _text.IndexAt(pos.X);
+            };
+            input.OnFocusEnter = () => _focused = true;
+            input.OnFocusExit = () =>
+            {
+                _focused = false;
+                _selected = null;
             };
 
             input.OnMove = (pos, _) => HandleMove(input, pos);
@@ -90,6 +100,8 @@ namespace Industropolis.Engine
                 _pointer++;
             }
             prevState = state;
+
+            _bindMethod?.Invoke();
         }
 
         private void HandleMove(MouseInput input, Vector2 pos)
@@ -117,7 +129,7 @@ namespace Industropolis.Engine
 
         private void HandleInput(char character, Keys key)
         {
-            if (!EnableInput) return;
+            if (!EnableInput || !_focused) return;
             if (Char.IsControl(character))
             {
                 if (key == Keys.Back)
@@ -132,11 +144,33 @@ namespace Industropolis.Engine
             }
             else
             {
+                if (NumbersOnly && !Char.IsDigit(character)) return;
                 ClearSelected();
                 _text.Content = _text.Content.Insert(_pointer, character.ToString());
                 _pointer++;
             }
             Size = new Vector2(Math.Min(Size.X, _text.Size.X), _text.Size.Y);
+        }
+
+        public void Bind(Action<string> set, Func<string>? get = null)
+        {
+            _bindMethod = () =>
+            {
+                if (_bindContent != Content)
+                {
+                    _bindContent = Content;
+                    set?.Invoke(_bindContent);
+                }
+                else if (get != null)
+                {
+                    var str = get.Invoke();
+                    if (_bindContent != str)
+                    {
+                        _bindContent = str;
+                        Content = _bindContent;
+                    }
+                }
+            };
         }
     }
 }
