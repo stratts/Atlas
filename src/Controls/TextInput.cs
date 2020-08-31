@@ -85,7 +85,7 @@ namespace Industropolis.Engine
             return _text.MeasureString(pointerText).X;
         }
 
-        private void Update(float elapsed)
+        private void Update(Scene scene, float elapsed)
         {
             if (!EnableInput) return;
             var state = Keyboard.GetState();

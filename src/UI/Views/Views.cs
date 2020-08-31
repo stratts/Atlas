@@ -23,7 +23,7 @@ namespace Industropolis.Engine.UI.Views
 
         public TextView Bind(Func<string> getContent)
         {
-            _node.AddComponent(new Updateable() { UpdateMethod = _ => Content = getContent() });
+            _node.AddComponent(new Updateable() { UpdateMethod = (scene, _) => Content = getContent() });
             return this;
         }
     }

@@ -43,7 +43,7 @@ namespace Industropolis.Engine.UI
         public static T WithUpdate<T>(this T view, Action<T> func) where T : View
         {
             func?.Invoke(view);
-            view.AddComponent(new Updateable() { UpdateMethod = (elapsed) => func?.Invoke(view) });
+            view.AddComponent(new Updateable() { UpdateMethod = (_, elapsed) => func?.Invoke(view) });
             return view;
         }
 
