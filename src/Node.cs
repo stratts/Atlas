@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 
 namespace Industropolis.Engine
@@ -25,7 +26,7 @@ namespace Industropolis.Engine
     public class Node
     {
         private List<Node> _children = new List<Node>();
-        private List<Component> _components = new List<Component>();
+        private List<IComponent> _components = new List<IComponent>();
         private bool _enabled = true;
         private ulong _tags = 0;
 
@@ -52,13 +53,13 @@ namespace Industropolis.Engine
         public Node? RootNode { get; set; }
         public Node? Parent { get; set; }
         public List<Node> Children => _children;
-        public IReadOnlyList<Component> Components => _components;
+        public IReadOnlyList<IComponent> Components => _components;
 
         public event Action<Node>? ChildAdded;
         public event Action<Node>? ChildRemoved;
 
-        public event Action<Component>? ComponentAdded;
-        public event Action<Component>? ComponentRemoved;
+        public event Action<IComponent>? ComponentAdded;
+        public event Action<IComponent>? ComponentRemoved;
 
         public event Action<Node>? OnEnabled;
         public event Action<Node>? Deleted;
@@ -82,33 +83,34 @@ namespace Industropolis.Engine
 
         public void Delete() => Deleted?.Invoke(this);
 
-        public void AddComponent(Component component)
+        public void AddComponent(IComponent component)
         {
             _components.Add(component);
             component.Parent = this;
             ComponentAdded?.Invoke(component);
         }
 
-        public T AddComponent<T>() where T : Component, new()
+        public T AddComponent<T>() where T : IComponent, new()
         {
             var c = new T();
             AddComponent(c);
             return c;
         }
 
-        public void RemoveComponent(Component component)
+        public void RemoveComponent(IComponent component)
         {
             _components.Remove(component);
             ComponentRemoved?.Invoke(component);
         }
 
-        public T? GetComponent<T>() where T : Component
+        [return: MaybeNull]
+        public T GetComponent<T>() where T : IComponent
         {
             foreach (var component in _components)
             {
                 if (component is T c) return c;
             }
-            return null;
+            return default(T);
         }
 
         public void BringToFront() => BroughtToFront?.Invoke(this);

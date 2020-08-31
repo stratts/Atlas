@@ -4,9 +4,9 @@ namespace Industropolis.Engine
 {
     public interface IComponentSystem
     {
-        bool HandlesComponent(Component component);
-        void AddComponent(Component component);
-        void RemoveComponent(Component component);
+        bool HandlesComponent(IComponent component);
+        void AddComponent(IComponent component);
+        void RemoveComponent(IComponent component);
         void UpdateComponents(Scene scene, float elapsed);
         void SortComponents();
     }

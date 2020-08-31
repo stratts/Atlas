@@ -1,18 +1,16 @@
+using System;
 using System.Collections.Generic;
-using Industropolis.Engine;
 using Microsoft.Xna.Framework;
 
-namespace SimplePlatformer
+namespace Industropolis.Engine
 {
-    public class Parallax : Updateable
+    public class Parallax : Component, ILogicComponent
     {
         private Vector2? _prevCameraPos;
 
         public float Amount { get; set; } = 1;
 
-        public Parallax() => UpdateMethod = Update;
-
-        private void Update(Scene scene, float elapsed)
+        void ILogicComponent.Update(Scene scene, float elapsed)
         {
             if (_prevCameraPos.HasValue)
             {

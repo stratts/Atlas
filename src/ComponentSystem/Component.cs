@@ -1,7 +1,14 @@
 
 namespace Industropolis.Engine
 {
-    public abstract class Component
+    public interface IComponent
+    {
+        Node Parent { get; set; }
+        bool Enabled { get; set; }
+        double Priority { get; set; }
+    }
+
+    public abstract class Component : IComponent
     {
         private bool _enabled = true;
 

@@ -3,18 +3,25 @@ using System.Collections.Generic;
 
 namespace Industropolis.Engine
 {
-    public class Updateable : Component
+    public interface ILogicComponent : IComponent
     {
-        public Action<Scene, float>? UpdateMethod { get; set; }
+        void Update(Scene scene, float elapsed);
     }
 
-    public class UpdateSystem : BaseComponentSystem<Updateable>
+    public class Updateable : Component, ILogicComponent
     {
-        public override void UpdateComponents(Scene scene, IReadOnlyList<Updateable> components, float elapsed)
+        public Action<Scene, float>? UpdateMethod { get; set; }
+
+        void ILogicComponent.Update(Scene scene, float elapsed) => UpdateMethod?.Invoke(scene, elapsed);
+    }
+
+    public class UpdateSystem : BaseComponentSystem<ILogicComponent>
+    {
+        public override void UpdateComponents(Scene scene, IReadOnlyList<ILogicComponent> components, float elapsed)
         {
             foreach (var c in components)
             {
-                if (c.Enabled) c.UpdateMethod?.Invoke(scene, elapsed);
+                if (c.Enabled) c.Update(scene, elapsed);
             }
         }
     }

@@ -187,7 +187,7 @@ namespace Industropolis.Engine
             return current;
         }
 
-        private IComponentSystem? GetSystem(Component component)
+        private IComponentSystem? GetSystem(IComponent component)
         {
             foreach (var system in _systems)
             {
@@ -196,13 +196,13 @@ namespace Industropolis.Engine
             return null;
         }
 
-        private void AddComponent(Component component)
+        private void AddComponent(IComponent component)
         {
             component.Priority = component.Parent.SceneSort;
             GetSystem(component)?.AddComponent(component);
         }
 
-        private void RemoveComponent(Component component)
+        private void RemoveComponent(IComponent component)
         {
             GetSystem(component)?.RemoveComponent(component);
         }

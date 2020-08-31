@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Industropolis.Engine
 {
-    public abstract class BaseComponentSystem<T> : IComponentSystem where T : Component
+    public abstract class BaseComponentSystem<T> : IComponentSystem where T : IComponent
     {
         protected List<T> _components = new List<T>();
         private Queue<Action> _actionQueue = new Queue<Action>();
@@ -15,9 +15,9 @@ namespace Industropolis.Engine
 
         protected bool UpdateEveryTick { get; set; } = true;
 
-        public bool HandlesComponent(Component component) => component is T;
+        public bool HandlesComponent(IComponent component) => component is T;
 
-        public void AddComponent(Component component)
+        public void AddComponent(IComponent component)
         {
             T c = TryCast(component);
 
@@ -31,7 +31,7 @@ namespace Industropolis.Engine
             });
         }
 
-        public void RemoveComponent(Component component)
+        public void RemoveComponent(IComponent component)
         {
             T c = TryCast(component);
 
@@ -45,7 +45,7 @@ namespace Industropolis.Engine
             });
         }
 
-        private T TryCast(Component component)
+        private T TryCast(IComponent component)
         {
             if (component is T c) return c;
 
