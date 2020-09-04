@@ -1,5 +1,5 @@
 
-namespace Industropolis.Engine.Anim
+namespace Atlas.Anim
 {
     public static class AnimationExtensions
     {

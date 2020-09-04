@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public struct LayoutBorder
     {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Industropolis.Engine.UI.Views;
+using Atlas.UI.Views;
 
-namespace Industropolis.Engine.UI
+namespace Atlas.UI
 {
     public static class Markup
     {

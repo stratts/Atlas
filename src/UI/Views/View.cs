@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 
-namespace Industropolis.Engine.UI
+namespace Atlas.UI
 {
     public abstract class View
     {

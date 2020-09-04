@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public interface IComponentSystem
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public abstract class BaseSplitContainer
     {

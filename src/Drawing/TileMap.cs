@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Text.Json.Serialization;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public class LayeredTileMap : Node
     {

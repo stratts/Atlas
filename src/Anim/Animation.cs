@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Industropolis.Engine.Anim
+namespace Atlas.Anim
 {
     public class AnimationSet : AnimationSet<string> { }
 

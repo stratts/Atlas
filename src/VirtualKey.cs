@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public struct VKeyboardState<TEnum> where TEnum : notnull
     {

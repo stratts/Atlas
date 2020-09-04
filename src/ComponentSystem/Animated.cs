@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Industropolis.Engine.Anim;
+using Atlas.Anim;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public class Animated : Component
     {

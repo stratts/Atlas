@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public delegate void DrawMethod(SpriteBatch spriteBatch, Vector2 position);
 

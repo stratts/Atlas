@@ -4,7 +4,7 @@ using SharpFont;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public struct Glyph
     {

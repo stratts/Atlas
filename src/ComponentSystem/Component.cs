@@ -1,5 +1,5 @@
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public interface IComponent
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public struct Tag
     {

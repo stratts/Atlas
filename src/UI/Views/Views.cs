@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Industropolis.Engine.UI.Views
+namespace Atlas.UI.Views
 {
     public interface IPaddableView
     {

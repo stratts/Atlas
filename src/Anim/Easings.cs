@@ -2,7 +2,7 @@ using System;
 
 // Original code courtesy of acron0 (https://github.com/acron0/Easings)
 
-namespace Industropolis.Engine.Anim
+namespace Atlas.Anim
 {
     /// <summary>
     /// Easing Functions enumeration

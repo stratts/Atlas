@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 
-namespace Industropolis.Engine.UI
+namespace Atlas.UI
 {
     public class ViewNode : Node
     {

@@ -2,7 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public class TextInput : CustomDrawingNode
     {

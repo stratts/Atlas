@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public class Modulate : Component
     {

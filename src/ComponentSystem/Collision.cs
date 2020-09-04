@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using static Industropolis.Engine.Collision.Direction;
+using static Atlas.Collision.Direction;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     internal static class DirectionExtensions
     {

@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
-namespace Industropolis.Engine
+namespace Atlas
 {
     public class Scissor : Component
     {

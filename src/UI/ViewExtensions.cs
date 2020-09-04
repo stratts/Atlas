@@ -1,8 +1,8 @@
 using System;
 using Microsoft.Xna.Framework;
-using Industropolis.Engine.UI.Views;
+using Atlas.UI.Views;
 
-namespace Industropolis.Engine.UI
+namespace Atlas.UI
 {
     public delegate T Style<T>(T view) where T : View;
 
