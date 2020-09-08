@@ -7,6 +7,9 @@ namespace Atlas.Anim
 {
     public class AnimationSet : AnimationSet<string> { }
 
+    /// <summary>
+    /// A collection of animations accessed using a key of type T
+    /// </summary>
     public class AnimationSet<T> : IEnumerable where T : notnull
     {
         private Dictionary<T, IAnimation> _animations = new Dictionary<T, IAnimation>();
@@ -29,6 +32,9 @@ namespace Atlas.Anim
         void Update(float time);
     }
 
+    /// <summary>
+    /// An animation consisting of multiple animations that are updated simultaneously
+    /// </summary>
     public class CompoundAnimation : IAnimation
     {
         private List<IAnimation> _animations = new List<IAnimation>();
@@ -55,6 +61,11 @@ namespace Atlas.Anim
         public Vector2 Interpolate(Vector2 a, Vector2 b, float amount) => a + (b - a) * amount;
     }
 
+    /// <summary>
+    /// Animates a value of type <typeparamref name="T"/>, using a collection of frames
+    /// with optional interpolation and looping
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class Animation<T> : IAnimation where T : struct
     {
         private static DefaultInterpolator _defaultInterpolator = new DefaultInterpolator();
@@ -66,6 +77,11 @@ namespace Atlas.Anim
         public float? Length { get; set; }
         public EaseType EaseType { get; set; } = EaseType.None;
 
+        /// <summary>
+        /// Creates an empty animation
+        /// </summary>
+        /// <param name="setter">The delegate used to set the value</param>
+        /// <param name="interpolate">Whether or not to interpolate (or 'tween') values between frames</param>
         public Animation(Action<T> setter, bool interpolate = false)
         {
             if (interpolate && _defaultInterpolator is Interpolator<T> i) _interpolateFunc = i.Interpolate;

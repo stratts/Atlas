@@ -11,6 +11,9 @@ namespace Atlas
         public string ContentDirectory { get; set; } = ".";
         public string Font { get; set; } = "";
 
+        /// <summary>
+        /// Starts the engine with the given scene
+        /// </summary>
         public void Start<T>() where T : IScene, new()
         {
             using (var g = new MainGame())

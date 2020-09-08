@@ -14,6 +14,9 @@ namespace Atlas
         bool EnableDraw { get; }
     }
 
+    /// <summary>
+    /// A scene that consists of multiple scenes arranged into layers
+    /// </summary>
     public class CompoundScene : IScene
     {
         private IScene[] _scenes;
@@ -21,9 +24,12 @@ namespace Atlas
         public bool EnableUpdate { get; set; } = true;
         public bool EnableDraw { get; set; } = true;
 
+        private Queue<int> test = new Queue<int>();
+
         public CompoundScene(int layers)
         {
             _scenes = new IScene[layers];
+            var t = new List<int>();
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -50,6 +56,9 @@ namespace Atlas
         public void SetScene(int layer, IScene scene) => _scenes[layer] = scene;
     }
 
+    /// <summary>
+    /// Base scene class, manages nodes, systems, and components
+    /// </summary>
     public class Scene : IScene
     {
         private List<Node> _nodes = new List<Node>();
@@ -122,6 +131,9 @@ namespace Atlas
             foreach (var child in node.Children) RemoveNode(child);
         }
 
+        /// <summary>
+        /// Gets nodes within the scene that match the given type
+        /// </summary>
         public IEnumerable<T> GetNodes<T>() where T : Node
         {
             foreach (var node in Nodes)
@@ -130,6 +142,9 @@ namespace Atlas
             }
         }
 
+        /// <summary>
+        /// Gets nodes within the scene located at the given position
+        /// </summary>
         public IEnumerable<Node> GetNodesAt(Vector2 position)
         {
             foreach (var node in Nodes)
@@ -220,6 +235,9 @@ namespace Atlas
             }
         }
 
+        /// <summary>
+        /// Translates an onscreen position to a position relative to the scene
+        /// </summary>
         public Vector2 ScreenToScene(Vector2 screenPos)
         {
             return (screenPos / Camera.Zoom) + Camera.Viewport.Location.ToVector2();
