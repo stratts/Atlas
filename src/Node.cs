@@ -40,6 +40,7 @@ namespace Atlas
         public Vector2 ScenePosition => Parent != null ? Position + Parent.ScenePosition : Position;
 
         public virtual Vector2 Size { get; set; } = Vector2.Zero;
+        public Rectangle BoundingBox => new Rectangle(ScenePosition.ToPoint(), Size.ToPoint());
 
         public uint? Layer { get; set; }
         internal ulong SceneSort { get; set; }

@@ -49,6 +49,8 @@ namespace Atlas
             foreach (var key in keys) AddKey(key.key, key.trigger);
         }
 
+        public static void AddKeys(params (TEnum key, Keys trigger)[] keys) => AddKeys((IEnumerable<(TEnum key, Keys trigger)>)keys);
+
         public static void AddKeys(IEnumerable<(TEnum key, Keys trigger)> keys)
         {
             foreach (var key in keys) AddKey(key.key, new[] { key.trigger });
