@@ -61,7 +61,7 @@ namespace Atlas
                     color);
         }
 
-        public static void DrawEqTriangle(Vector2 basePos, Vector2 size, Color color)
+        public static void DrawEqTriangle(Vector2 basePos, Vector2 size, Color color, bool flip = false)
         {
             _spriteBatch.Draw(
                 _triangleTexture,
@@ -71,7 +71,7 @@ namespace Atlas
                 color: color,
                 rotation: 0,
                 origin: new Vector2(0.5f, 1f),
-                effects: SpriteEffects.None,
+                effects: flip ? SpriteEffects.FlipVertically : SpriteEffects.None,
                 layerDepth: 0
             );
         }

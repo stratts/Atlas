@@ -53,9 +53,9 @@ namespace Atlas
             UpdateDrawBounds(position, size);
         }
 
-        public void DrawEqTriangle(Vector2 basePos, Vector2 size, Color color)
+        public void DrawEqTriangle(Vector2 basePos, Vector2 size, Color color, bool flip = false)
         {
-            CustomDrawing.DrawEqTriangle(_screenPos + basePos, size, GetRenderColor(color));
+            CustomDrawing.DrawEqTriangle(_screenPos + basePos, size, GetRenderColor(color), flip);
             UpdateDrawBounds(basePos - new Vector2(size.X / 2, size.Y), size);
         }
 
