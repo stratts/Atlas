@@ -66,6 +66,7 @@ namespace Atlas
         protected Camera _camera = new Camera(Config.ScreenSize.X, Config.ScreenSize.Y);
 
         private Dictionary<uint, uint> _topLevelCount = new Dictionary<uint, uint>();
+        private Dictionary<uint, bool> _depthSort = new Dictionary<uint, bool>();
 
         public Camera Camera => _camera;
         public IReadOnlyList<Node> Nodes => _nodes;
@@ -154,6 +155,8 @@ namespace Atlas
             }
         }
 
+        public void SetDepthSort(uint layer, bool enableDepthSort) => _depthSort[layer + 1] = enableDepthSort;
+
         private void BringNodeToFront(Node node) => SetNodeSort(node, true);
 
         private void SetNodeSort(Node node, bool recurse = false)
@@ -166,7 +169,9 @@ namespace Atlas
             {
                 uint layer = node.Layer.HasValue ? node.Layer.Value + 1 : 0;
                 if (!_topLevelCount.ContainsKey(layer)) _topLevelCount[layer] = 0;
-                node.SceneSort = (ulong)layer * layerSize + (ulong)_topLevelCount[layer] * maxChildren;
+                if (!_depthSort.ContainsKey(layer)) _depthSort[layer] = false;
+                uint sortKey = _depthSort[layer] ? (uint)((long)int.MaxValue + (long)node.ScenePosition.Y) : _topLevelCount[layer];
+                node.SceneSort = (ulong)layer * layerSize + sortKey * maxChildren;
                 _topLevelCount[layer]++;
             }
             else if (node.RootNode != null) SetChildSort(node.RootNode, node.RootNode.SceneSort);
