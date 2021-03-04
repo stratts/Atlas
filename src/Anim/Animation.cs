@@ -54,11 +54,16 @@ namespace Atlas.Anim
 
     public delegate T Interpolate<T>(T a, T b, float amount);
 
-    internal class DefaultInterpolator : Interpolator<int>, Interpolator<float>, Interpolator<Vector2>
+    internal class DefaultInterpolator : Interpolator<int>, Interpolator<float>, Interpolator<Vector2>, Interpolator<Color>
     {
         public int Interpolate(int a, int b, float amount) => (int)(a + (b - a) * amount);
         public float Interpolate(float a, float b, float amount) => a + (b - a) * amount;
         public Vector2 Interpolate(Vector2 a, Vector2 b, float amount) => a + (b - a) * amount;
+        public Color Interpolate(Color a, Color b, float amount)
+        {
+            var (aV, bV) = (a.ToVector4(), b.ToVector4());
+            return new Color(aV + (bV - aV) * amount);
+        }
     }
 
     /// <summary>
@@ -125,6 +130,19 @@ namespace Atlas.Anim
                     break;
                 }
             }
+        }
+
+        public static Animation<T> Create(Action<T> setter, T start, T end, float length, bool loop = false, EaseType easeType = EaseType.None)
+        {
+            var anim = new Animation<T>(setter, true)
+            {
+                Length = length,
+                Loop = loop,
+                EaseType = easeType
+            };
+
+            anim.AddFrames((0, start), (length, end));
+            return anim;
         }
     }
 }

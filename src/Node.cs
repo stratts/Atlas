@@ -120,6 +120,16 @@ namespace Atlas
             return default(T);
         }
 
+        [return: MaybeNull]
+        public T GetComponentByName<T>(string name) where T : IComponent
+        {
+            foreach (var component in _components)
+            {
+                if (component.Name == name && component is T c) return c;
+            }
+            return default(T);
+        }
+
         public void BringToFront() => BroughtToFront?.Invoke(this);
 
         public Color GetRenderColor(Color c) => GetComponent<Modulate>() is Modulate m ? m.ModulateColor(c) : c;
