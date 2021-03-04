@@ -132,16 +132,17 @@ namespace Atlas.Anim
             }
         }
 
-        public static Animation<T> Create(Action<T> setter, T start, T end, float length, bool loop = false, EaseType easeType = EaseType.None)
+        public static Animation<T> Create(Action<T> setter, T start, T end, float length, bool loop = false, EaseType easeType = EaseType.None, bool pingPong = false)
         {
             var anim = new Animation<T>(setter, true)
             {
-                Length = length,
+                Length = !pingPong ? length : length * 2,
                 Loop = loop,
                 EaseType = easeType
             };
 
             anim.AddFrames((0, start), (length, end));
+            if (pingPong) anim.AddFrame(length * 2, start);
             return anim;
         }
     }

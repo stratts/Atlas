@@ -97,9 +97,10 @@ namespace Atlas
             ComponentAdded?.Invoke(component);
         }
 
-        public T AddComponent<T>() where T : IComponent, new()
+        public T AddComponent<T>(string? name = null) where T : IComponent, new()
         {
             var c = new T();
+            if (name != null) c.Name = name;
             AddComponent(c);
             return c;
         }

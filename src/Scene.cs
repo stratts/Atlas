@@ -247,5 +247,13 @@ namespace Atlas
         {
             return (screenPos / Camera.Zoom) + Camera.Viewport.Location.ToVector2();
         }
+
+        /// <summary>
+        /// Translates a position relative to the scene to an onscreen position
+        /// </summary>
+        public Vector2 SceneToScreen(Vector2 scenePos)
+        {
+            return (scenePos - Camera.Viewport.Location.ToVector2()) * Camera.Zoom;
+        }
     }
 }
