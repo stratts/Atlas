@@ -72,6 +72,8 @@ namespace Atlas
 
     public class VKey
     {
+        public event Action? OnPressed;
+
         List<Keys[]> triggers = new List<Keys[]>();
         KeyboardState prevstate, kstate;
         float elapsed;
@@ -113,6 +115,7 @@ namespace Atlas
             prevstate = kstate;
             kstate = currentState;
             elapsed = elapsedTime;
+            if (Pressed) OnPressed?.Invoke();
         }
 
         private bool KeysDown(KeyboardState kstate)

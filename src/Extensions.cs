@@ -28,6 +28,18 @@ namespace Atlas
         public static Vector2 ToXna(this System.Numerics.Vector2 v) => new Vector2(v.X, v.Y);
 
         public static Rectangle ToRectangle(this Vector2 v) => new Rectangle(Point.Zero, v.ToPoint());
+
+        public static bool IsParallelTo(this Vector2 v1, Vector2 v2)
+        {
+            var n1 = Vector2.Normalize(v1).Round(2);
+            var n2 = Vector2.Normalize(v2).Round(2);
+            return n1 == n2 || n1 == -n2;
+        }
+
+        public static Vector2 Round(this Vector2 v, int digits = 0)
+        {
+            return new Vector2((float)Math.Round(v.X, digits), (float)Math.Round(v.Y, digits));
+        }
     }
 
     public struct ColorHsv
