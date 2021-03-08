@@ -17,7 +17,7 @@ namespace Atlas
         private Dictionary<T, NodeData> visited = new Dictionary<T, NodeData>();    // Closed set
         private PriorityQueue<T, float> queue = new PriorityQueue<T, float>();      // Open set
 
-        private float greed = 0.5f;
+        private float _greed = 0.5f;
 
         // Represents information about a node in the closed set
         private struct NodeData
@@ -39,13 +39,30 @@ namespace Atlas
             {
                 throw new ArgumentException("Greediness must be in the range of 0 to 1");
             }
-            greed = greediness;
+            _greed = greediness;
+        }
+
+        /// <summary> Determines whether a path can be found between src and dest </summary>
+        public bool HasPath(IGraph<T> graph, T src, T dest)
+        {
+            FindPath(graph, src, dest, 1);
+            var found = visited.ContainsKey(dest);
+            visited.Clear();
+            return found;
         }
 
         /// <summary> Try to find a path from src to dest. Returns null if no path is found. </summary>
         public List<T> FindPath(IGraph<T> graph, T src, T dest)
         {
-            if (!graph.Accessible(src, dest)) return null;
+            FindPath(graph, src, dest, _greed);
+            var path = ReconstructPath(src, dest);
+            visited.Clear();
+            return path;
+        }
+
+        private void FindPath(IGraph<T> graph, T src, T dest, float greediness)
+        {
+            if (!graph.Accessible(src, dest)) return;
 
             visited.Add(src, new NodeData(src, 0));
             queue.Enqueue(src, 0);
@@ -62,17 +79,12 @@ namespace Atlas
                     var closed = visited.TryGetValue(neighbour, out NodeData v);
                     if (!closed || v.Dist > g) visited[neighbour] = new NodeData(node, g);
                     else continue;
-                    var f = (1 - greed) * g + greed * graph.EstimateCost(neighbour, dest);
+                    var f = (1 - greediness) * g + greediness * graph.EstimateCost(neighbour, dest);
                     queue.Enqueue(neighbour, f);
                 }
             }
 
-            var path = ReconstructPath(src, dest);
-
             queue.Clear();
-            visited.Clear();
-
-            return path;
         }
 
         private List<T> ReconstructPath(T src, T dest)
@@ -100,7 +112,6 @@ namespace Atlas
     // Quick and dirty SortedList-based priority queue
     class PriorityQueue<T1, T2>
     {
-
         private SortedList<T2, Queue<T1>> data = new SortedList<T2, Queue<T1>>();
         private int count = 0;
 
