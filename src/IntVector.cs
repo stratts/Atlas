@@ -72,13 +72,14 @@ namespace Atlas
             return (X >= 0 && Y >= 0 && X < width && Y < height);
         }
 
-        public IEnumerable<IntVector> GetNeighbours()
+        public IEnumerable<IntVector> GetNeighbours(bool fourWay = false)
         {
             for (int x = -1; x <= 1; x++)
             {
                 for (int y = -1; y <= 1; y++)
                 {
                     if (x == 0 && y == 0) continue;
+                    if (fourWay && Math.Abs(x) == Math.Abs(y)) continue;
                     yield return new IntVector(X + x, Y + y);
                 }
             }
