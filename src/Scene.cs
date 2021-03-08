@@ -103,7 +103,7 @@ namespace Atlas
             if (layer.HasValue) node.Layer = layer.Value;
 
             _nodes.Add(node);
-            SetNodeSort(node);
+            UpdateNodeSort(node);
 
             foreach (var component in node.Components) AddComponent(component);
 
@@ -155,11 +155,13 @@ namespace Atlas
             }
         }
 
+        public bool IsDepthSort(uint layer) => _depthSort.GetValueOrDefault(layer + 1);
+
         public void SetDepthSort(uint layer, bool enableDepthSort) => _depthSort[layer + 1] = enableDepthSort;
 
-        private void BringNodeToFront(Node node) => SetNodeSort(node, true);
+        private void BringNodeToFront(Node node) => UpdateNodeSort(node, true);
 
-        private void SetNodeSort(Node node, bool recurse = false)
+        private void UpdateNodeSort(Node node, bool recurse = false, bool renderOnly = false)
         {
             const ulong maxNodes = uint.MaxValue;
             const ulong maxChildren = ushort.MaxValue;
@@ -174,21 +176,23 @@ namespace Atlas
                 node.SceneSort = (ulong)layer * layerSize + sortKey * maxChildren;
                 _topLevelCount[layer]++;
             }
-            else if (node.RootNode != null) SetChildSort(node.RootNode, node.RootNode.SceneSort);
+            else if (node.RootNode != null) UpdateChildSort(node.RootNode, node.RootNode.SceneSort);
 
             foreach (var component in node.Components)
             {
                 component.Priority = node.SceneSort;
-                GetSystem(component)?.SortComponents();
+                var system = GetSystem(component);
+                if (!renderOnly) system?.SortComponents();
+                else if (system is IRenderSystem r) r.SortComponents();
             }
 
             if (recurse)
             {
-                foreach (var child in node.Children) SetNodeSort(child, true);
+                foreach (var child in node.Children) UpdateNodeSort(child, true);
             }
         }
 
-        private ulong SetChildSort(Node node, ulong current)
+        private ulong UpdateChildSort(Node node, ulong current)
         {
             var children = new List<Node>(node.Children);
             children.Sort(
@@ -202,7 +206,7 @@ namespace Atlas
             node.SceneSort = current;
             foreach (var component in node.Components) component.Priority = node.SceneSort;
 
-            foreach (var child in children) current = SetChildSort(child, current + 1);
+            foreach (var child in children) current = UpdateChildSort(child, current + 1);
 
             return current;
         }
@@ -229,6 +233,14 @@ namespace Atlas
 
         public virtual void Update(float elapsed)
         {
+            foreach (var node in _nodes)
+            {
+                if (node.Parent == null && node.Layer != null && node.LastPos != node.Position && IsDepthSort(node.Layer.Value))
+                {
+                    UpdateNodeSort(node, true, renderOnly: true);
+                }
+                node.LastPos = node.Position;
+            }
             foreach (var system in _systems) system.UpdateComponents(this, elapsed);
         }
 

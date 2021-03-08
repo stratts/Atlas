@@ -38,12 +38,14 @@ namespace Atlas
 
         /// <summary> Node position relative to scene </summary>
         public Vector2 ScenePosition => Parent != null ? Position + Parent.ScenePosition : Position;
+        public uint? SceneLayer => RootNode != null ? RootNode.Layer : Layer;
 
         public virtual Vector2 Size { get; set; } = Vector2.Zero;
         public Rectangle BoundingBox => new Rectangle(ScenePosition.ToPoint(), Size.ToPoint());
 
         public uint? Layer { get; set; }
         internal ulong SceneSort { get; set; }
+        internal Vector2 LastPos { get; set; }
 
         public int Depth => Parent != null ? Parent.Depth + 1 : 0;
 
@@ -84,6 +86,7 @@ namespace Atlas
         public void RemoveChild(Node node)
         {
             node.Parent = null;
+            node.RootNode = null;
             _children.Remove(node);
             ChildRemoved?.Invoke(node);
         }

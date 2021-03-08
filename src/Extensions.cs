@@ -40,6 +40,12 @@ namespace Atlas
         {
             return new Vector2((float)Math.Round(v.X, digits), (float)Math.Round(v.Y, digits));
         }
+
+        public static IntVector ToIntVector(this Vector2 v)
+        {
+            var floored = v.Floored();
+            return new IntVector((int)floored.X, (int)floored.Y);
+        }
     }
 
     public struct ColorHsv
