@@ -61,6 +61,7 @@ namespace Atlas
     /// </summary>
     public class Scene : IScene
     {
+        private UpdateContext _updateContext = new UpdateContext();
         private List<Node> _nodes = new List<Node>();
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
         protected Camera _camera = new Camera(Config.ScreenSize.X, Config.ScreenSize.Y);
@@ -70,6 +71,8 @@ namespace Atlas
 
         public Camera Camera => _camera;
         public IReadOnlyList<Node> Nodes => _nodes;
+
+        public IUpdateContext UpdateContext => _updateContext;
 
         public bool EnableUpdate { get; set; } = true;
         public bool EnableDraw { get; set; } = true;
@@ -233,6 +236,7 @@ namespace Atlas
 
         public virtual void Update(float elapsed)
         {
+            _updateContext.ElapsedTime = elapsed;
             foreach (var node in _nodes)
             {
                 if (node.Parent == null && node.Layer != null && node.LastPos != node.Position && IsDepthSort(node.Layer.Value))
