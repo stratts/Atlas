@@ -117,5 +117,11 @@ namespace Atlas
 
             return (hue / 360f, sat, value);
         }
+
+        public static Color Mix(this Color a, Color b, float amount)
+        {
+            var (aV, bV) = (a.ToVector4(), b.ToVector4());
+            return new Color(aV + (bV - aV) * amount);
+        }
     }
 }

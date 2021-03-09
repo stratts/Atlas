@@ -59,11 +59,7 @@ namespace Atlas.Anim
         public int Interpolate(int a, int b, float amount) => (int)(a + (b - a) * amount);
         public float Interpolate(float a, float b, float amount) => a + (b - a) * amount;
         public Vector2 Interpolate(Vector2 a, Vector2 b, float amount) => a + (b - a) * amount;
-        public Color Interpolate(Color a, Color b, float amount)
-        {
-            var (aV, bV) = (a.ToVector4(), b.ToVector4());
-            return new Color(aV + (bV - aV) * amount);
-        }
+        public Color Interpolate(Color a, Color b, float amount) => a.Mix(b, amount);
     }
 
     /// <summary>
