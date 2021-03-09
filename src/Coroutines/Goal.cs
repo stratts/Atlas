@@ -28,6 +28,13 @@ namespace Atlas
             return Action;
         }
 
+        public void Reset()
+        {
+            _currentAction = null;
+            _complete = false;
+            _currentIdx = 0;
+        }
+
         public bool Update(IUpdateContext context)
         {
             if (_complete || _actions.Count == 0) return true;

@@ -160,6 +160,15 @@ namespace Atlas
             }
         }
 
+        public T? GetNodeAt<T>(Vector2 position) where T : Node
+        {
+            foreach (var node in GetNodesAt(position))
+            {
+                if (node is T n) return n;
+            }
+            return null;
+        }
+
         public bool IsDepthSort(uint layer) => _depthSort.GetValueOrDefault(layer + 1);
 
         public void SetDepthSort(uint layer, bool enableDepthSort) => _depthSort[layer + 1] = enableDepthSort;
