@@ -153,8 +153,10 @@ namespace Atlas
         {
             foreach (var node in Nodes)
             {
-                if (new Rectangle(node.ScenePosition.ToPoint(), node.Size.ToPoint()).Contains(position))
-                    yield return node;
+                if (node == Camera) continue;
+                var bounds = node.Bounds;
+                bounds.Offset(node.ScenePosition);
+                if (bounds.Contains(position)) yield return node;
             }
         }
 

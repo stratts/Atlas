@@ -37,7 +37,7 @@ namespace Atlas
 
             _actionQueue.Enqueue(() =>
             {
-                if (!_components.Contains(c)) throw new ArgumentException("Component not added to system");
+                if (!_components.Contains(c)) throw new ArgumentException($"Component {component} not added to system");
                 _components.Remove(c);
                 _sort = true;
                 _update = true;

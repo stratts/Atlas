@@ -18,6 +18,10 @@ namespace Atlas
             }
         }
         public float CurrentTime { get; set; } = 0;
+
+        public Animated() { }
+
+        public Animated(IAnimation animation) => CurrentAnimation = animation;
     }
 
     public class AnimationSystem : BaseComponentSystem<Animated>

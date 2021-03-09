@@ -46,6 +46,8 @@ namespace Atlas
                     continue;
                 }
 
+                if (c.InheritFrom != null && !c.InheritFrom.Enabled) c.InheritFrom = null;
+
                 foreach (var child in c.Parent.Children) Inherit(child, c);
             }
         }

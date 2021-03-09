@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
@@ -32,16 +33,22 @@ namespace Atlas
         private List<IComponent> _components = new List<IComponent>();
         private bool _enabled = true;
         private ulong _tags = 0;
+        private Rectangle? _bounds;
 
         /// <summary> Node position relative to parent (if any) </summary>
         public Vector2 Position;
+        public virtual Vector2 Centre
+        {
+            get => Position + Size / 2;
+            set => Position = value - Size / 2;
+        }
 
         /// <summary> Node position relative to scene </summary>
         public Vector2 ScenePosition => Parent != null ? Position + Parent.ScenePosition : Position;
         public uint? SceneLayer => RootNode != null ? RootNode.Layer : Layer;
 
         public virtual Vector2 Size { get; set; } = Vector2.Zero;
-        public Rectangle BoundingBox => new Rectangle(ScenePosition.ToPoint(), Size.ToPoint());
+        public virtual Rectangle Bounds => GetBounds();
 
         public uint? Layer { get; set; }
         internal ulong SceneSort { get; set; }
@@ -110,8 +117,20 @@ namespace Atlas
 
         public void RemoveComponent(IComponent component)
         {
+            component.Enabled = false;
             _components.Remove(component);
             ComponentRemoved?.Invoke(component);
+        }
+
+        public void RemoveComponent(string name)
+        {
+            foreach (var component in ((IEnumerable<IComponent>)_components).Reverse())
+            {
+                if (component.Name == name)
+                {
+                    RemoveComponent(component);
+                }
+            }
         }
 
         [return: MaybeNull]
@@ -143,5 +162,17 @@ namespace Atlas
         public void RemoveTag(Tag tag) => _tags = _tags ^ tag.Value;
 
         public bool HasTag(Tag tag) => (_tags & tag.Value) > 0;
+
+        private Rectangle GetBounds()
+        {
+            var bounds = Size.ToRectangle();
+            foreach (var child in Children)
+            {
+                var childBounds = child.Bounds;
+                childBounds.Offset(child.Position);
+                bounds = Rectangle.Union(bounds, childBounds);
+            }
+            return bounds;
+        }
     }
 }

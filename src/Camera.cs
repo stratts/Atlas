@@ -8,7 +8,7 @@ namespace Atlas
         public float Zoom { get; set; } = 1f;
         public Rectangle Viewport => new Rectangle(Position.ToPoint(), (Size / Zoom).ToPoint());
 
-        public Vector2 Centre
+        public override Vector2 Centre
         {
             get => Position + Viewport.Size.ToVector2() / 2;
             set => Position = value - Viewport.Size.ToVector2() / 2;
