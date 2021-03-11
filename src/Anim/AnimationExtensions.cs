@@ -1,6 +1,12 @@
+using System;
 
 namespace Atlas.Anim
 {
+    public class GenerateAnimations : Attribute
+    {
+
+    }
+
     public static class AnimationExtensions
     {
         /// <summary>

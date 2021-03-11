@@ -128,7 +128,7 @@ namespace Atlas.Anim
             }
         }
 
-        public static Animation<T> Create(Action<T> setter, T start, T end, float length, bool loop = false, EaseType easeType = EaseType.None, bool pingPong = false)
+        public static Animation<T> Create(Action<T> setter, T start, T end, float length, bool loop = false, EaseType easeType = EaseType.Linear, bool pingPong = false)
         {
             var anim = new Animation<T>(setter, true)
             {
