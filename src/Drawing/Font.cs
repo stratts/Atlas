@@ -50,6 +50,10 @@ namespace Atlas
             _face = new Face(_library, path);
         }
 
+        public static void SetFont(byte[] font) {
+            _face = new Face(_library, font, 0);
+        }
+
         public static void SetSize(int size)
         {
             _face.SetPixelSizes(0, (uint)size);

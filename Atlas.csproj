@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
@@ -12,6 +12,11 @@
 
   <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
+    <ContentWithTargetPath Include="native\freetype.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>freetype.dll</TargetPath>
+    </ContentWithTargetPath>
+    <EmbeddedResource Include="resources/default_font.ttf" />
   </ItemGroup>
 
   <ItemGroup>
