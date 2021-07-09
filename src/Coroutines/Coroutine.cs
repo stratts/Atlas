@@ -2,9 +2,15 @@ using System.Collections.Generic;
 
 namespace Atlas
 {
+    public interface ICoroutine<T> {
+         bool Update(T context);
+         void Reset();
+         bool Completed { get; }
+    }
+
     public delegate IEnumerator<bool> CoroutineAction<T>(T context) where T : IUpdateContext;
 
-    public class Coroutine<T> where T : IUpdateContext
+    public class Coroutine<T> : ICoroutine<T> where T : IUpdateContext
     {
         private CoroutineAction<T> _action;
         private IEnumerator<bool>? _current;

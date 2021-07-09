@@ -2,22 +2,20 @@ using System.Collections.Generic;
 
 namespace Atlas
 {
-    public class BaseGoal<T> where T : IUpdateContext
+    public class CompoundCoroutine<T> : ICoroutine<T> where T : IUpdateContext
     {
         private Coroutine<T>? _currentAction;
         private int _currentIdx;
         private List<CoroutineAction<T>> _actions = new List<CoroutineAction<T>>();
         private bool _complete = false;
 
-        public BaseGoal() { }
-
-        public BaseGoal(CoroutineAction<T> action) => AddAction(action);
+        public bool Completed => _complete;
 
         public CoroutineAction<T> ToAction()
         {
             IEnumerator<bool> Action(T context)
             {
-                var goal = new BaseGoal<T>();
+                var goal = new CompoundCoroutine<T>();
                 goal.AddActions(_actions);
 
                 while (true)
