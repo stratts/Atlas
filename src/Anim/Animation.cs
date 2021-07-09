@@ -41,6 +41,11 @@ namespace Atlas.Anim
 
         public void AddAnimation(IAnimation track) => _animations.Add(track);
 
+        public CompoundAnimation(params IAnimation[] animations)
+        {
+            foreach (var anim in animations) AddAnimation(anim);
+        }
+
         public void Update(float time)
         {
             foreach (var track in _animations) track.Update(time);
