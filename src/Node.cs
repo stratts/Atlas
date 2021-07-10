@@ -61,8 +61,8 @@ namespace Atlas
             get => _enabled && Parent != null ? Parent.Enabled : _enabled;
             set
             {
+                if (value == true && !_enabled) OnEnabled?.Invoke(this);
                 _enabled = value;
-                if (_enabled) OnEnabled?.Invoke(this);
             }
         }
 
