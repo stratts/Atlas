@@ -376,7 +376,7 @@ namespace SharpFont
 			if (!disposed)
 			{
 				disposed = true;
-				
+
 				FT.FT_Stroker_Done(reference);
 
 				// removes itself from the parent Library, with a check to prevent this from happening when Library is

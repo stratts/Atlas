@@ -136,7 +136,7 @@ namespace SharpFont
 			Reference = reference;
 		}
 
-		private Face(Library parent): base(IntPtr.Zero)
+		private Face(Library parent) : base(IntPtr.Zero)
 		{
 			childSizes = new List<FTSize>();
 

@@ -32,7 +32,7 @@ namespace SharpFont
 	/// <summary>
 	/// A structure used to hold a single list element.
 	/// </summary>
-	public class ListNode: NativeObject
+	public class ListNode : NativeObject
 	{
 		#region Fields
 
@@ -42,7 +42,7 @@ namespace SharpFont
 
 		#region Constructors
 
-		internal ListNode(IntPtr reference): base(reference)
+		internal ListNode(IntPtr reference) : base(reference)
 		{
 		}
 

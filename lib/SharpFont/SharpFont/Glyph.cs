@@ -407,7 +407,7 @@ namespace SharpFont
 			if (sourceRef == reference)
 				return this;
 			else
-				return new Glyph(sourceRef, parentLibrary );
+				return new Glyph(sourceRef, parentLibrary);
 		}
 
 		#endregion

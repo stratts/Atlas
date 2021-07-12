@@ -34,7 +34,7 @@ namespace SharpFont
 	{
 		#region Constructors
 
-		internal Module(IntPtr reference): base(reference)
+		internal Module(IntPtr reference) : base(reference)
 		{
 		}
 

@@ -35,7 +35,7 @@ namespace SharpFont
 		/// The end of lines is rendered as a full stop on the last point itself.
 		/// </summary>
 		Butt = 0,
-		
+
 		/// <summary>
 		/// The end of lines is rendered as a half-circle around the last point.
 		/// </summary>

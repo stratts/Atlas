@@ -64,7 +64,7 @@ namespace SharpFont.TrueType
 				return (int)rec.FormatType;
 			}
 		}
-		
+
 		/// <summary>
 		/// Gets the angle of italics, in degrees, counter-clockwise from vertical.
 		/// </summary>
@@ -75,7 +75,7 @@ namespace SharpFont.TrueType
 				return (int)rec.italicAngle;
 			}
 		}
-		
+
 		/// <summary>
 		/// Gets the recommended position of the underline.
 		/// </summary>
@@ -86,7 +86,7 @@ namespace SharpFont.TrueType
 				return rec.underlinePosition;
 			}
 		}
-		
+
 		/// <summary>
 		/// Gets the recommended thickness of the underline.
 		/// </summary>

@@ -51,7 +51,7 @@ namespace SharpFont
 		/// to the right of the drawing direction of a contour must be filled.
 		/// </summary>
 		FillRight = TrueType,
-		
+
 		/// <summary>
 		/// This is identical to <see cref="PostScript"/>, but is used to remember that in PostScript, everything that
 		/// is to the left of the drawing direction of a contour must be filled.

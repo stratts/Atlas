@@ -232,7 +232,7 @@ namespace SharpFont
 		/// <returns>A hash code.</returns>
 		public override int GetHashCode()
 		{
-			 return x.GetHashCode() ^ y.GetHashCode();
+			return x.GetHashCode() ^ y.GetHashCode();
 		}
 
 		#endregion

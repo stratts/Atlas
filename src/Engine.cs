@@ -23,7 +23,8 @@ namespace Atlas
                 g.SceneBuilder = () => new T();
                 Config.ContentPath = ContentDirectory;
                 if (File.Exists(Font)) FontService.SetFont(Path.Join(ContentDirectory, Font));
-                else {
+                else
+                {
                     var assembly = GetType().Assembly;
                     var fontStream = assembly.GetManifestResourceStream("Atlas.resources.default_font.ttf") ?? throw new Exception("Could not read default font");
                     var buffer = new byte[fontStream.Length];

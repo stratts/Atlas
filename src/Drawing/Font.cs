@@ -50,7 +50,8 @@ namespace Atlas
             _face = new Face(_library, path);
         }
 
-        public static void SetFont(byte[] font) {
+        public static void SetFont(byte[] font)
+        {
             _face = new Face(_library, font, 0);
         }
 

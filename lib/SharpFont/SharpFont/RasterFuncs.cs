@@ -105,7 +105,7 @@ namespace SharpFont
 	/// <summary>
 	/// A structure used to describe a given raster class to the library.
 	/// </summary>
-	public class RasterFuncs: NativeObject
+	public class RasterFuncs : NativeObject
 	{
 		#region Fields
 

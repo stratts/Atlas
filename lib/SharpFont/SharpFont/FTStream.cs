@@ -65,7 +65,7 @@ namespace SharpFont
 
 		#region Constructors
 
-		internal FTStream(IntPtr reference): base(reference)
+		internal FTStream(IntPtr reference) : base(reference)
 		{
 		}
 
@@ -84,7 +84,7 @@ namespace SharpFont
 				return rec.@base;
 			}
 		}
-		
+
 		/// <summary>
 		/// Gets the stream size in bytes.
 		/// </summary>

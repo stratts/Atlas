@@ -2,10 +2,11 @@ using System.Collections.Generic;
 
 namespace Atlas
 {
-    public interface ICoroutine<T> {
-         bool Update(T context);
-         void Reset();
-         bool Completed { get; }
+    public interface ICoroutine<T>
+    {
+        bool Update(T context);
+        void Reset();
+        bool Completed { get; }
     }
 
     public delegate IEnumerator<bool> CoroutineAction<T>(T context) where T : IUpdateContext;

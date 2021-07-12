@@ -346,7 +346,7 @@ namespace SharpFont.TrueType
 				return rec.usLastCharIndex;
 			}
 		}
-		
+
 		/// <summary>
 		/// The ascender value, useful for computing a default line spacing in conjunction with unitsPerEm.
 		/// </summary>
@@ -357,7 +357,7 @@ namespace SharpFont.TrueType
 				return rec.sTypoAscender;
 			}
 		}
-		
+
 		/// <summary>
 		/// The descender value, useful for computing a default line spacing in conjunction with unitsPerEm.
 		/// </summary>
@@ -368,7 +368,7 @@ namespace SharpFont.TrueType
 				return rec.sTypoDescender;
 			}
 		}
-		
+
 		/// <summary>
 		/// The line gap value, useful for computing a default line spacing in conjunction with unitsPerEm.
 		/// </summary>
@@ -438,7 +438,7 @@ namespace SharpFont.TrueType
 				return rec.sxHeight;
 			}
 		}
-		
+
 		/// <summary>
 		/// The approximate height of uppercase letters relative to the baseline.
 		/// </summary>
