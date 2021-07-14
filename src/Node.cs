@@ -44,7 +44,6 @@ namespace Atlas
         private List<IComponent> _components = new List<IComponent>();
         private bool _enabled = true;
         private TagCollection _tags;
-        private Rectangle? _bounds;
 
         /// <summary> Node position relative to parent (if any) </summary>
         public Vector2 Position;
@@ -103,8 +102,8 @@ namespace Atlas
 
         public void RemoveChild(Node node)
         {
-            node.Parent = null;
-            node.RootNode = null;
+            //node.Parent = null;
+            //node.RootNode = null;
             _children.Remove(node);
             ChildRemoved?.Invoke(node);
         }
