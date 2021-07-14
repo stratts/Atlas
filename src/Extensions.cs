@@ -123,5 +123,11 @@ namespace Atlas
             var (aV, bV) = (a.ToVector4(), b.ToVector4());
             return new Color(aV + (bV - aV) * amount);
         }
+
+        public static Color Multiply(this Color a, Color b)
+        {
+            var (aV, bV) = (a.ToVector4(), b.ToVector4());
+            return new Color(aV * bV);
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace Atlas
         public RoundedRect()
         {
             AddComponent(new Drawable() { Draw = Draw });
+            AddComponent<Modulate>();
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
