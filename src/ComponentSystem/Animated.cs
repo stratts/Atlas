@@ -22,6 +22,8 @@ namespace Atlas
         public Animated() { }
 
         public Animated(IAnimation animation) => CurrentAnimation = animation;
+
+        public void Reset() => _currentAnimation?.Reset();
     }
 
     public class AnimationSystem : BaseComponentSystem<Animated>
