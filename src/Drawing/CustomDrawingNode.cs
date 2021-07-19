@@ -31,7 +31,7 @@ namespace Atlas
 
         public void DrawRect(Vector2 position, Vector2 size, Color color)
         {
-            CustomDrawing.DrawRect(_screenPos + position, size, color);
+            CustomDrawing.DrawRect(_screenPos + position, size, GetRenderColor(color));
             UpdateDrawBounds(position, size);
         }
 
@@ -49,7 +49,7 @@ namespace Atlas
 
         public void DrawEllipse(Vector2 position, Vector2 size, Color color)
         {
-            CustomDrawing.DrawEllipse(_screenPos + position, size, color);
+            CustomDrawing.DrawEllipse(_screenPos + position, size, GetRenderColor(color));
             UpdateDrawBounds(position, size);
         }
 
