@@ -7,7 +7,7 @@ namespace Atlas
     public interface IGraph<T>
     {
         bool Accessible(T src, T dest);         // Return whether dest is accessible from src
-        IEnumerable<T> GetConnections(T node);  // Get accessible connections from node
+        IEnumerable<T> GetConnections(T node, T src, T dest);  // Get accessible connections from node
         float GetCost(T src, T dest);           // Get cost to connection
         float EstimateCost(T src, T dest);      // Calculate estimated cost to dest
     }
@@ -73,7 +73,7 @@ namespace Atlas
                 float dist = visited[node].Dist;
 
                 // Visit all neighbours
-                foreach (T neighbour in graph.GetConnections(node))
+                foreach (T neighbour in graph.GetConnections(node, src, dest))
                 {
                     var g = dist + graph.GetCost(node, neighbour);
                     var closed = visited.TryGetValue(neighbour, out NodeData v);
