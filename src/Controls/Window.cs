@@ -17,7 +17,7 @@ namespace Atlas
             // Add title bar
             var titleText = new Text()
             {
-                Color = Color.White,
+                Color = Colors.White,
                 Content = title,
                 Position = new Vector2(6)
             };
@@ -25,7 +25,7 @@ namespace Atlas
             _titleSize = (int)titleText.Size.Y + 12;
 
             // Add shadow
-            var shadow = new Rect() { Color = Color.Black * 0.1f };
+            var shadow = new Rect() { Color = Colors.Black * 0.1f };
             shadow.AddComponent(new Layout()
             {
                 Fill = new Vector2(1),
@@ -37,7 +37,7 @@ namespace Atlas
 
             _titleBar = new Rect()
             {
-                Color = Color.Black * 0.9f,
+                Color = Colors.Black * 0.9f,
             };
             _titleBar.AddChild(titleText);
             AddChild(_titleBar);
@@ -89,7 +89,7 @@ namespace Atlas
             // Add window resize grabber
             _resize = new Rect()
             {
-                Color = Color.Gray,
+                Color = Colors.Gray,
                 Size = new Vector2(10)
             };
             var resizeInput = new MouseInput();

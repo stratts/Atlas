@@ -47,7 +47,7 @@ namespace Atlas
                 _texture,
                 new Rectangle(position.ToPoint(), Size.ToPoint()),
                 sourceRect,
-                GetRenderColor(Color.White),
+                GetRenderColor(Colors.White),
                 rotation: 0,
                 origin: Vector2.Zero,
                 HFlip ? SpriteEffects.FlipHorizontally : SpriteEffects.None,

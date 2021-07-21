@@ -110,7 +110,7 @@ namespace Atlas
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Colors.CornflowerBlue);
             if (_scene != null && _scene.EnableDraw) _scene.Draw(_spriteBatch);
             base.Draw(gameTime);
         }

@@ -5,7 +5,7 @@ namespace Atlas
 {
     public class Rect : Node
     {
-        public Color Color { get; set; } = Color.White;
+        public Color Color { get; set; } = Colors.White;
 
         public Rect()
         {

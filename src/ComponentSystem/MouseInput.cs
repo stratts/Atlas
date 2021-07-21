@@ -93,7 +93,8 @@ namespace Atlas
             _prevMousePos = _mousePos;
         }
 
-        public static Vector2 MouseToScenePos(Scene scene, MouseState state) => scene.ScreenToScene(state.Position.ToVector2());
+        public static Vector2 MouseToScenePos(Scene scene, MouseState state) =>
+            scene.ScreenToScene(state.Position.ToAtlasVector2());
 
         private Vector2 MouseToAreaPos(Scene scene, Vector2 mousePos, MouseInput component)
         {

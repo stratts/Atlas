@@ -14,11 +14,11 @@ namespace Atlas
         public event Action? OnPressed;
         public Action? OnClick { get; set; }
 
-        private Color _baseColor = Color.Black;
-        private Color _hoverColor = Color.DimGray;
+        private Color _baseColor = Colors.Black;
+        private Color _hoverColor = Colors.DimGray;
 
         public Button(string label, int padding = 8)
-            : this(new Text() { Content = label, Color = Color.White }, padding) { }
+            : this(new Text() { Content = label, Color = Colors.White }, padding) { }
 
         public Button(Node label, int padding = 8)
         {

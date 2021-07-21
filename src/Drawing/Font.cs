@@ -50,7 +50,8 @@ namespace Atlas
             _face = new Face(_library, path);
         }
 
-        public static void SetFont(byte[] font) {
+        public static void SetFont(byte[] font)
+        {
             _face = new Face(_library, font, 0);
         }
 
@@ -104,7 +105,7 @@ namespace Atlas
                     for (int x = 0; x < bitmap.Width; x++)
                     {
                         var value = data[bitmap.Width * y + x];
-                        colors[i] = Color.White * ((float)value / 255f);
+                        colors[i] = Colors.White * ((float)value / 255f);
                         i++;
                     }
                 }

@@ -125,7 +125,7 @@ namespace Atlas.UI.Views
 
     public class ContainerView : View, IPaddableView
     {
-        private Color _background = Color.Transparent;
+        private Color _background = Colors.Transparent;
         private View _view;
         private Container _container;
         protected override Node Node => _container;

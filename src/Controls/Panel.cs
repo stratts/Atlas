@@ -11,7 +11,7 @@ namespace Atlas
             // Add background and border
             var border = new Rect()
             {
-                Color = Color.Black
+                Color = Colors.Black
             };
             border.AddComponent(new Layout()
             {

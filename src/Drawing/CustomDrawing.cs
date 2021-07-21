@@ -15,7 +15,7 @@ namespace Atlas
         {
             _spriteBatch = spriteBatch;
             _texture = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-            _texture.SetData(new Color[] { Color.White });
+            _texture.SetData(new Color[] { Colors.White });
             _circleTexture = CreateCircleTexture(64);
             _triangleTexture = CreateTriangleTexture(64);
         }
@@ -103,8 +103,8 @@ namespace Atlas
                 for (int y = 0; y < size; y++)
                 {
                     var idx = x + size * y;
-                    if (Math.Abs(x - size / 2) <= Math.Abs(y / 2)) colors[idx] = Color.White;
-                    else colors[idx] = Color.Transparent;
+                    if (Math.Abs(x - size / 2) <= Math.Abs(y / 2)) colors[idx] = Colors.White;
+                    else colors[idx] = Colors.Transparent;
                 }
             }
 
@@ -126,8 +126,8 @@ namespace Atlas
                     var xc = x - r;
                     var yc = y - r;
 
-                    if (xc * xc + yc * yc <= r * r) colors[idx] = Color.White;
-                    else colors[idx] = Color.Transparent;
+                    if (xc * xc + yc * yc <= r * r) colors[idx] = Colors.White;
+                    else colors[idx] = Colors.Transparent;
                 }
             }
 

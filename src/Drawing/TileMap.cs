@@ -159,7 +159,7 @@ namespace Atlas
                     if (!tile.HasValue) continue;
 
                     var sourceRect = TileSet.GetTileRect(tile.Value);
-                    spriteBatch.Draw(TileSet.Texture, position + new Vector2(x, y) * TileSize, sourceRect, GetRenderColor(Color.White));
+                    spriteBatch.Draw(TileSet.Texture, position + new Vector2(x, y) * TileSize, sourceRect, GetRenderColor(Colors.White));
                 }
             }
         }

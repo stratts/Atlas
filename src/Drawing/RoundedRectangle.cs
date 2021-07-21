@@ -6,7 +6,7 @@ namespace Atlas
 {
     public class RoundedRect : Node
     {
-        public Color Color { get; set; } = Color.White;
+        public Color Color { get; set; } = Colors.White;
         public int Radius { get; set; }
 
         public RoundedRect()

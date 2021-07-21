@@ -7,16 +7,16 @@ namespace Atlas
     {
         public Modulate? InheritFrom { get; set; } = null;
         public float Opacity { get; set; } = 1f;
-        public Color Tint { get; set; } = Color.White;
+        public Color Tint { get; set; } = Colors.White;
         public float Brightness = 0f;
 
         public Color ModulateColor(Color color)
         {
             if (!Enabled) return color;
             var opacity = InheritFrom != null ? Opacity * InheritFrom.Opacity : Opacity;
-            var tint = InheritFrom != null && InheritFrom.Tint != Color.White ? InheritFrom.Tint : Tint;
+            var tint = InheritFrom != null && InheritFrom.Tint != Colors.White ? InheritFrom.Tint : Tint;
             var c = color;
-            if (tint != Color.White)
+            if (tint != Colors.White)
             {
                 var tHsv = tint.ToHsv();
                 var cHsv = c.ToHsv();

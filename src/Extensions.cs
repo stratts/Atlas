@@ -46,6 +46,8 @@ namespace Atlas
             var floored = v.Floored();
             return new IntVector((int)floored.X, (int)floored.Y);
         }
+
+        public static Vector2 ToAtlasVector2(this Microsoft.Xna.Framework.Point p) => new Vector2(p.X, p.Y);
     }
 
     public struct ColorHsv

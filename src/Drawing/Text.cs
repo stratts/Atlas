@@ -7,7 +7,7 @@ namespace Atlas
     public class Text : Node
     {
         public string Content { get; set; } = "";
-        public Color Color { get; set; } = Color.White;
+        public Color Color { get; set; } = Colors.White;
         public int FontSize { get; set; } = 16;
 
         public override Vector2 Size => MeasureString(Content);

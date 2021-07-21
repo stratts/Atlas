@@ -70,12 +70,12 @@ namespace Atlas
             {
                 var start = GetPositionAt(_selected.Value.Item1);
                 var end = GetPositionAt(_selected.Value.Item2);
-                DrawRect(new Vector2(start, 0), new Vector2(end - start, _text.LineHeight), Color.OrangeRed * 0.8f);
+                DrawRect(new Vector2(start, 0), new Vector2(end - start, _text.LineHeight), Colors.OrangeRed * 0.8f);
             }
             else
             {
                 var pointerPos = GetPositionAt(_pointer);
-                DrawLine(new Vector2(pointerPos, 0), new Vector2(pointerPos, _text.LineHeight), 2, Color.White);
+                DrawLine(new Vector2(pointerPos, 0), new Vector2(pointerPos, _text.LineHeight), 2, Colors.White);
             }
         }
 
