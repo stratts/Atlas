@@ -108,6 +108,8 @@ namespace Atlas
 
         public float Distance(IntVector dest) => (dest - this).ToVector2().Length();
 
+        public float DistanceSquared(IntVector dest) => (dest - this).ToVector2().LengthSquared();
+
         public bool IsParallelTo(IntVector vector) => this.ToVector2().IsParallelTo(vector.ToVector2());
 
         public Vector2 ToVector2() => new Vector2(X, Y);
