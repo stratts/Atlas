@@ -16,7 +16,7 @@ namespace Atlas
         {
             if (!Enabled) return color;
             var opacity = InheritFrom != null ? Opacity * InheritFrom.Opacity : Opacity;
-            var tint = InheritFrom != null && InheritFrom.Tint != Color.White ? InheritFrom.Tint : Tint;
+            var tint = InheritFrom != null && InheritFrom.Tint != Colors.White ? InheritFrom.Tint : Tint;
             var brightness = InheritFrom != null ? InheritFrom.Brightness + Brightness : Brightness;
             var c = color;
             var cHsv = c.ToHsv();
