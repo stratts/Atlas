@@ -12,6 +12,10 @@ namespace Atlas
     {
         public Action<Scene, float>? UpdateMethod { get; set; }
 
+        public Updateable() { }
+
+        public Updateable(Action<Scene, float> updateMethod) => UpdateMethod = updateMethod;
+
         void ILogicComponent.Update(Scene scene, float elapsed) => UpdateMethod?.Invoke(scene, elapsed);
     }
 
