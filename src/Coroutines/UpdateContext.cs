@@ -9,5 +9,10 @@ namespace Atlas
     public class UpdateContext : IUpdateContext
     {
         public float ElapsedTime { get; internal set; }
+
+        public void Update(IUpdateContext context)
+        {
+            ElapsedTime = context.ElapsedTime;
+        }
     }
 }

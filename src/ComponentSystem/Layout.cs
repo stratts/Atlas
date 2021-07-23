@@ -51,8 +51,8 @@ namespace Atlas
         float Bottom => Offset.Y + Size.Y - Padding.Bottom;
     }
 
-    public enum HAlign { None, Left, Right, Centre }
-    public enum VAlign { None, Top, Bottom, Centre }
+    public enum HAlign { Default, None, Left, Right, Centre }
+    public enum VAlign { Default, None, Top, Bottom, Centre }
 
     public class Layout : Component
     {
@@ -113,6 +113,7 @@ namespace Atlas
                     HAlign.Left => container.Left + c.Margin.Left,
                     HAlign.Right => container.Right - parent.Size.X - c.Margin.Right,
                     HAlign.Centre => container.Left + c.Margin.Left + (container.PaddedSize.X / 2 - c.Parent.Size.X / 2),
+                    HAlign.None => parent.Position.X,
                     _ => container.Left + c.Margin.Left
                 };
 
@@ -121,6 +122,7 @@ namespace Atlas
                     VAlign.Top => container.Top + c.Margin.Top,
                     VAlign.Bottom => container.Bottom - parent.Size.Y - c.Margin.Bottom,
                     VAlign.Centre => container.Top + c.Margin.Top + (container.PaddedSize.Y / 2 - c.Parent.Size.Y / 2),
+                    VAlign.None => parent.Position.Y,
                     _ => container.Top + c.Margin.Top
                 };
             }

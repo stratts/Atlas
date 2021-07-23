@@ -63,7 +63,7 @@ namespace SharpFont
 	/// <summary>
 	/// A structure used to describe a given memory manager to FreeType 2.
 	/// </summary>
-	public class Memory: NativeObject
+	public class Memory : NativeObject
 	{
 		#region Fields
 
@@ -73,7 +73,7 @@ namespace SharpFont
 
 		#region Constructors
 
-		internal Memory(IntPtr reference): base(reference)
+		internal Memory(IntPtr reference) : base(reference)
 		{
 		}
 

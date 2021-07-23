@@ -172,7 +172,7 @@ namespace SharpFont
 			cubicToPtr = Marshal.GetFunctionPointerForDelegate(cubicToFunc);
 
 			this.shift = shift;
-			this.delta = (IntPtr) delta;
+			this.delta = (IntPtr)delta;
 		}
 
 		#endregion
@@ -301,7 +301,7 @@ namespace SharpFont
 			get
 			{
 				ThrowIfDisposed();
-				return (int) delta;
+				return (int)delta;
 			}
 
 			/*set

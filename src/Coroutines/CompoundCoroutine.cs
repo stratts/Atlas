@@ -2,18 +2,20 @@ using System.Collections.Generic;
 
 namespace Atlas
 {
-    public class Goal
+    public class CompoundCoroutine<T> : ICoroutine<T> where T : IUpdateContext
     {
-        private Coroutine? _currentAction;
+        private Coroutine<T>? _currentAction;
         private int _currentIdx;
-        private List<CoroutineAction> _actions = new List<CoroutineAction>();
+        private List<CoroutineAction<T>> _actions = new List<CoroutineAction<T>>();
         private bool _complete = false;
 
-        public CoroutineAction ToAction()
+        public bool Completed => _complete;
+
+        public CoroutineAction<T> ToAction()
         {
-            IEnumerator<bool> Action(IUpdateContext context)
+            IEnumerator<bool> Action(T context)
             {
-                var goal = new Goal();
+                var goal = new CompoundCoroutine<T>();
                 goal.AddActions(_actions);
 
                 while (true)
@@ -35,10 +37,10 @@ namespace Atlas
             _currentIdx = 0;
         }
 
-        public bool Update(IUpdateContext context)
+        public bool Update(T context)
         {
             if (_complete || _actions.Count == 0) return true;
-            if (_currentAction == null) _currentAction = new Coroutine(_actions[_currentIdx]);
+            if (_currentAction == null) _currentAction = new Coroutine<T>(_actions[_currentIdx]);
             var actionComplete = _currentAction.Update(context);
             if (actionComplete)
             {
@@ -51,16 +53,16 @@ namespace Atlas
                 }
                 else
                 {
-                    _currentAction = new Coroutine(_actions[_currentIdx]);
+                    _currentAction = new Coroutine<T>(_actions[_currentIdx]);
                     return false;
                 }
             }
             return false;
         }
 
-        public void AddAction(CoroutineAction action) => _actions.Add(action);
+        public void AddAction(CoroutineAction<T> action) => _actions.Add(action);
 
-        public void AddActions(IEnumerable<CoroutineAction> actions)
+        public void AddActions(IEnumerable<CoroutineAction<T>> actions)
         {
             foreach (var action in actions) AddAction(action);
         }

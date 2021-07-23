@@ -66,6 +66,8 @@ namespace Atlas
         private List<IComponentSystem> _systems = new List<IComponentSystem>();
         protected Camera _camera = new Camera(Config.ScreenSize.X, Config.ScreenSize.Y);
 
+        private Queue<Action> _actionQueue = new Queue<Action>();
+
         private Dictionary<uint, uint> _topLevelCount = new Dictionary<uint, uint>();
         private Dictionary<uint, bool> _depthSort = new Dictionary<uint, bool>();
 
@@ -99,40 +101,57 @@ namespace Atlas
             _systems.Add(system);
         }
 
+        private void Defer(Action action) => _actionQueue.Enqueue(action);
+
         public void AddNode(Node node) => AddNode(node, null);
 
         public void AddNode(Node node, uint? layer)
         {
             if (layer.HasValue) node.Layer = layer.Value;
 
-            _nodes.Add(node);
-            UpdateNodeSort(node);
+            Defer(() =>
+            {
+                _nodes.Add(node);
+                UpdateNodeSort(node);
 
-            foreach (var component in node.Components) AddComponent(component);
+                foreach (var component in node.Components) AddComponent(component);
 
-            node.ChildAdded += AddNode;
-            node.ChildRemoved += RemoveNode;
-            node.ComponentAdded += AddComponent;
-            node.ComponentRemoved += RemoveComponent;
-            node.Deleted += RemoveNode;
-            node.BroughtToFront += BringNodeToFront;
+                node.ChildAdded += AddNode;
+                node.ChildRemoved += RemoveChild;
+                node.ComponentAdded += AddComponent;
+                node.ComponentRemoved += RemoveComponent;
+                node.Deleted += RemoveNode;
+                node.BroughtToFront += BringNodeToFront;
 
-            foreach (var child in node.Children) AddNode(child);
+                foreach (var child in node.Children) AddNode(child);
+            });
+        }
+
+        public void RemoveChild(Node node)
+        {
+            Defer(() =>
+            {
+                node.Parent = null;
+                node.RootNode = null;
+                RemoveNode(node);
+            });
         }
 
         public void RemoveNode(Node node)
         {
-            _nodes.Remove(node);
+            Defer(() =>
+            {
+                _nodes.Remove(node);
+                node.ChildAdded -= AddNode;
+                node.ChildRemoved -= RemoveChild;
+                node.ComponentAdded -= AddComponent;
+                node.ComponentRemoved -= RemoveComponent;
+                node.Deleted -= RemoveNode;
+                node.BroughtToFront -= BringNodeToFront;
 
-            node.ChildAdded -= AddNode;
-            node.ChildRemoved -= RemoveNode;
-            node.ComponentAdded -= AddComponent;
-            node.ComponentRemoved -= RemoveComponent;
-            node.Deleted -= RemoveNode;
-            node.BroughtToFront -= BringNodeToFront;
-
-            foreach (var component in node.Components) RemoveComponent(component);
-            foreach (var child in node.Children) RemoveNode(child);
+                foreach (var component in node.Components) RemoveComponent(component);
+                foreach (var child in node.Children) RemoveNode(child);
+            });
         }
 
         /// <summary>
@@ -173,7 +192,7 @@ namespace Atlas
 
         public void SetDepthSort(uint layer, bool enableDepthSort) => _depthSort[layer + 1] = enableDepthSort;
 
-        private void BringNodeToFront(Node node) => UpdateNodeSort(node, true);
+        private void BringNodeToFront(Node node) => Defer(() => UpdateNodeSort(node, true));
 
         private void UpdateNodeSort(Node node, bool recurse = false, bool renderOnly = false)
         {
@@ -247,6 +266,7 @@ namespace Atlas
 
         public virtual void Update(float elapsed)
         {
+            while (_actionQueue.TryDequeue(out var action)) action.Invoke();
             _updateContext.ElapsedTime = elapsed;
             foreach (var node in _nodes)
             {

@@ -6,6 +6,17 @@ using Microsoft.Xna.Framework;
 
 namespace Atlas
 {
+    public struct TagCollection
+    {
+        private ulong _tags;
+
+        public void AddTag(Tag tag) => _tags = _tags | tag.Value;
+
+        public void RemoveTag(Tag tag) => _tags = _tags ^ tag.Value;
+
+        public bool HasTag(Tag tag) => (_tags & tag.Value) > 0;
+    }
+
     public struct Tag
     {
         private static ulong _currentTag = 1;
@@ -14,7 +25,7 @@ namespace Atlas
 
         private Tag(ulong value) => Value = value;
 
-        public static Tag New()
+        internal static Tag New()
         {
             var curr = _currentTag;
             _currentTag *= 2;
@@ -32,8 +43,7 @@ namespace Atlas
         private List<Node> _children = new List<Node>();
         private List<IComponent> _components = new List<IComponent>();
         private bool _enabled = true;
-        private ulong _tags = 0;
-        private Rectangle? _bounds;
+        private TagCollection _tags;
 
         /// <summary> Node position relative to parent (if any) </summary>
         public Vector2 Position;
@@ -61,8 +71,8 @@ namespace Atlas
             get => _enabled && Parent != null ? Parent.Enabled : _enabled;
             set
             {
+                if (value == true && !_enabled) OnEnabled?.Invoke(this);
                 _enabled = value;
-                if (_enabled) OnEnabled?.Invoke(this);
             }
         }
 
@@ -92,8 +102,8 @@ namespace Atlas
 
         public void RemoveChild(Node node)
         {
-            node.Parent = null;
-            node.RootNode = null;
+            //node.Parent = null;
+            //node.RootNode = null;
             _children.Remove(node);
             ChildRemoved?.Invoke(node);
         }
@@ -157,11 +167,11 @@ namespace Atlas
 
         public Color GetRenderColor(Color c) => GetComponent<Modulate>() is Modulate m ? m.ModulateColor(c) : c;
 
-        public void AddTag(Tag tag) => _tags = _tags | tag.Value;
+        public void AddTag(Tag tag) => _tags.AddTag(tag);
 
-        public void RemoveTag(Tag tag) => _tags = _tags ^ tag.Value;
+        public void RemoveTag(Tag tag) => _tags.RemoveTag(tag);
 
-        public bool HasTag(Tag tag) => (_tags & tag.Value) > 0;
+        public bool HasTag(Tag tag) => _tags.HasTag(tag);
 
         private Rectangle GetBounds()
         {

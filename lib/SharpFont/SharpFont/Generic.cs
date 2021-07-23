@@ -115,7 +115,7 @@ namespace SharpFont
 			{
 				return rec.data;
 			}
-			
+
 			set
 			{
 				rec.data = value;

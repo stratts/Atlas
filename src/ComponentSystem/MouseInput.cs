@@ -42,8 +42,16 @@ namespace Atlas
             {
                 if (c.Enabled && (!InputConsumed || c.HandleConsumed || _consumedBy == c.Parent) && WithinInputArea(scene, _mousePos, c))
                 {
+                    // Handle mouse enter
+                    if (!_mouseEntered.Contains(c))
+                    {
+                        _mouseEntered.Add(c);
+                        c.OnMouseEnter?.Invoke();
+                    }
+
                     if (_mouseState.LeftButton == ButtonState.Pressed) c.ButtonHeld = true;
                     else c.ButtonHeld = false;
+
                     // Handle click
                     if (_mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
                     {
@@ -67,12 +75,6 @@ namespace Atlas
                         var curAreaPos = MouseToAreaPos(scene, _mousePos, c);
                         var prevAreaPos = MouseToAreaPos(scene, _prevMousePos, c);
                         c.OnMove?.Invoke(curAreaPos, curAreaPos - prevAreaPos);
-
-                        if (!_mouseEntered.Contains(c))
-                        {
-                            _mouseEntered.Add(c);
-                            c.OnMouseEnter?.Invoke();
-                        }
                     }
 
                     // Mark input as consumed
