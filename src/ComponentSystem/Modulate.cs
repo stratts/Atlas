@@ -21,6 +21,7 @@ namespace Atlas
             var c = color;
             var cHsv = c.ToHsv();
             cHsv.Value += brightness;
+            if (tint != Colors.White) cHsv.Saturation = 0;
             c = cHsv.ToRgb();
             c.A = color.A;
             return c.Multiply(tint) * opacity;

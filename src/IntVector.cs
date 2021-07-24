@@ -43,6 +43,11 @@ namespace Atlas
             return new IntVector(-a.X, -a.Y);
         }
 
+        public static IntVector operator *(IntVector a, int b)
+        {
+            return new IntVector(a.X * b, a.Y * b);
+        }
+
         public override bool Equals(object? obj)
         {
             if (obj is IntVector p)
