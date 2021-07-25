@@ -57,7 +57,7 @@ namespace Atlas
             Layout();
         }
 
-        private void Layout()
+        protected void Layout()
         {
             _container.ClearSections();
             _container.Spacing = _spacing;
@@ -65,6 +65,7 @@ namespace Atlas
             for (int i = 0; i < Children.Count; i++)
             {
                 var node = Children[i];
+                if (!node.Enabled) continue;
                 var (min, max) = _sizes[node];
                 var layout = node.GetComponent<Layout>() is Layout l ? l : node.AddComponent<Layout>();
 
