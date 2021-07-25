@@ -125,6 +125,8 @@ namespace Atlas
             return c;
         }
 
+        public T GetOrAddComponent<T>() where T : IComponent, new() => GetComponent<T>() ?? AddComponent<T>();
+
         public void RemoveComponent(IComponent component)
         {
             component.Enabled = false;
