@@ -23,7 +23,7 @@ namespace Atlas
 
             _actionQueue.Enqueue(() =>
             {
-                if (_components.Contains(c)) throw new ArgumentException("Component already added to system");
+                if (_components.Contains(c)) throw new ArgumentException($"Component already added to system ({component} of {component.Parent})");
                 _components.Add(c);
                 _sort = true;
                 _update = true;
