@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static Atlas.CustomDrawing.CircleCorner;
 
 namespace Atlas
 {
@@ -19,13 +20,14 @@ namespace Atlas
         {
             var color = GetRenderColor(Color);
             var radius = Radius;
-            var circleSize = new Vector2(radius * 2);
             CustomDrawing.DrawRect(position + new Vector2(0, radius), Size - new Vector2(0, radius * 2), color);
-            CustomDrawing.DrawRect(position + new Vector2(radius, 0), Size - new Vector2(radius * 2, 0), color);
-            CustomDrawing.DrawEllipse(position, circleSize, color);
-            CustomDrawing.DrawEllipse(position + new Vector2(Size.X - circleSize.X, 0), circleSize, color);
-            CustomDrawing.DrawEllipse(position + new Vector2(0, Size.Y - circleSize.Y), circleSize, color);
-            CustomDrawing.DrawEllipse(position + Size - circleSize, circleSize, color);
+            CustomDrawing.DrawRect(position + new Vector2(radius, 0), new Vector2(Size.X - radius * 2, radius), color);
+            CustomDrawing.DrawRect(position + new Vector2(radius, Size.Y - radius), new Vector2(Size.X - radius * 2, radius), color);
+            CustomDrawing.DrawCircleCorner(position, radius, color, TopLeft);
+            CustomDrawing.DrawCircleCorner(position + new Vector2(Size.X - radius, 0), radius, color, TopRight);
+            CustomDrawing.DrawCircleCorner(position + new Vector2(0, Size.Y - radius), radius, color, BottomLeft);
+            CustomDrawing.DrawCircleCorner(position + new Vector2(Size.X - radius, Size.Y - radius), radius, color, BottomRight);
+
         }
     }
 }

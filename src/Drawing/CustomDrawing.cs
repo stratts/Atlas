@@ -61,6 +61,30 @@ namespace Atlas
                     color);
         }
 
+        public enum CircleCorner { TopLeft, TopRight, BottomLeft, BottomRight }
+
+        public static void DrawCircleCorner(Vector2 position, int size, Color color, CircleCorner corner)
+        {
+            Point sourcePos = corner switch
+            {
+                CircleCorner.TopLeft => new Point(0, 0),
+                CircleCorner.TopRight => new Point(32, 0),
+                CircleCorner.BottomLeft => new Point(0, 32),
+                CircleCorner.BottomRight => new Point(32, 32),
+                _ => Point.Zero
+            };
+
+            _spriteBatch.Draw(
+                _circleTexture,
+                new Rectangle(
+                    (int)position.X,
+                    (int)position.Y,
+                    size,
+                    size),
+                new Rectangle(sourcePos, new Point(32)),
+                color);
+        }
+
         public static void DrawEqTriangle(Vector2 basePos, Vector2 size, Color color, bool flip = false)
         {
             _spriteBatch.Draw(
