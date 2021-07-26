@@ -10,10 +10,20 @@ namespace Atlas
         private static Dictionary<string, Texture2D> _textures = new Dictionary<string, Texture2D>();
         private Point _size;
         private Texture2D _texture;
+        private Drawable _drawable;
+        private Vector2 _offset;
 
         public int? CurrentFrame { get; set; } = null;
         public bool HFlip { get; set; } = false;
-        public Vector2 Offset { get; set; } = Vector2.Zero;
+        public Vector2 Offset
+        {
+            get => _offset;
+            set
+            {
+                _offset = value;
+                _drawable.DrawBounds = new Rectangle(_offset.ToPoint(), Size.ToPoint());
+            }
+        }
 
         public Sprite(string path, Point size)
         {
@@ -29,7 +39,8 @@ namespace Atlas
             _size = size;
             Size = _size.ToVector2();
 
-            AddComponent(new Drawable { Draw = Draw });
+            _drawable = new Drawable { Draw = Draw };
+            AddComponent(_drawable);
             AddComponent(new Modulate());
         }
 
