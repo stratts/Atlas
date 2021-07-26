@@ -109,6 +109,8 @@ namespace Atlas
         {
             if (layer.HasValue) node.Layer = layer.Value;
 
+            node.Deleted += RemoveNode;
+
             Defer(() =>
             {
                 _nodes.Add(node);
@@ -120,7 +122,6 @@ namespace Atlas
                 node.ChildRemoved += RemoveChild;
                 node.ComponentAdded += AddComponent;
                 node.ComponentRemoved += RemoveComponent;
-                node.Deleted += RemoveNode;
                 node.BroughtToFront += BringNodeToFront;
 
                 foreach (var child in node.Children) AddNode(child);
