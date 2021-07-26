@@ -50,6 +50,8 @@ namespace Atlas
             }
         }
 
+        public Sprite GetSprite(int x, int y) => GetSprite(y * Width + x);
+
         public Sprite GetSprite(int index) => new Sprite(_path, new Point(TileSize)) { CurrentFrame = index };
     }
 }
