@@ -201,14 +201,14 @@ namespace Atlas
             const ulong maxChildren = ushort.MaxValue;
             const ulong layerSize = maxNodes * maxChildren;
 
-            if (node.Parent == null)
+            if (node.Parent == null || node.PlaceInScene)
             {
-                uint layer = node.Layer.HasValue ? node.Layer.Value + 1 : 0;
+                uint layer = node.SceneLayer.HasValue ? node.SceneLayer.Value + 1 : 0;
                 if (!_topLevelCount.ContainsKey(layer)) _topLevelCount[layer] = 0;
                 if (!_depthSort.ContainsKey(layer)) _depthSort[layer] = false;
                 uint sortKey = _depthSort[layer] ? (uint)((long)int.MaxValue + (long)node.ScenePosition.Y) : _topLevelCount[layer];
                 node.SceneSort = (ulong)layer * layerSize + sortKey * maxChildren;
-                _topLevelCount[layer]++;
+                if (!_depthSort[layer]) _topLevelCount[layer]++;
             }
             else if (node.RootNode != null) UpdateChildSort(node.RootNode, node.RootNode.SceneSort);
 
@@ -271,7 +271,7 @@ namespace Atlas
             _updateContext.ElapsedTime = elapsed;
             foreach (var node in _nodes)
             {
-                if (node.Parent == null && node.Layer != null && node.LastPos != node.Position && IsDepthSort(node.Layer.Value))
+                if ((node.Parent == null || node.PlaceInScene) && node.SceneLayer != null && node.LastPos != node.Position && IsDepthSort(node.SceneLayer.Value))
                 {
                     UpdateNodeSort(node, true, renderOnly: true);
                 }

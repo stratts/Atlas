@@ -13,6 +13,7 @@ namespace Atlas
 
         public int? CurrentFrame { get; set; } = null;
         public bool HFlip { get; set; } = false;
+        public Vector2 Offset { get; set; } = Vector2.Zero;
 
         public Sprite(string path, Point size)
         {
@@ -45,7 +46,7 @@ namespace Atlas
 
             spriteBatch.Draw(
                 _texture,
-                new Rectangle(position.ToPoint(), Size.ToPoint()),
+                new Rectangle(position.ToPoint() + Offset.ToPoint(), Size.ToPoint()),
                 sourceRect,
                 GetRenderColor(Colors.White),
                 rotation: 0,

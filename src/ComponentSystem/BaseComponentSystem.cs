@@ -58,12 +58,19 @@ namespace Atlas
 
         protected virtual int SortMethod(T a, T b) => b.Priority.CompareTo(a.Priority);
 
+        private int GetSort(T a, T b)
+        {
+            var standard = SortMethod(a, b);
+            if (standard == 0) return a.GetHashCode().CompareTo(b.GetHashCode());
+            else return standard;
+        }
+
         public void UpdateComponents(Scene scene, float elapsed)
         {
             ProcessChanges();
             if (_sort)
             {
-                _components.Sort(SortMethod);
+                _components.Sort(GetSort);
                 _sort = false;
             }
             if (_update || UpdateEveryTick)

@@ -60,6 +60,7 @@ namespace Atlas
         public virtual Vector2 Size { get; set; } = Vector2.Zero;
         public virtual Rectangle Bounds => GetBounds();
 
+        public bool PlaceInScene { get; set; } = false;
         public uint? Layer { get; set; }
         internal ulong SceneSort { get; set; }
         internal Vector2 LastPos { get; set; }
