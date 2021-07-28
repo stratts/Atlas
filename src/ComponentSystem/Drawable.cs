@@ -30,6 +30,11 @@ namespace Atlas
             return a.Priority.CompareTo(b.Priority);
         }
 
+        protected override int GetAltSortKey(Drawable component)
+        {
+            return (int)component.Parent.ScenePosition.X;
+        }
+
         public void Draw(Scene scene, SpriteBatch spriteBatch)
         {
             var samplerState = scene.NearestNeighbour ? SamplerState.PointClamp : null;

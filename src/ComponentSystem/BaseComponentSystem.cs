@@ -61,9 +61,11 @@ namespace Atlas
         private int GetSort(T a, T b)
         {
             var standard = SortMethod(a, b);
-            if (standard == 0) return a.GetHashCode().CompareTo(b.GetHashCode());
+            if (standard == 0) return GetAltSortKey(a).CompareTo(GetAltSortKey(b));
             else return standard;
         }
+
+        protected virtual int GetAltSortKey(T component) => component.GetHashCode();
 
         public void UpdateComponents(Scene scene, float elapsed)
         {
