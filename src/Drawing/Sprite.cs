@@ -27,16 +27,9 @@ namespace Atlas
 
         public Sprite(string path, Point size = default)
         {
-            Texture2D? texture;
-            if (!_textures.TryGetValue(path, out texture))
-            {
-                texture = Texture2D.FromFile(Config.GraphicsDevice, Path.Join(Config.ContentPath, path));
-                _textures[path] = texture;
+            _texture = TextureService.GetTexture(path);
 
-            }
-            _texture = texture;
-
-            if (size == Point.Zero) size = new Point(texture.Width, texture.Height);
+            if (size == Point.Zero) size = new Point(_texture.Width, _texture.Height);
 
             _size = size;
             Size = _size.ToVector2();

@@ -16,7 +16,7 @@ namespace Atlas
         public TileSet(string path, int tileSize)
         {
             _path = path;
-            Texture = Texture2D.FromFile(Config.GraphicsDevice, Path.Join(Config.ContentPath, path));
+            Texture = TextureService.GetTexture(path);
             TileSize = tileSize;
         }
 
