@@ -7,6 +7,11 @@ namespace Atlas
 {
     public struct IntVector
     {
+        public static IntVector Up => (0, -1);
+        public static IntVector Down => (0, 1);
+        public static IntVector Left => (-1, 0);
+        public static IntVector Right => (1, 0);
+
         public int X { get; set; }
         public int Y { get; set; }
 
