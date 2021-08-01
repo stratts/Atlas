@@ -7,7 +7,8 @@ namespace Atlas
         string Name { get; set; }
         Node Parent { get; set; }
         bool Enabled { get; set; }
-        double Priority { get; set; }
+        ulong Priority { get; set; }
+        ulong AltPriority { get; set; }
     }
 
     public abstract class Component : IComponent
@@ -24,6 +25,10 @@ namespace Atlas
             set => _enabled = value;
         }
 
-        public double Priority { get; set; }
+        public ulong Priority { get; set; }
+
+        public ulong AltPriority { get; set; }
+
+        public Component() => AltPriority = (ulong)Math.Abs(GetHashCode());
     }
 }

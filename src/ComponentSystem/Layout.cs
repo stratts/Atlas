@@ -82,7 +82,7 @@ namespace Atlas
             }
         }
 
-        protected override int SortMethod(Layout a, Layout b) => a.Priority.CompareTo(b.Priority);
+        public LayoutSystem() => ReverseSort = true;
 
         public override void UpdateComponents(Scene scene, IReadOnlyList<Layout> components, float elapsed)
         {

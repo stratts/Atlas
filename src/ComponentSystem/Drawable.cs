@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,19 +21,11 @@ namespace Atlas
 
         public IEnumerable<Drawable> Components => _components;
 
+        public DrawableSystem() => ReverseSort = true;
+
         public override void UpdateComponents(Scene scene, IReadOnlyList<Drawable> components, float elapsed)
         {
 
-        }
-
-        protected override int SortMethod(Drawable a, Drawable b)
-        {
-            return a.Priority.CompareTo(b.Priority);
-        }
-
-        protected override int GetAltSortKey(Drawable component)
-        {
-            return (int)component.Parent.ScenePosition.X;
         }
 
         public void Draw(Scene scene, SpriteBatch spriteBatch)
@@ -75,6 +68,7 @@ namespace Atlas
 
                 if (bounds.Intersects(scene.Camera.Viewport) || bounds == Rectangle.Empty)
                 {
+                    d.AltPriority = (ulong)Math.Abs(pos.X);
                     d.Draw?.Invoke(spriteBatch, pos - scene.Camera.Position.Floored());
                     //CustomDrawing.DrawRect(bounds.Location.ToVector2() - scene.Camera.Position.Floor(), bounds.Size.ToVector2(), Color.Red * 0.5f);
                     /*if (d.ScissorArea.HasValue)

@@ -14,6 +14,7 @@ namespace Atlas
         public event Action<T>? ComponentRemoved;
 
         protected bool UpdateEveryTick { get; set; } = true;
+        protected bool ReverseSort { get; set; } = false;
 
         public bool HandlesComponent(IComponent component) => component is T;
 
@@ -56,23 +57,19 @@ namespace Atlas
 
         public void SortComponents() => _sort = true;
 
-        protected virtual int SortMethod(T a, T b) => b.Priority.CompareTo(a.Priority);
-
-        private int GetSort(T a, T b)
+        private int SortMethod(T a, T b)
         {
-            var standard = SortMethod(a, b);
-            if (standard == 0) return GetAltSortKey(a).CompareTo(GetAltSortKey(b));
-            else return standard;
+            var res = b.Priority.CompareTo(a.Priority);
+            if (res == 0) res = b.AltPriority.CompareTo(a.AltPriority);
+            return ReverseSort ? -res : res;
         }
-
-        protected virtual int GetAltSortKey(T component) => component.GetHashCode();
 
         public void UpdateComponents(Scene scene, float elapsed)
         {
             ProcessChanges();
             if (_sort)
             {
-                _components.Sort(GetSort);
+                _components.Sort(SortMethod);
                 _sort = false;
             }
             if (_update || UpdateEveryTick)
