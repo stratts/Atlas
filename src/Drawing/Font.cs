@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using SharpFont;
 using Microsoft.Xna.Framework;
@@ -34,60 +35,57 @@ namespace Atlas
         }
     }
 
-    public static class FontService
+    public class Font
     {
-        private static int _size;
-        private static Library _library = new Library();
-        private static Face _face = null!;
-        private static Dictionary<int, Dictionary<char, GlyphBitmap>> _textures = new Dictionary<int, Dictionary<char, GlyphBitmap>>();
+        private Dictionary<char, GlyphBitmap> _textureCache = new();
+        private Dictionary<uint, Glyph> _glyphCache = new();
+        private Face _face;
+        private int _size;
 
-        public static int NominalHeight => _face.Size.Metrics.NominalHeight;
-        public static int Ascender => _face.Size.Metrics.Ascender.ToInt32();
-        public static int Height => _face.Size.Metrics.Height.ToInt32();
+        public int NominalHeight { get; }
+        public int Ascender { get; }
+        public int Height { get; }
 
-        public static void SetFont(string path)
+        internal Font(Library library, Face face, int size)
         {
-            _face = new Face(_library, path);
-        }
-
-        public static void SetFont(byte[] font)
-        {
-            _face = new Face(_library, font, 0);
-        }
-
-        public static void SetSize(int size)
-        {
+            _face = face;
             _face.SetPixelSizes(0, (uint)size);
             _size = size;
+
+            NominalHeight = _face.Size.Metrics.NominalHeight;
+            Ascender = _face.Size.Metrics.Ascender.ToInt32();
+            Height = _face.Size.Metrics.Height.ToInt32();
         }
 
-        public static Glyph GetGlyph(char character)
+        public Glyph GetGlyph(char character)
         {
             var index = _face.GetCharIndex(character);
-            var advance = _face.GetAdvance(index, LoadFlags.Default);
-            return new Glyph(character, advance.ToInt32());
+            var cached = _glyphCache.TryGetValue(index, out var glyph);
+
+            if (!cached)
+            {
+                var advance = _face.GetAdvance(index, LoadFlags.Default);
+                glyph = new Glyph(character, advance.ToInt32());
+                _glyphCache[index] = glyph;
+            }
+
+            return glyph;
         }
 
-        public static GlyphBitmap GetBitmap(Glyph glyph, GraphicsDevice device)
+        public GlyphBitmap GetBitmap(Glyph glyph, GraphicsDevice device)
         {
             var character = glyph.Character;
-            bool rendered = GetTextures(_size).TryGetValue(character, out var texture);
+            bool rendered = _textureCache.TryGetValue(character, out var texture);
             if (!rendered)
             {
                 var index = _face.GetCharIndex(character);
                 texture = RenderGlyph(glyph, device);
-                GetTextures(_size)[character] = texture;
+                _textureCache[character] = texture;
             }
             return texture;
         }
 
-        private static Dictionary<char, GlyphBitmap> GetTextures(int size)
-        {
-            if (!_textures.ContainsKey(size)) _textures[size] = new Dictionary<char, GlyphBitmap>();
-            return _textures[size];
-        }
-
-        private static GlyphBitmap RenderGlyph(Glyph glyph, GraphicsDevice device)
+        private GlyphBitmap RenderGlyph(Glyph glyph, GraphicsDevice device)
         {
             var index = _face.GetCharIndex(glyph.Character);
             _face.LoadGlyph(index, LoadFlags.Render, LoadTarget.Normal);
@@ -116,6 +114,36 @@ namespace Atlas
             else texture = new Texture2D(device, 1, 1);
 
             return new GlyphBitmap(texture, _face.Glyph.BitmapTop, _face.Glyph.BitmapLeft);
+        }
+    }
+
+    public static class FontService
+    {
+        private static Library _library = new Library();
+        private static byte[] _fontData = null!;
+        private static Dictionary<int, Font> _fonts = new();
+
+        public static void SetFont(string path)
+        {
+            using (var f = File.OpenRead(path))
+            {
+                _fontData = new byte[f.Length];
+                f.Read(_fontData);
+            }
+        }
+
+        public static void SetFont(byte[] data) => _fontData = data;
+
+        public static Font GetFont(int size)
+        {
+            var cached = _fonts.TryGetValue(size, out var font);
+            if (font == null || !cached)
+            {
+                var face = new Face(_library, _fontData, 0);
+                font = new Font(_library, face, size);
+                _fonts[size] = font;
+            }
+            return font;
         }
     }
 }

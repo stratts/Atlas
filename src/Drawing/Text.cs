@@ -6,9 +6,20 @@ namespace Atlas
 {
     public class Text : Node
     {
+        private Font _font;
+        private int _fontSize = 16;
+
         public string Content { get; set; } = "";
         public Color Color { get; set; } = Colors.White;
-        public int FontSize { get; set; } = 16;
+        public int FontSize
+        {
+            get => _fontSize;
+            set
+            {
+                _fontSize = value;
+                _font = FontService.GetFont(value);
+            }
+        }
 
         public override Vector2 Size => MeasureString(Content);
 
@@ -16,25 +27,18 @@ namespace Atlas
         {
             AddComponent(new Drawable() { Draw = Draw });
             AddComponent<Modulate>();
+            _font = FontService.GetFont(FontSize);
         }
 
-        public int LineHeight
-        {
-            get
-            {
-                FontService.SetSize(FontSize);
-                return FontService.Height;
-            }
-        }
+        public int LineHeight => _font.Height;
 
         public int IndexAt(float x)
         {
-            FontService.SetSize(FontSize);
-            Vector2 pos = new Vector2(0, FontService.Ascender);
+            Vector2 pos = new Vector2(0, _font.Ascender);
             int idx = 0;
             foreach (var c in Content)
             {
-                var glyph = FontService.GetGlyph(c);
+                var glyph = _font.GetGlyph(c);
                 pos.X += glyph.Advance + glyph.Kerning;
                 if (pos.X > x) break;
                 idx++;
@@ -44,35 +48,33 @@ namespace Atlas
 
         public Vector2 MeasureString(ReadOnlySpan<char> s)
         {
-            FontService.SetSize(FontSize);
-            Vector2 pos = new Vector2(0, FontService.Ascender);
+            Vector2 pos = new Vector2(0, _font.Ascender);
             foreach (var c in s)
             {
                 if (c == '\n')
                 {
-                    pos = new Vector2(0, pos.Y + FontService.Height);
+                    pos = new Vector2(0, pos.Y + _font.Height);
                     continue;
                 }
-                var glyph = FontService.GetGlyph(c);
+                var glyph = _font.GetGlyph(c);
                 pos.X += glyph.Advance + glyph.Kerning;
             }
-            return new Vector2(pos.X, pos.Y + FontService.NominalHeight - FontService.Ascender);
+            return new Vector2(pos.X, pos.Y + _font.NominalHeight - _font.Ascender);
         }
 
         private void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
-            FontService.SetSize(FontSize);
-            Vector2 pos = position + new Vector2(0, FontService.Ascender);
+            Vector2 pos = position + new Vector2(0, _font.Ascender);
             foreach (var c in Content)
             {
                 if (c == '\n')
                 {
-                    pos = new Vector2(position.X, pos.Y + FontService.Height);
+                    pos = new Vector2(position.X, pos.Y + _font.Height);
                     continue;
                 }
-                var glyph = FontService.GetGlyph(c);
+                var glyph = _font.GetGlyph(c);
 
-                var bitmap = FontService.GetBitmap(glyph, spriteBatch.GraphicsDevice);
+                var bitmap = _font.GetBitmap(glyph, spriteBatch.GraphicsDevice);
                 spriteBatch.Draw(bitmap.Texture, pos - new Vector2(-bitmap.Left, bitmap.Top), GetRenderColor(Color));
 
                 pos.X += glyph.Advance + glyph.Kerning;
