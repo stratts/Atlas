@@ -979,7 +979,17 @@ namespace Atlas
         /// <returns>A <see cref="String"/> representation of this <see cref="Vector2"/>.</returns>
         public override string ToString()
         {
-            return "{X:" + X + " Y:" + Y + "}";
+            return $"({X}, {Y})";
+        }
+
+        public static Vector2 Parse(ReadOnlySpan<char> input)
+        {
+            Span<char> trimChars = stackalloc char[] { '(', ')' };
+            var trimmed = input.Trim(trimChars);
+            var sep = trimmed.IndexOf(',');
+            var x = trimmed.Slice(0, sep).Trim();
+            var y = trimmed.Slice(sep + 1).Trim();
+            return new Vector2(float.Parse(x), float.Parse(y));
         }
 
         /// <summary>
