@@ -8,7 +8,7 @@ namespace Atlas
         void AddComponent(IComponent component);
         void RemoveComponent(IComponent component);
         void UpdateComponents(Scene scene, float elapsed);
-        void SortComponents();
+        void SortComponent(IComponent component);
     }
 
     public interface IRenderSystem : IComponentSystem

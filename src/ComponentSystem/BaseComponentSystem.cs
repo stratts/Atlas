@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 namespace Atlas
 {
-    public abstract class BaseComponentSystem<T> : IComponentSystem where T : IComponent
+    public abstract class BaseComponentSystem<T> : IComponentSystem, IComparer<T> where T : IComponent
     {
         protected List<T> _components = new List<T>();
         private Queue<Action> _actionQueue = new Queue<Action>();
-        private bool _sort = false;
+        private HashSet<uint> _toSort = new();
+
         private bool _update = false;
 
         public event Action<T>? ComponentAdded;
@@ -25,8 +26,8 @@ namespace Atlas
             _actionQueue.Enqueue(() =>
             {
                 if (_components.Contains(c)) throw new ArgumentException($"Component already added to system ({component} of {component.Parent})");
-                _components.Add(c);
-                _sort = true;
+                var idx = _components.FindIndex(t => Compare(t, c) >= 0);
+                _components.Insert(idx != -1 ? idx : _components.Count, c);
                 _update = true;
                 ComponentAdded?.Invoke(c);
             });
@@ -40,7 +41,6 @@ namespace Atlas
             {
                 if (!_components.Contains(c)) return;
                 _components.Remove(c);
-                _sort = true;
                 _update = true;
                 ComponentRemoved?.Invoke(c);
             });
@@ -55,10 +55,25 @@ namespace Atlas
             );
         }
 
-        public void SortComponents() => _sort = true;
+        private uint GetLayer(IComponent component) => (uint)(component.Priority / Scene.LayerSize);
 
-        private int SortMethod(T a, T b)
+        public void SortComponent(IComponent component) => _toSort.Add(GetLayer(component));
+
+        public void SortComponents()
         {
+            foreach (var layer in _toSort)
+            {
+                var start = _components.FindIndex(c => GetLayer(c) == layer);
+                var end = _components.FindLastIndex(c => GetLayer(c) == layer);
+                _components.Sort(start, end - start + 1, this);
+            }
+
+            _toSort.Clear();
+        }
+
+        public int Compare(T? a, T? b)
+        {
+            if (a == null || b == null) return 0;
             var res = b.Priority.CompareTo(a.Priority);
             if (res == 0) res = b.AltPriority.CompareTo(a.AltPriority);
             return ReverseSort ? -res : res;
@@ -67,11 +82,7 @@ namespace Atlas
         public void UpdateComponents(Scene scene, float elapsed)
         {
             ProcessChanges();
-            if (_sort)
-            {
-                _components.Sort(SortMethod);
-                _sort = false;
-            }
+            SortComponents();
             if (_update || UpdateEveryTick)
             {
                 UpdateComponents(scene, _components, elapsed);

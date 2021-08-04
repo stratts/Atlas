@@ -67,6 +67,9 @@ namespace Atlas
         protected Camera _camera = new Camera(Config.ScreenSize.X, Config.ScreenSize.Y);
 
         private Queue<Action> _actionQueue = new Queue<Action>();
+        private const ulong _maxNodes = uint.MaxValue;
+        private const ulong _maxChildren = ushort.MaxValue;
+        public const ulong LayerSize = _maxNodes * _maxChildren;
 
         private Dictionary<uint, uint> _topLevelCount = new Dictionary<uint, uint>();
         private Dictionary<uint, bool> _depthSort = new Dictionary<uint, bool>();
@@ -197,17 +200,13 @@ namespace Atlas
 
         private void UpdateNodeSort(Node node, bool recurse = false, bool renderOnly = false)
         {
-            const ulong maxNodes = uint.MaxValue;
-            const ulong maxChildren = ushort.MaxValue;
-            const ulong layerSize = maxNodes * maxChildren;
-
             if (node.Parent == null || node.PlaceInScene)
             {
                 uint layer = node.SceneLayer.HasValue ? node.SceneLayer.Value + 1 : 0;
                 if (!_topLevelCount.ContainsKey(layer)) _topLevelCount[layer] = 0;
                 if (!_depthSort.ContainsKey(layer)) _depthSort[layer] = false;
                 uint sortKey = _depthSort[layer] ? (uint)((long)int.MaxValue + (long)node.ScenePosition.Y) : _topLevelCount[layer];
-                node.SceneSort = (ulong)layer * layerSize + sortKey * maxChildren;
+                node.SceneSort = (ulong)layer * LayerSize + sortKey * _maxChildren;
                 if (!_depthSort[layer]) _topLevelCount[layer]++;
             }
             else if (node.RootNode != null) UpdateChildSort(node.RootNode, node.RootNode.SceneSort);
@@ -216,8 +215,7 @@ namespace Atlas
             {
                 component.Priority = node.SceneSort;
                 var system = GetSystem(component);
-                if (!renderOnly) system?.SortComponents();
-                else if (system is IRenderSystem r) r.SortComponents();
+                if (!renderOnly || system is IRenderSystem) system?.SortComponent(component);
             }
 
             if (recurse)
@@ -271,11 +269,11 @@ namespace Atlas
             _updateContext.ElapsedTime = elapsed;
             foreach (var node in _nodes)
             {
-                if ((node.Parent == null || node.PlaceInScene) && node.SceneLayer != null && node.LastPos != node.Position && IsDepthSort(node.SceneLayer.Value))
+                if (node.LastPos != node.Position && (node.Parent == null || node.PlaceInScene) && node.SceneLayer != null && IsDepthSort(node.SceneLayer.Value))
                 {
                     UpdateNodeSort(node, true, renderOnly: true);
+                    node.LastPos = node.Position;
                 }
-                node.LastPos = node.Position;
             }
             foreach (var system in _systems) system.UpdateComponents(this, elapsed);
         }
