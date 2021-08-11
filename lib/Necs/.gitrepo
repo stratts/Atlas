@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://git.stratts.dev/stratts/Necs.git
+	branch = main
+	commit = 3e0ec842243a9d8ef1a7ef8ca91776b395e2da23
+	parent = 42dd3c023adfcafc92df312350f37442b8587727
+	method = merge
+	cmdver = 0.4.3
