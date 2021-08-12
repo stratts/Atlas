@@ -3,9 +3,18 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Necs;
 
 namespace Atlas
 {
+    public class SceneContext
+    {
+        public Scene Scene { get; }
+        public float Elapsed { get; }
+
+        public SceneContext(Scene scene, float elapsed) => (Scene, Elapsed) = (scene, elapsed);
+    }
+
     public interface IScene
     {
         void Update(float elapsed);
@@ -61,12 +70,10 @@ namespace Atlas
     /// </summary>
     public class Scene : IScene
     {
-        private UpdateContext _updateContext = new UpdateContext();
-        private List<Node> _nodes = new List<Node>();
-        private List<IComponentSystem> _systems = new List<IComponentSystem>();
+        protected EcsContext<UpdateContext, RenderContext> _ecs = new();
+        private UpdateContext _updateContext;
         protected Camera _camera = new Camera(Config.ScreenSize.X, Config.ScreenSize.Y);
 
-        private Queue<Action> _actionQueue = new Queue<Action>();
         private const ulong _maxNodes = uint.MaxValue;
         private const ulong _maxChildren = ushort.MaxValue;
         public const ulong LayerSize = _maxNodes * _maxChildren;
@@ -75,7 +82,6 @@ namespace Atlas
         private Dictionary<uint, bool> _depthSort = new Dictionary<uint, bool>();
 
         public Camera Camera => _camera;
-        public IReadOnlyList<Node> Nodes => _nodes;
 
         public IUpdateContext UpdateContext => _updateContext;
 
@@ -86,25 +92,22 @@ namespace Atlas
 
         public Scene()
         {
+            _updateContext = new UpdateContext(this);
             AddNode(_camera);
-            AddSystem(new MouseInputSystem());
 
-            AddSystem(new AnimationSystem());
-            AddSystem(new UpdateSystem());
-            AddSystem(new CollisionSystem());
+            _ecs.AddSystem(new LayoutSystem());
+            _ecs.AddSystem(new TransformSystem());
+            _ecs.AddSystem(new MouseInputSystem());
 
-            AddSystem(new LayoutSystem());
-            AddSystem(new ModulateSystem());
-            AddSystem(new ScissorSystem());
-            AddSystem(new DrawableSystem());
+            _ecs.AddSystem(new AnimationSystem());
+            _ecs.AddSystem(new UpdateSystem());
+            //AddSystem(new CollisionSystem());
+
+
+            //AddSystem(new ModulateSystem());
+            //AddSystem(new ScissorSystem());
+            _ecs.AddRenderSystem(new DrawableSystem());
         }
-
-        public void AddSystem(IComponentSystem system)
-        {
-            _systems.Add(system);
-        }
-
-        private void Defer(Action action) => _actionQueue.Enqueue(action);
 
         public void AddNode(Node node) => AddNode(node, null);
 
@@ -112,50 +115,14 @@ namespace Atlas
         {
             if (layer.HasValue) node.Layer = layer.Value;
 
-            node.Deleted += RemoveNode;
-
-            Defer(() =>
-            {
-                _nodes.Add(node);
-                UpdateNodeSort(node);
-
-                foreach (var component in node.Components) AddComponent(component);
-
-                node.ChildAdded += AddNode;
-                node.ChildRemoved += RemoveChild;
-                node.ComponentAdded += AddComponent;
-                node.ComponentRemoved += RemoveComponent;
-                node.BroughtToFront += BringNodeToFront;
-
-                foreach (var child in node.Children) AddNode(child);
-            });
-        }
-
-        public void RemoveChild(Node node)
-        {
-            Defer(() =>
-            {
-                node.Parent = null;
-                node.RootNode = null;
-                RemoveNode(node);
-            });
+            //node.Deleted += RemoveNode;
+            _ecs.AddEntity(node);
         }
 
         public void RemoveNode(Node node)
         {
-            Defer(() =>
-            {
-                _nodes.Remove(node);
-                node.ChildAdded -= AddNode;
-                node.ChildRemoved -= RemoveChild;
-                node.ComponentAdded -= AddComponent;
-                node.ComponentRemoved -= RemoveComponent;
-                node.Deleted -= RemoveNode;
-                node.BroughtToFront -= BringNodeToFront;
-
-                foreach (var component in node.Components) RemoveComponent(component);
-                foreach (var child in node.Children) RemoveNode(child);
-            });
+            var parent = node.Parent;
+            _ecs.RemoveEntity(node);
         }
 
         /// <summary>
@@ -163,10 +130,11 @@ namespace Atlas
         /// </summary>
         public IEnumerable<T> GetNodes<T>() where T : Node
         {
-            foreach (var node in Nodes)
+            /*foreach (var node in Nodes)
             {
                 if (node is T n) yield return n;
-            }
+            }*/
+            yield break;
         }
 
         /// <summary>
@@ -174,13 +142,14 @@ namespace Atlas
         /// </summary>
         public IEnumerable<Node> GetNodesAt(Vector2 position)
         {
-            foreach (var node in Nodes)
+            yield break;
+            /*foreach (var node in Nodes)
             {
                 if (node == Camera) continue;
                 var bounds = node.Bounds;
                 bounds.Offset(node.ScenePosition);
                 if (bounds.Contains(position)) yield return node;
-            }
+            }*/
         }
 
         public T? GetNodeAt<T>(Vector2 position) where T : Node
@@ -196,78 +165,20 @@ namespace Atlas
 
         public void SetDepthSort(uint layer, bool enableDepthSort) => _depthSort[layer + 1] = enableDepthSort;
 
-        private void BringNodeToFront(Node node) => Defer(() => UpdateNodeSort(node, true));
+        private void BringNodeToFront(Node node) => UpdateNodeSort(node, true);
 
         private void UpdateNodeSort(Node node, bool recurse = false, bool renderOnly = false)
         {
-            if (node.Parent == null || node.PlaceInScene)
-            {
-                uint layer = node.SceneLayer.HasValue ? node.SceneLayer.Value + 1 : 0;
-                if (!_topLevelCount.ContainsKey(layer)) _topLevelCount[layer] = 0;
-                if (!_depthSort.ContainsKey(layer)) _depthSort[layer] = false;
-                uint sortKey = _depthSort[layer] ? (uint)((long)int.MaxValue + (long)node.ScenePosition.Y) : _topLevelCount[layer];
-                node.SceneSort = (ulong)layer * LayerSize + sortKey * _maxChildren;
-                if (!_depthSort[layer]) _topLevelCount[layer]++;
-            }
-            else if (node.RootNode != null) UpdateChildSort(node.RootNode, node.RootNode.SceneSort);
 
-            foreach (var component in node.Components)
-            {
-                component.Priority = node.SceneSort;
-                var system = GetSystem(component);
-                if (!renderOnly || system is IRenderSystem) system?.SortComponent(component);
-            }
-
-            if (recurse)
-            {
-                foreach (var child in node.Children) UpdateNodeSort(child, true);
-            }
         }
 
-        private ulong UpdateChildSort(Node node, ulong current)
-        {
-            var children = new List<Node>(node.Children);
-            children.Sort(
-                   (a, b) =>
-                   {
-                       int layerA = a.Layer.HasValue ? (int)a.Layer.Value : -1;
-                       int layerB = b.Layer.HasValue ? (int)b.Layer.Value : -1;
-                       return layerA.CompareTo(layerB);
-                   });
-
-            node.SceneSort = current;
-            foreach (var component in node.Components) component.Priority = node.SceneSort;
-
-            foreach (var child in children) current = UpdateChildSort(child, current + 1);
-
-            return current;
-        }
-
-        private IComponentSystem? GetSystem(IComponent component)
-        {
-            foreach (var system in _systems)
-            {
-                if (system.HandlesComponent(component)) return system;
-            }
-            return null;
-        }
-
-        private void AddComponent(IComponent component)
-        {
-            component.Priority = component.Parent.SceneSort;
-            GetSystem(component)?.AddComponent(component);
-        }
-
-        private void RemoveComponent(IComponent component)
-        {
-            GetSystem(component)?.RemoveComponent(component);
-        }
 
         public virtual void Update(float elapsed)
         {
-            while (_actionQueue.TryDequeue(out var action)) action.Invoke();
             _updateContext.ElapsedTime = elapsed;
-            foreach (var node in _nodes)
+            _ecs.Update(_updateContext);
+
+            /*foreach (var node in _nodes)
             {
                 if (node.LastPos != node.Position && (node.Parent == null || node.PlaceInScene) && node.SceneLayer != null && IsDepthSort(node.SceneLayer.Value))
                 {
@@ -275,15 +186,12 @@ namespace Atlas
                     node.LastPos = node.Position;
                 }
             }
-            foreach (var system in _systems) system.UpdateComponents(this, elapsed);
+            foreach (var system in _systems) system.UpdateComponents(this, elapsed);*/
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var system in _systems)
-            {
-                if (system is IRenderSystem r) r.Draw(this, spriteBatch);
-            }
+            _ecs.Render(new RenderContext(this, spriteBatch));
         }
 
         /// <summary>

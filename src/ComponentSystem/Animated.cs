@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Atlas.Anim;
+using Necs;
 
 namespace Atlas
 {
-    public class Animated : Component
+    public class Animated
     {
         private IAnimation? _currentAnimation;
         public IAnimation? CurrentAnimation
@@ -26,16 +27,12 @@ namespace Atlas
         public void Reset() => _currentAnimation?.Reset();
     }
 
-    public class AnimationSystem : BaseComponentSystem<Animated>
+    public class AnimationSystem : IComponentSystem<UpdateContext, Animated>
     {
-        public override void UpdateComponents(Scene scene, IReadOnlyList<Animated> components, float elapsed)
+        public void Process(UpdateContext context, ref Animated c)
         {
-            foreach (var c in components)
-            {
-                if (!c.Enabled) continue;
-                c.CurrentTime += elapsed;
-                c.CurrentAnimation?.Update(c.CurrentTime);
-            }
+            c.CurrentTime += context.ElapsedTime;
+            c.CurrentAnimation?.Update(c.CurrentTime);
         }
     }
 }

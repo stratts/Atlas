@@ -2,24 +2,23 @@ using Microsoft.Xna.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Necs;
 
 namespace Atlas
 {
     public class StackBox : Node, IEnumerable<Node>
     {
-        public class Expand : Component { }
+        public class Expand { }
 
         private int _spacing;
-        private Vector2 _size = Vector2.Zero;
         private Vector2 _currentOffset = Vector2.Zero;
         private Direction _direction;
         private BaseSplitContainer _container;
         private Dictionary<Node, (float? min, float? max)> _sizes = new Dictionary<Node, (float?, float?)>();
 
-        public override Vector2 Size
+        public void SetWidth(int width)
         {
-            get { return _size; }
-            set { SetSize(value); }
+            SetSize(new Vector2(width, Size.Y));
         }
 
         public int Spacing
@@ -32,6 +31,7 @@ namespace Atlas
 
         public StackBox(int spacing, Direction direction)
         {
+            AddComponent(new Updateable() { UpdateMethod = Update });
             _spacing = spacing;
             _direction = direction;
             if (_direction == Direction.Horizontal) _container = new ColumnContainer();
@@ -46,7 +46,7 @@ namespace Atlas
             }
         }
 
-        public override void AddChild(Node node) => AddChild(node);
+        public override void AddChild(Entity node) => AddChild((Node)node, null, null);
 
         public void Add(Node node) => AddChild(node);
 
@@ -62,19 +62,18 @@ namespace Atlas
             _container.ClearSections();
             _container.Spacing = _spacing;
 
-            for (int i = 0; i < Children.Count; i++)
+            foreach (Node node in Children)
             {
-                var node = Children[i];
                 if (!node.Enabled) continue;
                 var (min, max) = _sizes[node];
-                var layout = node.GetComponent<Layout>() is Layout l ? l : node.AddComponent<Layout>();
+                ref var layout = ref node.GetOrAddComponent<Layout>();
 
                 var width = node.Size.X + layout.Margin.Size.X;
                 var height = node.Size.Y + layout.Margin.Size.Y;
                 var size = _direction == Direction.Horizontal ? width : height;
 
                 float minSpace = min.HasValue ? min.Value : size;
-                float? maxSpace = !max.HasValue && node.GetComponent<Expand>() == null ? size : max;
+                float? maxSpace = !max.HasValue && !node.HasComponent<Expand>() ? size : max;
 
                 layout.Container = _container.AddSection(minSpace, maxSpace);
 
@@ -83,13 +82,18 @@ namespace Atlas
             }
 
             _container.Layout();
-            _size = _container.Size;
+            Size = _container.Size;
         }
 
         private void SetSize(Vector2 size)
         {
-            _size = size;
+            Size = size;
             _container.Size = size;
+        }
+
+        public void Update(Scene scene, float elapsed)
+        {
+            if (_container.Size != Size) _container.Size = Size;
         }
 
         public void Clear()

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Xna.Framework;
+using Necs;
 
 namespace Atlas
 {
@@ -38,133 +39,88 @@ namespace Atlas
     /// <summary>
     /// Base node class, to which components and child nodes can be added
     /// </summary>
-    public class Node
+    public class Node : Entity
     {
-        private List<Node> _children = new List<Node>();
-        private List<IComponent> _components = new List<IComponent>();
         private bool _enabled = true;
         private TagCollection _tags;
+        private List<Node> _children = new();
 
-        /// <summary> Node position relative to parent (if any) </summary>
-        public Vector2 Position;
-        public virtual Vector2 Centre
-        {
-            get => Position + Size / 2;
-            set => Position = value - Size / 2;
-        }
+        public List<Node> Children => _children;
 
-        /// <summary> Node position relative to scene </summary>
-        public Vector2 ScenePosition => Parent != null ? Position + Parent.ScenePosition : Position;
+        public bool Removed = false;
+
         public uint? SceneLayer => RootNode != null ? RootNode.Layer : Layer;
 
-        public virtual Vector2 Size { get; set; } = Vector2.Zero;
+        public ref Vector2 Position => ref GetComponent<Transform>().Position;
+        public ref Vector2 Size => ref GetComponent<Transform>().Size;
         public virtual Rectangle Bounds => GetBounds();
+        public bool Enabled { get; set; } = true;
+
+        public virtual Vector2 Centre { get; set; }
 
         public bool PlaceInScene { get; set; } = false;
         public uint? Layer { get; set; }
-        internal ulong SceneSort { get; set; }
-        internal Vector2 LastPos { get; set; }
 
         public int Depth => Parent != null ? Parent.Depth + 1 : 0;
 
-        public bool Enabled
-        {
-            get => _enabled && Parent != null ? Parent.Enabled : _enabled;
-            set
-            {
-                if (value == true && !_enabled) OnEnabled?.Invoke(this);
-                _enabled = value;
-            }
-        }
-
         public Node? RootNode { get; internal set; }
         public Node? Parent { get; internal set; }
-        public List<Node> Children => _children;
-        public IReadOnlyList<IComponent> Components => _components;
-
-        public event Action<Node>? ChildAdded;
-        public event Action<Node>? ChildRemoved;
-
-        public event Action<IComponent>? ComponentAdded;
-        public event Action<IComponent>? ComponentRemoved;
 
         public event Action<Node>? OnEnabled;
         public event Action<Node>? Deleted;
 
         public event Action<Node>? BroughtToFront;
 
-        public virtual void AddChild(Node node)
+        public Node()
         {
-            node.Parent = this;
-            node.RootNode = RootNode != null ? RootNode : this;
-            _children.Add(node);
-            ChildAdded?.Invoke(node);
+            AddComponent(new Transform());
         }
 
-        public void RemoveChild(Node node)
+        public override void AddChild(Entity child)
         {
-            //node.Parent = null;
-            //node.RootNode = null;
-            _children.Remove(node);
-            ChildRemoved?.Invoke(node);
+            base.AddChild(child);
+            _children.Add((Node)child);
+        }
+
+        public override void RemoveChild(Entity child)
+        {
+            base.RemoveChild(child);
+            _children.Remove((Node)child);
+        }
+
+        public bool HasComponent<T>()
+        {
+            try
+            {
+                GetComponent<T>();
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+        }
+
+        public ref T AddComponent<T>() where T : new()
+        {
+            var t = new T();
+            AddComponent(t);
+            return ref GetComponent<T>();
+        }
+
+        public ref T GetOrAddComponent<T>() where T : new()
+        {
+            try
+            {
+                return ref GetComponent<T>();
+            }
+            catch (ArgumentException)
+            {
+                return ref AddComponent<T>();
+            }
         }
 
         public void Delete() => Deleted?.Invoke(this);
-
-        public void AddComponent(IComponent component)
-        {
-            _components.Add(component);
-            component.Parent = this;
-            ComponentAdded?.Invoke(component);
-        }
-
-        public T AddComponent<T>(string? name = null) where T : IComponent, new()
-        {
-            var c = new T();
-            if (name != null) c.Name = name;
-            AddComponent(c);
-            return c;
-        }
-
-        public T GetOrAddComponent<T>() where T : IComponent, new() => GetComponent<T>() ?? AddComponent<T>();
-
-        public void RemoveComponent(IComponent component)
-        {
-            component.Enabled = false;
-            _components.Remove(component);
-            ComponentRemoved?.Invoke(component);
-        }
-
-        public void RemoveComponent(string name)
-        {
-            foreach (var component in ((IEnumerable<IComponent>)_components).Reverse())
-            {
-                if (component.Name == name)
-                {
-                    RemoveComponent(component);
-                }
-            }
-        }
-
-        [return: MaybeNull]
-        public T GetComponent<T>() where T : IComponent
-        {
-            foreach (var component in _components)
-            {
-                if (component is T c) return c;
-            }
-            return default(T);
-        }
-
-        [return: MaybeNull]
-        public T GetComponentByName<T>(string name) where T : IComponent
-        {
-            foreach (var component in _components)
-            {
-                if (component.Name == name && component is T c) return c;
-            }
-            return default(T);
-        }
 
         public void BringToFront() => BroughtToFront?.Invoke(this);
 

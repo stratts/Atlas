@@ -17,7 +17,7 @@ namespace Atlas
 
             LayoutBorder IContainer.Padding => Padding;
             Vector2 IContainer.Offset => Offset;
-            Vector2 IContainer.Size => Size;
+            ref Vector2 IContainer.Size => ref Size;
         }
 
         private Vector2 _size;

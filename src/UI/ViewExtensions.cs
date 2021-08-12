@@ -8,17 +8,17 @@ namespace Atlas.UI
 
     public static class ViewExtensions
     {
-        private static T? GetComponent<T>(this View view) where T : Component
+        private static T? GetComponent<T>(this View view)
         {
             return view.GetNode().GetComponent<T>();
         }
 
-        private static T AddComponent<T>(this View view) where T : Component, new()
+        private static T AddComponent<T>(this View view) where T : new()
         {
             return view.GetNode().AddComponent<T>();
         }
 
-        private static void AddComponent(this View view, Component c)
+        private static void AddComponent<T>(this View view, T c)
         {
             view.GetNode().AddComponent(c);
         }
@@ -29,16 +29,16 @@ namespace Atlas.UI
             return obj;
         }
 
-        private static Layout GetLayout(this View view)
+        private static ref Layout GetLayout(this View view)
         {
-            return view.GetComponent<Layout>() is Layout l ? l : view.AddComponent<Layout>();
+            return ref view.Node.GetOrAddComponent<Layout>();
         }
 
-        public static T InitComponents<T>(this T view, params Component[] components) where T : View
+        /*public static T InitComponents<T>(this T view, params Component[] components) where T : View
         {
             foreach (var c in components) view.AddComponent(c);
             return view;
-        }
+        }*/
 
         public static T WithUpdate<T>(this T view, Action<T> func) where T : View
         {

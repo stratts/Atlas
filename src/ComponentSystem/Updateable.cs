@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Necs;
 
 namespace Atlas
 {
-    public interface ILogicComponent : IComponent
-    {
-        void Update(Scene scene, float elapsed);
-    }
-
-    public class Updateable : Component, ILogicComponent
+    public class Updateable
     {
         public Action<Scene, float>? UpdateMethod { get; set; }
 
@@ -16,17 +12,14 @@ namespace Atlas
 
         public Updateable(Action<Scene, float> updateMethod) => UpdateMethod = updateMethod;
 
-        void ILogicComponent.Update(Scene scene, float elapsed) => UpdateMethod?.Invoke(scene, elapsed);
+        public void Update(Scene scene, float elapsed) => UpdateMethod?.Invoke(scene, elapsed);
     }
 
-    public class UpdateSystem : BaseComponentSystem<ILogicComponent>
+    public class UpdateSystem : IComponentSystem<UpdateContext, Updateable>
     {
-        public override void UpdateComponents(Scene scene, IReadOnlyList<ILogicComponent> components, float elapsed)
+        public void Process(UpdateContext context, ref Updateable component)
         {
-            foreach (var c in components)
-            {
-                if (c.Enabled) c.Update(scene, elapsed);
-            }
+            component.Update(context.Scene, context.ElapsedTime);
         }
     }
 }

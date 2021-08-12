@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using static Atlas.Collision.Direction;
+using Necs;
 
 namespace Atlas
 {
@@ -38,31 +39,25 @@ namespace Atlas
         }
     }
 
-    public class Collision : Component
+    public class Collision
     {
         [Flags]
         public enum Direction { None = 0, Left = 1, Right = 2, Top = 4, Bottom = 8 }
         public Direction? RestrictDirection { get; set; }
         public Rectangle? Area { get; set; }
         public Action<CollisionInfo>? OnCollision { get; set; }
-        public Rectangle CollisionBox
-        {
-            get
-            {
-                var area = Area.HasValue ? Area.Value : new Rectangle(Point.Zero, Parent.Size.ToPoint());
-                return new Rectangle(area.Location + Parent.ScenePosition.ToPoint(), area.Size);
-            }
-        }
+        public Rectangle CollisionBox => Rectangle.Empty;
         public int? Mask { get; set; }
         public bool CollidingWith(Collision other) => CollisionBox.Intersects(other.CollisionBox);
     }
 
-    public class CollisionSystem : BaseComponentSystem<Collision>
+    public class CollisionSystem : IComponentSpanSystem<SceneContext, Collision>
     {
         private const int _gridSize = 128;
         private Dictionary<(int, int), List<Collision>> _grid = new Dictionary<(int, int), List<Collision>>();
 
-        public override void UpdateComponents(Scene scene, IReadOnlyList<Collision> components, float elapsed)
+
+        public void Process(SceneContext context, Span<Collision> components)
         {
             foreach (var list in _grid.Values) list.Clear();
 
@@ -99,7 +94,7 @@ namespace Atlas
 
                         if (a.CollidingWith(b))
                         {
-                            var info = GetInfo(b.Parent, a.CollisionBox, b.CollisionBox);
+                            var info = GetInfo(a.CollisionBox, b.CollisionBox);
                             var collisionInfo = new CollisionInfo(a, b, info.vector, info.coord, info.dir);
                             if (a.RestrictDirection.HasValue && !a.RestrictDirection.Value.HasFlag(info.dir)) continue;
                             if (b.RestrictDirection.HasValue && !b.RestrictDirection.Value.HasFlag(info.dir.Invert())) continue;
@@ -110,7 +105,7 @@ namespace Atlas
             }
         }
 
-        private (float coord, Collision.Direction dir, Vector2 vector) GetInfo(Node source, Rectangle a, Rectangle b)
+        private (float coord, Collision.Direction dir, Vector2 vector) GetInfo(Rectangle a, Rectangle b)
         {
             // Find edges of the two boxes that are closest
             Span<(Collision.Direction dir, int dist)> distances = stackalloc[] {

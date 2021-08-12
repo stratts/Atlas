@@ -52,7 +52,7 @@ namespace Atlas
 
             spriteBatch.Draw(
                 _texture,
-                new Rectangle(position.ToPoint() + Offset.ToPoint(), Size.ToPoint()),
+                new Rectangle(position.ToPoint() + Offset.ToPoint(), _size),
                 sourceRect,
                 GetRenderColor(Colors.White),
                 rotation: 0,

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" Condition="'$(TargetFramework)' == 'net5.0-windows'"/>
-    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" Condition="'$(TargetFramework)' == 'net5.0'"/>
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" Condition="'$(TargetFramework)' == 'net5.0-windows'" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" Condition="'$(TargetFramework)' == 'net5.0'" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -22,8 +22,8 @@
 
   <ItemGroup>
     <ProjectReference Include="lib\SharpFont\SharpFont\SharpFont.csproj" />
-    <ProjectReference Include="lib\Atlas.AnimGenerator\Atlas.AnimGenerator.csproj"
-                            OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="lib\Atlas.AnimGenerator\Atlas.AnimGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="lib\Necs\src\Necs.csproj" />
   </ItemGroup>
 
 </Project>

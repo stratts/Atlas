@@ -1,5 +1,6 @@
 
 using Microsoft.Xna.Framework;
+using Necs;
 
 namespace Atlas
 {
@@ -13,6 +14,12 @@ namespace Atlas
             Size = size;
             Padding = padding;
             Offset = offset;
+        }
+
+        public override void AddChild(Entity child)
+        {
+            base.AddChild(child);
+            ((Node)child).GetOrAddComponent<Layout>().Container = this;
         }
     }
 }

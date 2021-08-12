@@ -9,8 +9,7 @@ namespace Atlas.UI
 
         public bool HasView => _view != null;
 
-        public override Vector2 Size => _node?.Size ?? Vector2.Zero;
-        protected Node? Node => _node;
+        public Node? Node => _node;
 
         public ViewNode(bool fill = true)
         {
@@ -25,6 +24,7 @@ namespace Atlas.UI
             _node = newView.GetNode();
             AddChild(_node);
             _view = newView;
+            Size = _node.Size;
         }
 
         public void ClearView()

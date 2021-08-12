@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Necs;
 
 namespace Atlas
 {
@@ -42,7 +43,7 @@ namespace Atlas
     {
         Vector2 Offset { get; }
         LayoutBorder Padding { get; }
-        Vector2 Size { get; }
+        ref Vector2 Size { get; }
 
         Vector2 PaddedSize => Size - Padding.Size;
         float Left => Offset.X + Padding.Left;
@@ -54,7 +55,7 @@ namespace Atlas
     public enum HAlign { Default, None, Left, Right, Centre }
     public enum VAlign { Default, None, Top, Bottom, Centre }
 
-    public class Layout : Component
+    public class Layout
     {
         public Vector2 Offset { get; set; }
         public IContainer? Container { get; set; }
@@ -65,14 +66,15 @@ namespace Atlas
         public Vector2 Fill { get; set; } = Vector2.Zero;
     }
 
-    public class LayoutSystem : BaseComponentSystem<Layout>
+    public class LayoutSystem : IComponentParentSystem<UpdateContext, Layout, Transform>
     {
-        private struct Container : IContainer
+        private class Container : IContainer
         {
+            private Vector2 _size;
+
             public Vector2 Offset { get; }
             public LayoutBorder Padding => LayoutBorder.None;
-            public Vector2 Size { get; }
-
+            public ref Vector2 Size => ref _size;
             public Container(Vector2 size) : this(Vector2.Zero, size) { }
 
             public Container(Vector2 offset, Vector2 size)
@@ -82,50 +84,42 @@ namespace Atlas
             }
         }
 
-        public LayoutSystem() => ReverseSort = true;
-
-        public override void UpdateComponents(Scene scene, IReadOnlyList<Layout> components, float elapsed)
+        public void Process(UpdateContext context, ref Layout c, ref Transform transform, ref Transform parent, bool hasParent)
         {
-            foreach (var c in components)
+            //Console.WriteLine(hasParent);
+            IContainer container;
+            if (c.Container != null) container = c.Container;
+            else if (hasParent) container = new Container(parent.Size);
+            else return;
+
+            if (c.IgnorePadding) container = new Container(container.Offset, container.Size);
+
+            if (c.Fill.X > 0)
             {
-                if (!c.Enabled || c.Parent == null) continue;
-                var parent = c.Parent;
-
-                IContainer container;
-                if (c.Container != null) container = c.Container;
-                else if (parent.Parent is IContainer p) container = p;
-                else if (parent.Parent != null) container = new Container(parent.Parent.Size);
-                else continue;
-
-                if (c.IgnorePadding) container = new Container(container.Offset, container.Size);
-
-                if (c.Fill.X > 0)
-                {
-                    parent.Size = new Vector2((container.PaddedSize.X - c.Margin.Left - c.Margin.Right) * c.Fill.X, parent.Size.Y);
-                }
-                if (c.Fill.Y > 0)
-                {
-                    parent.Size = new Vector2(parent.Size.X, (container.PaddedSize.Y - c.Margin.Top - c.Margin.Bottom) * c.Fill.Y);
-                }
-
-                parent.Position.X = c.Offset.X + c.HAlign switch
-                {
-                    HAlign.Left => container.Left + c.Margin.Left,
-                    HAlign.Right => container.Right - parent.Size.X - c.Margin.Right,
-                    HAlign.Centre => container.Left + c.Margin.Left + (container.PaddedSize.X / 2 - c.Parent.Size.X / 2),
-                    HAlign.None => parent.Position.X,
-                    _ => container.Left + c.Margin.Left
-                };
-
-                parent.Position.Y = c.Offset.Y + c.VAlign switch
-                {
-                    VAlign.Top => container.Top + c.Margin.Top,
-                    VAlign.Bottom => container.Bottom - parent.Size.Y - c.Margin.Bottom,
-                    VAlign.Centre => container.Top + c.Margin.Top + (container.PaddedSize.Y / 2 - c.Parent.Size.Y / 2),
-                    VAlign.None => parent.Position.Y,
-                    _ => container.Top + c.Margin.Top
-                };
+                transform.Size = new Vector2((container.PaddedSize.X - c.Margin.Left - c.Margin.Right) * c.Fill.X, transform.Size.Y);
             }
+            if (c.Fill.Y > 0)
+            {
+                transform.Size = new Vector2(transform.Size.X, (container.PaddedSize.Y - c.Margin.Top - c.Margin.Bottom) * c.Fill.Y);
+            }
+
+            transform.Position.X = c.Offset.X + c.HAlign switch
+            {
+                HAlign.Left => container.Left + c.Margin.Left,
+                HAlign.Right => container.Right - transform.Size.X - c.Margin.Right,
+                HAlign.Centre => container.Left + c.Margin.Left + (container.PaddedSize.X / 2 - transform.Size.X / 2),
+                HAlign.None => transform.Position.X,
+                _ => container.Left + c.Margin.Left
+            };
+
+            transform.Position.Y = c.Offset.Y + c.VAlign switch
+            {
+                VAlign.Top => container.Top + c.Margin.Top,
+                VAlign.Bottom => container.Bottom - transform.Size.Y - c.Margin.Bottom,
+                VAlign.Centre => container.Top + c.Margin.Top + (container.PaddedSize.Y / 2 - transform.Size.Y / 2),
+                VAlign.None => transform.Position.Y,
+                _ => container.Top + c.Margin.Top
+            };
         }
     }
 }

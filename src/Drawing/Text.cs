@@ -8,8 +8,17 @@ namespace Atlas
     {
         private Font _font;
         private int _fontSize = 16;
+        private string _content = "";
 
-        public string Content { get; set; } = "";
+        public string Content
+        {
+            get => _content;
+            set
+            {
+                _content = value;
+                Size = MeasureString(value);
+            }
+        }
         public Color Color { get; set; } = Colors.White;
         public int FontSize
         {
@@ -20,8 +29,6 @@ namespace Atlas
                 _font = FontService.GetFont(value);
             }
         }
-
-        public override Vector2 Size => MeasureString(Content);
 
         public Text()
         {

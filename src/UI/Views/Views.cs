@@ -15,7 +15,7 @@ namespace Atlas.UI.Views
 
         public string Content { get => _node.Content; set => _node.Content = value; }
 
-        protected override Node Node => _node;
+        internal override Node Node => _node;
 
         public TextView Color(Color c) => Modify(this, () => _node.Color = c);
 
@@ -32,7 +32,7 @@ namespace Atlas.UI.Views
     {
         private Button _button;
 
-        protected override Node Node => _button;
+        internal override Node Node => _button;
 
         public ButtonView(string label, Action? onClick)
         {
@@ -53,9 +53,9 @@ namespace Atlas.UI.Views
 
     public class BoxView : View
     {
-        protected StackBox _box;
+        internal StackBox _box;
 
-        protected override Node Node => _box;
+        internal override Node Node => _box;
 
         public BoxView(StackBox.Direction direction, params View?[] children)
         {
@@ -80,12 +80,12 @@ namespace Atlas.UI.Views
     {
         public VBoxView(params View?[] children) : base(StackBox.Direction.Vertical, children) { }
 
-        public VBoxView Width(int width) => Modify(this, () => _box.Size = new Vector2(width, _box.Size.Y));
+        public VBoxView Width(int width) => Modify(this, () => _box.SetWidth(width));
     }
 
     public class NodeView : View
     {
-        protected override Node Node { get; }
+        internal override Node Node { get; }
 
         public NodeView(Node node) => Node = node;
     }
@@ -96,7 +96,7 @@ namespace Atlas.UI.Views
         private Panel _panel;
         private Vector2 _size;
 
-        protected override Node Node => _panel;
+        internal override Node Node => _panel;
 
         public PanelView(View view, LayoutBorder? padding = null)
         {
@@ -128,7 +128,7 @@ namespace Atlas.UI.Views
         private Color _background = Colors.Transparent;
         private View _view;
         private Container _container;
-        protected override Node Node => _container;
+        internal override Node Node => _container;
 
         public Color BackgroundColor { get; private set; }
 
@@ -180,7 +180,7 @@ namespace Atlas.UI.Views
     {
         private TextInput _input = new TextInput();
 
-        protected override Node Node => _input;
+        internal override Node Node => _input;
 
         public TextInputView Bind(Action<string> set, Func<string>? get = null) { _input.Bind(set, get); return this; }
 

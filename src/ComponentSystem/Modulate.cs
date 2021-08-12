@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Atlas
 {
-    public class Modulate : Component
+    public class Modulate
     {
         public static Tag Disable = Tag.New();
 
@@ -14,7 +14,7 @@ namespace Atlas
 
         public Color ModulateColor(Color color)
         {
-            if (!Enabled) return color;
+            //if (!Enabled) return color;
             var opacity = InheritFrom != null ? Opacity * InheritFrom.Opacity : Opacity;
             var tint = InheritFrom != null && InheritFrom.Tint != Colors.White ? InheritFrom.Tint : Tint;
             var brightness = InheritFrom != null ? InheritFrom.Brightness + Brightness : Brightness;
@@ -28,7 +28,7 @@ namespace Atlas
         }
     }
 
-    public class ModulateSystem : BaseComponentSystem<Modulate>
+    /*public class ModulateSystem : BaseComponentSystem<Modulate>
     {
         public ModulateSystem()
         {
@@ -62,6 +62,6 @@ namespace Atlas
                 if (!child.HasTag(Modulate.Disable)) Inherit(child, component);
             }
         }
-    }
+    }*/
 }
 

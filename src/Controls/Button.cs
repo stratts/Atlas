@@ -24,7 +24,7 @@ namespace Atlas
         {
             _label = label;
 
-            if (!(_label.GetComponent<Layout>() is Layout l)) _label.AddComponent(new Layout());
+            _label.GetOrAddComponent<Layout>().Container = this;
             var rect = new RoundedRect()
             {
                 Color = _baseColor,

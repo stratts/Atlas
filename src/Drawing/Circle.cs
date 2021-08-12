@@ -4,9 +4,18 @@ namespace Atlas
 {
     public class Circle : CustomDrawingNode
     {
-        public int Radius { get; set; }
+        private int _radius = 0;
+
+        public int Radius
+        {
+            get => _radius;
+            set
+            {
+                _radius = value;
+                Size = new Vector2(Radius * 2);
+            }
+        }
         public Color Color { get; set; }
-        public override Vector2 Size => new Vector2(Radius * 2);
 
         public override void Draw() => DrawCircle(new Vector2(Radius / 2), Radius, Color);
     }

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace Atlas
 {
-    public class Parallax : Component, ILogicComponent
+    /*public class Parallax : Component, ILogicComponent
     {
         private Vector2? _prevCameraPos;
 
@@ -18,5 +18,5 @@ namespace Atlas
             }
             _prevCameraPos = scene.Camera.Position;
         }
-    }
+    }*/
 }

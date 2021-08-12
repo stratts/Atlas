@@ -8,7 +8,10 @@ namespace Atlas
 
     public class UpdateContext : IUpdateContext
     {
+        public Scene Scene { get; internal set; }
         public float ElapsedTime { get; internal set; }
+
+        public UpdateContext(Scene scene) => Scene = scene;
 
         public void Update(IUpdateContext context)
         {

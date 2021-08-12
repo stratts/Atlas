@@ -5,13 +5,13 @@ namespace Atlas.UI
 {
     public abstract class View
     {
-        protected abstract Node Node { get; }
+        internal abstract Node Node { get; }
 
         public Vector2 Size => Node.Size;
 
         public Node GetNode()
         {
-            if (Node.GetComponent<Layout>() is null) Node.AddComponent<Layout>();
+            Node.GetOrAddComponent<Layout>();
             return Node;
         }
 

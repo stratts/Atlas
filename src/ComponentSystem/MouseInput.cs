@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Necs;
 
 namespace Atlas
 {
-    public class MouseInput : Component
+    public class MouseInput
     {
         public bool ConsumeInput { get; set; } = true;
         public bool HandleConsumed { get; set; } = false;
@@ -21,96 +22,100 @@ namespace Atlas
         public Action? OnFocusExit { get; set; }
     }
 
-    public class MouseInputSystem : BaseComponentSystem<MouseInput>
+    public class MouseInputSystem : IComponentSystem<UpdateContext, Transform, MouseInput>
     {
         private MouseState _mouseState;
         private MouseState _prevMouseState = Mouse.GetState();
         private Vector2 _mousePos;
         private Vector2 _prevMousePos;
         private HashSet<MouseInput> _mouseEntered = new HashSet<MouseInput>();
-        private static Node? _consumedBy;
+        private static MouseInput? _consumedBy;
         private static MouseInput? _focused;
 
         public static bool InputConsumed { get; set; } = false;
 
-        public override void UpdateComponents(Scene scene, IReadOnlyList<MouseInput> components, float elapsed)
+        public void Process(UpdateContext context, ref Transform t, ref MouseInput c)
         {
-            _mouseState = Mouse.GetState();
-            _mousePos = MouseToScenePos(scene, _mouseState);
-
-            foreach (var c in components)
+            if ((!InputConsumed || c.HandleConsumed || _consumedBy == c) && WithinInputArea(context.Scene, _mousePos, t, c))
             {
-                if (c.Enabled && (!InputConsumed || c.HandleConsumed || _consumedBy == c.Parent) && WithinInputArea(scene, _mousePos, c))
+                // Handle mouse enter
+                if (!_mouseEntered.Contains(c))
                 {
-                    // Handle mouse enter
-                    if (!_mouseEntered.Contains(c))
+                    _mouseEntered.Add(c);
+                    c.OnMouseEnter?.Invoke();
+                }
+
+                if (_mouseState.LeftButton == ButtonState.Pressed) c.ButtonHeld = true;
+                else c.ButtonHeld = false;
+
+                // Handle click
+                if (_mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
+                {
+                    c.OnClick?.Invoke(MouseToAreaPos(context.Scene, _mousePos, t, c));
+
+                    if (_focused != c)
                     {
-                        _mouseEntered.Add(c);
-                        c.OnMouseEnter?.Invoke();
-                    }
-
-                    if (_mouseState.LeftButton == ButtonState.Pressed) c.ButtonHeld = true;
-                    else c.ButtonHeld = false;
-
-                    // Handle click
-                    if (_mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
-                    {
-                        c.OnClick?.Invoke(MouseToAreaPos(scene, _mousePos, c));
-
-                        if (_focused != c)
-                        {
-                            c.OnFocusEnter?.Invoke();
-                            _focused?.OnFocusExit?.Invoke();
-                            _focused = c;
-                        }
-                    }
-
-                    // Handle scroll
-                    var scroll = _mouseState.ScrollWheelValue - _prevMouseState.ScrollWheelValue;
-                    if (scroll != 0) c.OnScroll?.Invoke(_mousePos, scroll);
-
-                    // Handle movement
-                    if (_mousePos != _prevMousePos)
-                    {
-                        var curAreaPos = MouseToAreaPos(scene, _mousePos, c);
-                        var prevAreaPos = MouseToAreaPos(scene, _prevMousePos, c);
-                        c.OnMove?.Invoke(curAreaPos, curAreaPos - prevAreaPos);
-                    }
-
-                    // Mark input as consumed
-                    if (c.ConsumeInput)
-                    {
-                        _consumedBy = c.Parent;
-                        InputConsumed = true;
+                        c.OnFocusEnter?.Invoke();
+                        _focused?.OnFocusExit?.Invoke();
+                        _focused = c;
                     }
                 }
-                else if (_mouseEntered.Contains(c))
+
+                // Handle scroll
+                var scroll = _mouseState.ScrollWheelValue - _prevMouseState.ScrollWheelValue;
+                if (scroll != 0) c.OnScroll?.Invoke(_mousePos, scroll);
+
+                // Handle movement
+                if (_mousePos != _prevMousePos)
                 {
-                    c.OnMouseExit?.Invoke();
-                    _mouseEntered.Remove(c);
+                    var curAreaPos = MouseToAreaPos(context.Scene, _mousePos, t, c);
+                    var prevAreaPos = MouseToAreaPos(context.Scene, _prevMousePos, t, c);
+                    c.OnMove?.Invoke(curAreaPos, curAreaPos - prevAreaPos);
+                }
+
+                // Mark input as consumed
+                if (c.ConsumeInput)
+                {
+                    _consumedBy = c;
+                    InputConsumed = true;
                 }
             }
-
-            _prevMouseState = _mouseState;
-            _prevMousePos = _mousePos;
+            else if (_mouseEntered.Contains(c))
+            {
+                c.OnMouseExit?.Invoke();
+                _mouseEntered.Remove(c);
+            }
         }
 
         public static Vector2 MouseToScenePos(Scene scene, MouseState state) =>
             scene.ScreenToScene(state.Position.ToAtlasVector2());
 
-        private Vector2 MouseToAreaPos(Scene scene, Vector2 mousePos, MouseInput component)
+        private Vector2 MouseToAreaPos(Scene scene, Vector2 mousePos, Transform t, MouseInput component)
         {
-            var nodePos = component.Parent.ScenePosition;
+            var nodePos = t.ScenePos;
             var areaPos = new Vector2(component.InputArea.X, component.InputArea.Y);
             return mousePos - nodePos - areaPos;
         }
 
-        private bool WithinInputArea(Scene scene, Vector2 mousePos, MouseInput component)
+        private bool WithinInputArea(Scene scene, Vector2 mousePos, Transform t, MouseInput component)
         {
-            var area = component.InputArea != Rectangle.Empty ? component.InputArea : component.Parent.Size.ToRectangle();
+            var area = component.InputArea != Rectangle.Empty ? component.InputArea : t.Size.ToRectangle();
             if (component.CaptureGlobal) return true;
-            var areaPos = MouseToAreaPos(scene, mousePos, component);
+            var areaPos = MouseToAreaPos(scene, mousePos, t, component);
             return (!(areaPos.X < 0 || areaPos.X > area.Width || areaPos.Y < 0 || areaPos.Y > area.Height));
+        }
+
+
+        public void BeforeProcess(UpdateContext context)
+        {
+            _mouseState = Mouse.GetState();
+            _mousePos = MouseToScenePos(context.Scene, _mouseState);
+        }
+
+        public void AfterProcess(UpdateContext context)
+        {
+            _prevMouseState = _mouseState;
+            _prevMousePos = _mousePos;
         }
     }
 }

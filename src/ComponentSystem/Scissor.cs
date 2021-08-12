@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace Atlas
 {
-    public class Scissor : Component
+    public class Scissor
     {
         public static Tag Ignore = Tag.New();
 
         public LayoutBorder Bounds { get; set; }
     }
 
-    public class ScissorSystem : BaseComponentSystem<Scissor>
+    /*public class ScissorSystem : BaseComponentSystem<Scissor>
     {
         public ScissorSystem()
         {
@@ -45,5 +45,5 @@ namespace Atlas
                 EnableScissor(child, offsetArea);
             }
         }
-    }
+    }*/
 }
