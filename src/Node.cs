@@ -49,22 +49,13 @@ namespace Atlas
 
         public bool Removed = false;
 
-        public uint? SceneLayer => RootNode != null ? RootNode.Layer : Layer;
-
         public ref Vector2 Position => ref GetComponent<Transform>().Position;
         public ref Vector2 Size => ref GetComponent<Transform>().Size;
         public virtual Rectangle Bounds => GetBounds();
         public bool Enabled { get; set; } = true;
 
-        public virtual Vector2 Centre { get; set; }
-
         public bool PlaceInScene { get; set; } = false;
         public uint? Layer { get; set; }
-
-        public int Depth => Parent != null ? Parent.Depth + 1 : 0;
-
-        public Node? RootNode { get; internal set; }
-        public Node? Parent { get; internal set; }
 
         public event Action<Node>? OnEnabled;
         public event Action<Node>? Deleted;
@@ -123,8 +114,6 @@ namespace Atlas
         public void Delete() => Deleted?.Invoke(this);
 
         public void BringToFront() => BroughtToFront?.Invoke(this);
-
-        public Color GetRenderColor(Color c) => GetComponent<Modulate>() is Modulate m ? m.ModulateColor(c) : c;
 
         public void AddTag(Tag tag) => _tags.AddTag(tag);
 

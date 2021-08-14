@@ -24,6 +24,6 @@ namespace Atlas
             Position = position;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position) => CustomDrawing.DrawEqTriangle(position, Size, GetRenderColor(Color));
+        public void Draw(SpriteBatch spriteBatch, DrawContext ctx) => CustomDrawing.DrawEqTriangle(ctx.Position, Size, ctx.Modulate.ModulateColor(Color));
     }
 }

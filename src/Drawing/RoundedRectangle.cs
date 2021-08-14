@@ -16,11 +16,12 @@ namespace Atlas
             AddComponent<Modulate>();
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position)
+        public void Draw(SpriteBatch spriteBatch, DrawContext ctx)
         {
-            var size = Size;
-            var color = GetRenderColor(Color);
+            var size = ctx.Size;
+            var color = ctx.Modulate.ModulateColor(Color);
             var radius = Radius;
+            var position = ctx.Position;
             CustomDrawing.DrawRect(position + new Vector2(0, radius), size - new Vector2(0, radius * 2), color);
             CustomDrawing.DrawRect(position + new Vector2(radius, 0), new Vector2(size.X - radius * 2, radius), color);
             CustomDrawing.DrawRect(position + new Vector2(radius, size.Y - radius), new Vector2(size.X - radius * 2, radius), color);

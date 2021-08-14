@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Necs;
 
 namespace Atlas
 {
@@ -7,6 +8,7 @@ namespace Atlas
     {
         public static Tag Disable = Tag.New();
 
+        public bool Enabled = true;
         public Modulate? InheritFrom { get; set; } = null;
         public float Opacity { get; set; } = 1f;
         public Color Tint { get; set; } = Colors.White;
@@ -14,7 +16,7 @@ namespace Atlas
 
         public Color ModulateColor(Color color)
         {
-            //if (!Enabled) return color;
+            if (!Enabled) return color;
             var opacity = InheritFrom != null ? Opacity * InheritFrom.Opacity : Opacity;
             var tint = InheritFrom != null && InheritFrom.Tint != Colors.White ? InheritFrom.Tint : Tint;
             var brightness = InheritFrom != null ? InheritFrom.Brightness + Brightness : Brightness;
@@ -28,40 +30,20 @@ namespace Atlas
         }
     }
 
-    /*public class ModulateSystem : BaseComponentSystem<Modulate>
+    public class ModulateSystem : IComponentParentSystem<UpdateContext, Modulate>
     {
-        public ModulateSystem()
+        public void Process(UpdateContext context, ref Modulate a, ref Modulate? parent, bool hasParent)
         {
-            UpdateEveryTick = false;
+            if (parent != null) a.InheritFrom = parent;
         }
+    }
 
-        public override void UpdateComponents(Scene scene, IReadOnlyList<Modulate> components, float elapsed)
+    public class DrawableModulateSystem : IComponentSystem<UpdateContext, Drawable, Modulate>
+    {
+        public void Process(UpdateContext context, ref Drawable a, ref Modulate b)
         {
-            foreach (var c in components)
-            {
-                if (c.Enabled == false)
-                {
-                    c.InheritFrom = null;
-                    continue;
-                }
-
-                if (c.InheritFrom != null && !c.InheritFrom.Enabled) c.InheritFrom = null;
-
-                foreach (var child in c.Parent.Children)
-                {
-                    if (!child.HasTag(Modulate.Disable)) Inherit(child, c);
-                }
-            }
+            if (a.Modulate != b) a.Modulate = b;
         }
-
-        private void Inherit(Node node, Modulate component)
-        {
-            if (node.GetComponent<Modulate>() is Modulate m) m.InheritFrom = component;
-            foreach (var child in node.Children)
-            {
-                if (!child.HasTag(Modulate.Disable)) Inherit(child, component);
-            }
-        }
-    }*/
+    }
 }
 

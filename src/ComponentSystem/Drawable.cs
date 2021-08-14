@@ -6,14 +6,22 @@ using Necs;
 
 namespace Atlas
 {
-    public delegate void DrawMethod(SpriteBatch spriteBatch, Vector2 position);
+    public delegate void DrawMethod(SpriteBatch spriteBatch, DrawContext context);
 
-    public class Drawable
+    public struct Drawable
     {
         public Rectangle DrawBounds { get; set; }
-        float Opacity { get; set; }
         public DrawMethod? Draw { get; set; }
         public Rectangle? ScissorArea { get; set; }
+        public Modulate? Modulate { get; set; }
+    }
+
+    public struct DrawContext
+    {
+        public SpriteBatch SpriteBatch;
+        public Vector2 Position;
+        public Vector2 Size;
+        public Modulate Modulate;
     }
 
     public struct RenderContext
@@ -31,6 +39,7 @@ namespace Atlas
         private Matrix _matrix;
         private Vector2 _camera;
         private Rectangle _viewport;
+        private Modulate _disabledModulate = new Modulate() { Enabled = false };
 
         public void BeforeProcess(RenderContext context)
         {
@@ -74,8 +83,15 @@ namespace Atlas
 
             if (bounds.Intersects(_viewport) || bounds == Rectangle.Empty)
             {
+                var drawContext = new DrawContext()
+                {
+                    SpriteBatch = spriteBatch,
+                    Position = pos - _camera.Floored(),
+                    Size = t.Size,
+                    Modulate = d.Modulate != null ? d.Modulate : _disabledModulate
+                };
                 //d.AltPriority = (ulong)Math.Abs(pos.X);
-                d.Draw?.Invoke(spriteBatch, pos - _camera.Floored());
+                d.Draw?.Invoke(spriteBatch, drawContext);
                 //CustomDrawing.DrawRect(bounds.Location.ToVector2() - scene.Camera.Position.Floor(), bounds.Size.ToVector2(), Color.Red * 0.5f);
                 /*if (d.ScissorArea.HasValue)
                 {

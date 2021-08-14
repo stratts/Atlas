@@ -103,8 +103,8 @@ namespace Atlas
             _ecs.AddSystem(new UpdateSystem());
             //AddSystem(new CollisionSystem());
 
-
-            //AddSystem(new ModulateSystem());
+            _ecs.AddSystem(new ModulateSystem());
+            _ecs.AddSystem(new DrawableModulateSystem());
             //AddSystem(new ScissorSystem());
             _ecs.AddRenderSystem(new DrawableSystem());
         }
@@ -115,14 +115,14 @@ namespace Atlas
         {
             if (layer.HasValue) node.Layer = layer.Value;
 
-            //node.Deleted += RemoveNode;
             _ecs.AddEntity(node);
+            node.Deleted += RemoveNode;
             if (node.Layer != null) _ecs.SetTreePriority(node.Id, (ulong)node.Layer.Value);
         }
 
         public void RemoveNode(Node node)
         {
-            var parent = node.Parent;
+            node.Deleted -= RemoveNode;
             _ecs.RemoveEntity(node);
         }
 

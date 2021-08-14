@@ -149,7 +149,7 @@ namespace Atlas
             };
         }
 
-        private void Draw(SpriteBatch spriteBatch, Vector2 position)
+        private void Draw(SpriteBatch spriteBatch, DrawContext ctx)
         {
             for (int x = 0; x < MapSize.X; x++)
             {
@@ -159,7 +159,7 @@ namespace Atlas
                     if (!tile.HasValue) continue;
 
                     var sourceRect = TileSet.GetTileRect(tile.Value);
-                    spriteBatch.Draw(TileSet.Texture, position + new Vector2(x, y) * TileSize, sourceRect, GetRenderColor(Colors.White));
+                    spriteBatch.Draw(TileSet.Texture, ctx.Position + new Vector2(x, y) * TileSize, sourceRect, ctx.Modulate.ModulateColor(Colors.White));
                 }
             }
         }

@@ -69,20 +69,20 @@ namespace Atlas
             return new Vector2(pos.X, pos.Y + _font.NominalHeight - _font.Ascender);
         }
 
-        private void Draw(SpriteBatch spriteBatch, Vector2 position)
+        private void Draw(SpriteBatch spriteBatch, DrawContext ctx)
         {
-            Vector2 pos = position + new Vector2(0, _font.Ascender);
+            Vector2 pos = ctx.Position + new Vector2(0, _font.Ascender);
             foreach (var c in Content)
             {
                 if (c == '\n')
                 {
-                    pos = new Vector2(position.X, pos.Y + _font.Height);
+                    pos = new Vector2(ctx.Position.X, pos.Y + _font.Height);
                     continue;
                 }
                 var glyph = _font.GetGlyph(c);
 
                 var bitmap = _font.GetBitmap(glyph, spriteBatch.GraphicsDevice);
-                spriteBatch.Draw(bitmap.Texture, pos - new Vector2(-bitmap.Left, bitmap.Top), GetRenderColor(Color));
+                spriteBatch.Draw(bitmap.Texture, pos - new Vector2(-bitmap.Left, bitmap.Top), ctx.Modulate.ModulateColor(Color));
 
                 pos.X += glyph.Advance + glyph.Kerning;
             }

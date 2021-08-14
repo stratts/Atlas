@@ -10,7 +10,7 @@ namespace Atlas
         private static Dictionary<string, Texture2D> _textures = new Dictionary<string, Texture2D>();
         private Point _size;
         private Texture2D _texture;
-        private Drawable _drawable;
+        private ref Drawable _drawable => ref GetComponent<Drawable>();
         private Vector2 _offset;
 
         public int? CurrentFrame { get; set; } = null;
@@ -34,12 +34,11 @@ namespace Atlas
             _size = size;
             Size = _size.ToVector2();
 
-            _drawable = new Drawable { Draw = Draw };
-            AddComponent(_drawable);
+            AddComponent(new Drawable { Draw = Draw });
             AddComponent(new Modulate());
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position)
+        public void Draw(SpriteBatch spriteBatch, DrawContext ctx)
         {
             Rectangle sourceRect;
             if (CurrentFrame.HasValue)
@@ -52,9 +51,9 @@ namespace Atlas
 
             spriteBatch.Draw(
                 _texture,
-                new Rectangle(position.ToPoint() + Offset.ToPoint(), _size),
+                new Rectangle(ctx.Position.ToPoint() + Offset.ToPoint(), _size),
                 sourceRect,
-                GetRenderColor(Colors.White),
+                ctx.Modulate.ModulateColor(Colors.White),
                 rotation: 0,
                 origin: Vector2.Zero,
                 HFlip ? SpriteEffects.FlipHorizontally : SpriteEffects.None,

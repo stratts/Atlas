@@ -141,7 +141,7 @@ namespace Atlas.UI.Views
             _container = container;
             _container.AddComponent(new Drawable()
             {
-                Draw = (_, position) => CustomDrawing.DrawRect(position, Size, BackgroundColor)
+                Draw = (_, ctx) => CustomDrawing.DrawRect(ctx.Position, Size, BackgroundColor)
             });
         }
 

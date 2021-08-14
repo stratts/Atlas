@@ -24,7 +24,7 @@ namespace Atlas
             Position = position;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Vector2 position) =>
-            CustomDrawing.DrawRect(position, Size, GetRenderColor(Color));
+        public void Draw(SpriteBatch spriteBatch, DrawContext ctx) =>
+            CustomDrawing.DrawRect(ctx.Position, ctx.Size, ctx.Modulate.ModulateColor(Color));
     }
 }
