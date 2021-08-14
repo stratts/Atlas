@@ -115,9 +115,9 @@ namespace Atlas
         {
             if (layer.HasValue) node.Layer = layer.Value;
 
+            if (node.Layer != null) _ecs.SetTreePriority(node.Id, (ulong)node.Layer.Value);
             _ecs.AddEntity(node);
             node.Deleted += RemoveNode;
-            if (node.Layer != null) _ecs.SetTreePriority(node.Id, (ulong)node.Layer.Value);
         }
 
         public void RemoveNode(Node node)

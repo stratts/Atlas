@@ -60,7 +60,6 @@ namespace Atlas.UI.Views
         public BoxView(StackBox.Direction direction, params View?[] children)
         {
             _box = new StackBox(10, direction);
-            this.Fill(width: 1);
 
             foreach (var c in children)
             {

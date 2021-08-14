@@ -3,17 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Necs;
+using static Atlas.StackBox.Direction;
 
 namespace Atlas
 {
     public class StackBox : Node, IEnumerable<Node>
     {
+        public class BasicContainer : IContainer
+        {
+            private Vector2 _size;
+
+            public Vector2 Offset { get; set; }
+            public LayoutBorder Padding { get; set; }
+            public ref Vector2 Size => ref _size;
+        }
+
         public class Expand { }
 
         private int _spacing;
         private Vector2 _currentOffset = Vector2.Zero;
         private Direction _direction;
-        private BaseSplitContainer _container;
         private Dictionary<Node, (float? min, float? max)> _sizes = new Dictionary<Node, (float?, float?)>();
 
         public void SetWidth(int width)
@@ -34,8 +43,6 @@ namespace Atlas
             AddComponent(new Updateable() { UpdateMethod = Update });
             _spacing = spacing;
             _direction = direction;
-            if (_direction == Direction.Horizontal) _container = new ColumnContainer();
-            else _container = new RowContainer();
         }
 
         public void AddChildren(params Node?[] children)
@@ -59,11 +66,13 @@ namespace Atlas
 
         protected void Layout()
         {
-            _container.ClearSections();
-            _container.Spacing = _spacing;
+            if (_direction == Direction.Horizontal) Size.X = 0;
+            else Size.Y = 0;
+            float s = 0;
 
-            foreach (Node node in Children)
+            for (int i = 0; i < Children.Count; i++)
             {
+                var node = Children[i];
                 if (!node.Enabled) continue;
                 var (min, max) = _sizes[node];
                 ref var layout = ref node.GetOrAddComponent<Layout>();
@@ -75,31 +84,36 @@ namespace Atlas
                 float minSpace = min.HasValue ? min.Value : size;
                 float? maxSpace = !max.HasValue && !node.HasComponent<Expand>() ? size : max;
 
-                layout.Container = _container.AddSection(minSpace, maxSpace);
+                layout.Container = new BasicContainer()
+                {
+                    Offset = new Vector2(_direction == Horizontal ? s : 0, _direction == Vertical ? s : 0),
+                    Size = new Vector2(_direction == Horizontal ? width : Size.X, _direction == Vertical ? height : Size.Y)
+                };
 
                 if (width > Size.X) Size = new Vector2(width, Size.Y);
                 if (height > Size.Y) Size = new Vector2(Size.X, height);
+
+                s += size;
+                if (i < Children.Count - 1) s += Spacing;
             }
 
-            _container.Layout();
-            Size = _container.Size;
+            if (_direction == Horizontal) Size.X = s;
+            else Size.Y = s;
         }
 
         private void SetSize(Vector2 size)
         {
             Size = size;
-            _container.Size = size;
         }
 
         public void Update(Scene scene, float elapsed)
         {
-            if (_container.Size != Size) _container.Size = Size;
+
         }
 
         public void Clear()
         {
             _sizes.Clear();
-            _container.ClearSections();
             for (int i = Children.Count - 1; i >= 0; i--) RemoveChild(Children[i]);
             Size = Vector2.Zero;
         }
