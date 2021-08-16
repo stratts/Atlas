@@ -6,6 +6,7 @@ namespace Atlas
     public struct Transform
     {
         public Vector2 Position;
+        public Vector2 LastPos;
         public Vector2 ScenePos;
         public Vector2 Size;
     }
@@ -19,6 +20,8 @@ namespace Atlas
                 c.ScenePos = parent.ScenePos + c.Position;
             }
             else c.ScenePos = c.Position;
+
+            c.LastPos = c.Position;
         }
     }
 }

@@ -50,6 +50,7 @@ namespace Atlas
         public bool Removed = false;
 
         public ref Vector2 Position => ref GetComponent<Transform>().Position;
+        public ref Vector2 ScenePosition => ref GetComponent<Transform>().ScenePos;
         public ref Vector2 Size => ref GetComponent<Transform>().Size;
         public virtual Rectangle Bounds => GetBounds();
         public bool Enabled { get; set; } = true;

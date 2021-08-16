@@ -78,6 +78,7 @@ namespace Atlas
         private const ulong _maxChildren = ushort.MaxValue;
         public const ulong LayerSize = _maxNodes * _maxChildren;
 
+        private Dictionary<ulong, Node> _nodes = new();
         private Dictionary<uint, uint> _topLevelCount = new Dictionary<uint, uint>();
         private Dictionary<uint, bool> _depthSort = new Dictionary<uint, bool>();
 
@@ -96,6 +97,7 @@ namespace Atlas
             AddNode(_camera);
 
             _ecs.AddSystem(new LayoutSystem());
+            _ecs.AddSystem(new EntityAction<UpdateContext, Transform>(DepthSortSystem));
             _ecs.AddSystem(new TransformSystem());
             _ecs.AddSystem(new MouseInputSystem());
 
@@ -115,13 +117,15 @@ namespace Atlas
         {
             if (layer.HasValue) node.Layer = layer.Value;
 
-            if (node.Layer != null) _ecs.SetTreePriority(node.Id, (ulong)node.Layer.Value);
+            _nodes[node.Id] = node;
             _ecs.AddEntity(node);
+            UpdateNodeSort(node);
             node.Deleted += RemoveNode;
         }
 
         public void RemoveNode(Node node)
         {
+            _nodes.Remove(node.Id);
             node.Deleted -= RemoveNode;
             _ecs.RemoveEntity(node);
         }
@@ -166,13 +170,25 @@ namespace Atlas
 
         public void SetDepthSort(uint layer, bool enableDepthSort) => _depthSort[layer + 1] = enableDepthSort;
 
-        private void BringNodeToFront(Node node) => UpdateNodeSort(node, true);
+        private void BringNodeToFront(Node node) => UpdateNodeSort(node);
 
-        private void UpdateNodeSort(Node node, bool recurse = false, bool renderOnly = false)
+        private void UpdateNodeSort(Node node)
         {
-
+            uint layer = node.Layer.HasValue ? node.Layer.Value + 1 : 0;
+            if (!_topLevelCount.ContainsKey(layer)) _topLevelCount[layer] = 0;
+            if (!_depthSort.ContainsKey(layer)) _depthSort[layer] = false;
+            uint sortKey = _depthSort[layer] ? (uint)(int.MaxValue - node.ScenePosition.Y) : _topLevelCount[layer];
+            ulong priority = (ulong)layer * LayerSize + sortKey * _maxChildren;
+            if (!_depthSort[layer]) _topLevelCount[layer]++;
+            _ecs.SetTreePriority(node.Id, priority);
         }
 
+        private void DepthSortSystem(UpdateContext ctx, ComponentInfo entity, ref Transform t)
+        {
+            if (entity.ParentId != null || t.LastPos == t.Position) return;
+            var node = _nodes[entity.Id];
+            if (IsDepthSort(node.Layer.HasValue ? node.Layer.Value : 0)) UpdateNodeSort(node);
+        }
 
         public virtual void Update(float elapsed)
         {
