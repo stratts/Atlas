@@ -97,7 +97,6 @@ namespace Atlas
             AddNode(_camera);
 
             _ecs.AddSystem(new LayoutSystem());
-            _ecs.AddSystem(DepthSortSystem);
             _ecs.AddSystem(new TransformSystem());
             _ecs.AddSystem(new MouseInputSystem());
 
@@ -107,6 +106,7 @@ namespace Atlas
 
             _ecs.AddSystem(new ModulateSystem());
             //AddSystem(new ScissorSystem());
+            _ecs.AddSystem(DepthSortSystem);
             _ecs.AddRenderSystem(new DrawableSystem());
         }
 
@@ -165,18 +165,18 @@ namespace Atlas
             return null;
         }
 
-        public bool IsDepthSort(uint layer) => _depthSort.GetValueOrDefault(layer + 1);
+        public bool IsDepthSort(uint layer) => _depthSort.GetValueOrDefault(layer);
 
-        public void SetDepthSort(uint layer, bool enableDepthSort) => _depthSort[layer + 1] = enableDepthSort;
+        public void SetDepthSort(uint layer, bool enableDepthSort) => _depthSort[layer] = enableDepthSort;
 
         private void BringNodeToFront(Node node) => UpdateNodeSort(node);
 
         private void UpdateNodeSort(Node node)
         {
-            uint layer = node.Layer.HasValue ? node.Layer.Value + 1 : 0;
+            uint layer = node.SceneLayer;
             if (!_topLevelCount.ContainsKey(layer)) _topLevelCount[layer] = 0;
             if (!_depthSort.ContainsKey(layer)) _depthSort[layer] = false;
-            uint sortKey = _depthSort[layer] ? (uint)(int.MaxValue - node.ScenePosition.Y) : _topLevelCount[layer];
+            uint sortKey = _depthSort[layer] ? (uint)(uint.MaxValue / 2 + (int)node.ScenePosition.Y) : _topLevelCount[layer];
             ulong priority = (ulong)layer * LayerSize + sortKey * _maxChildren;
             if (!_depthSort[layer]) _topLevelCount[layer]++;
             _ecs.SetTreePriority(node.Id, priority);
@@ -186,9 +186,9 @@ namespace Atlas
         {
             ecs.Query((ComponentInfo entity, ref Transform t) =>
             {
-                if (entity.ParentId != null || t.LastPos == t.Position) return;
+                if (entity.ParentId != null || t.LastPos == t.ScenePos) return;
                 var node = _nodes[entity.Id];
-                if (IsDepthSort(node.Layer.HasValue ? node.Layer.Value : 0)) UpdateNodeSort(node);
+                if (IsDepthSort(node.SceneLayer)) UpdateNodeSort(node);
             });
         }
 

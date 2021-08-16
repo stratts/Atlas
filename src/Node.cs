@@ -58,6 +58,8 @@ namespace Atlas
         public bool PlaceInScene { get; set; } = false;
         public uint? Layer { get; set; }
 
+        internal uint SceneLayer => Layer.HasValue ? Layer.Value : 0;
+
         public event Action<Node>? OnEnabled;
         public event Action<Node>? Deleted;
 

@@ -20,13 +20,13 @@ namespace Atlas
 
         private void Query(ref Transform c, ref Transform parent, bool hasParent)
         {
+            c.LastPos = c.ScenePos;
+
             if (hasParent)
             {
                 c.ScenePos = parent.ScenePos + c.Position;
             }
             else c.ScenePos = c.Position;
-
-            c.LastPos = c.Position;
         }
     }
 }
