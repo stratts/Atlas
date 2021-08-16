@@ -66,7 +66,7 @@ namespace Atlas
         public Vector2 Fill { get; set; } = Vector2.Zero;
     }
 
-    public class LayoutSystem : IComponentParentSystem<UpdateContext, Layout, Transform>
+    public class LayoutSystem : IComponentSystem<UpdateContext>
     {
         private class Container : IContainer
         {
@@ -84,7 +84,9 @@ namespace Atlas
             }
         }
 
-        public void Process(UpdateContext context, ref Layout c, ref Transform transform, ref Transform parent, bool hasParent)
+        public void Process(UpdateContext context, IEcsContext ecs) => ecs.QueryParent<Layout, Transform>(Query);
+
+        private void Query(ref Layout c, ref Transform transform, ref Transform parent, bool hasParent)
         {
             //Console.WriteLine(hasParent);
             IContainer container;

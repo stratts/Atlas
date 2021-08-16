@@ -97,7 +97,7 @@ namespace Atlas
             AddNode(_camera);
 
             _ecs.AddSystem(new LayoutSystem());
-            _ecs.AddSystem(new EntityAction<UpdateContext, Transform>(DepthSortSystem));
+            _ecs.AddSystem(DepthSortSystem);
             _ecs.AddSystem(new TransformSystem());
             _ecs.AddSystem(new MouseInputSystem());
 
@@ -106,7 +106,6 @@ namespace Atlas
             //AddSystem(new CollisionSystem());
 
             _ecs.AddSystem(new ModulateSystem());
-            _ecs.AddSystem(new DrawableModulateSystem());
             //AddSystem(new ScissorSystem());
             _ecs.AddRenderSystem(new DrawableSystem());
         }
@@ -183,11 +182,14 @@ namespace Atlas
             _ecs.SetTreePriority(node.Id, priority);
         }
 
-        private void DepthSortSystem(UpdateContext ctx, ComponentInfo entity, ref Transform t)
+        private void DepthSortSystem(UpdateContext ctx, IEcsContext ecs)
         {
-            if (entity.ParentId != null || t.LastPos == t.Position) return;
-            var node = _nodes[entity.Id];
-            if (IsDepthSort(node.Layer.HasValue ? node.Layer.Value : 0)) UpdateNodeSort(node);
+            ecs.Query((ComponentInfo entity, ref Transform t) =>
+            {
+                if (entity.ParentId != null || t.LastPos == t.Position) return;
+                var node = _nodes[entity.Id];
+                if (IsDepthSort(node.Layer.HasValue ? node.Layer.Value : 0)) UpdateNodeSort(node);
+            });
         }
 
         public virtual void Update(float elapsed)

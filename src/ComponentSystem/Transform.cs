@@ -11,9 +11,14 @@ namespace Atlas
         public Vector2 Size;
     }
 
-    public class TransformSystem : IComponentParentSystem<UpdateContext, Transform>
+    public class TransformSystem : IComponentSystem<UpdateContext>
     {
-        public void Process(UpdateContext context, ref Transform c, ref Transform parent, bool hasParent)
+        public void Process(UpdateContext context, IEcsContext ecs)
+        {
+            ecs.Query<Transform>(Query);
+        }
+
+        private void Query(ref Transform c, ref Transform parent, bool hasParent)
         {
             if (hasParent)
             {

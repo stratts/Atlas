@@ -22,7 +22,7 @@ namespace Atlas
         public Action? OnFocusExit { get; set; }
     }
 
-    public class MouseInputSystem : IComponentSystem<UpdateContext, Transform, MouseInput>
+    public class MouseInputSystem : IComponentSystem<UpdateContext>
     {
         private MouseState _mouseState;
         private MouseState _prevMouseState = Mouse.GetState();
@@ -34,57 +34,60 @@ namespace Atlas
 
         public static bool InputConsumed { get; set; } = false;
 
-        public void Process(UpdateContext context, ref Transform t, ref MouseInput c)
+        public void Process(UpdateContext context, IEcsContext ecs)
         {
-            if ((!InputConsumed || c.HandleConsumed || _consumedBy == c) && WithinInputArea(context.Scene, _mousePos, t, c))
+            ecs.Query((ref Transform t, ref MouseInput c) =>
             {
-                // Handle mouse enter
-                if (!_mouseEntered.Contains(c))
+                if ((!InputConsumed || c.HandleConsumed || _consumedBy == c) && WithinInputArea(context.Scene, _mousePos, t, c))
                 {
-                    _mouseEntered.Add(c);
-                    c.OnMouseEnter?.Invoke();
-                }
-
-                if (_mouseState.LeftButton == ButtonState.Pressed) c.ButtonHeld = true;
-                else c.ButtonHeld = false;
-
-                // Handle click
-                if (_mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
-                {
-                    c.OnClick?.Invoke(MouseToAreaPos(context.Scene, _mousePos, t, c));
-
-                    if (_focused != c)
+                    // Handle mouse enter
+                    if (!_mouseEntered.Contains(c))
                     {
-                        c.OnFocusEnter?.Invoke();
-                        _focused?.OnFocusExit?.Invoke();
-                        _focused = c;
+                        _mouseEntered.Add(c);
+                        c.OnMouseEnter?.Invoke();
+                    }
+
+                    if (_mouseState.LeftButton == ButtonState.Pressed) c.ButtonHeld = true;
+                    else c.ButtonHeld = false;
+
+                    // Handle click
+                    if (_mouseState.LeftButton == ButtonState.Pressed && _prevMouseState.LeftButton == ButtonState.Released)
+                    {
+                        c.OnClick?.Invoke(MouseToAreaPos(context.Scene, _mousePos, t, c));
+
+                        if (_focused != c)
+                        {
+                            c.OnFocusEnter?.Invoke();
+                            _focused?.OnFocusExit?.Invoke();
+                            _focused = c;
+                        }
+                    }
+
+                    // Handle scroll
+                    var scroll = _mouseState.ScrollWheelValue - _prevMouseState.ScrollWheelValue;
+                    if (scroll != 0) c.OnScroll?.Invoke(_mousePos, scroll);
+
+                    // Handle movement
+                    if (_mousePos != _prevMousePos)
+                    {
+                        var curAreaPos = MouseToAreaPos(context.Scene, _mousePos, t, c);
+                        var prevAreaPos = MouseToAreaPos(context.Scene, _prevMousePos, t, c);
+                        c.OnMove?.Invoke(curAreaPos, curAreaPos - prevAreaPos);
+                    }
+
+                    // Mark input as consumed
+                    if (c.ConsumeInput)
+                    {
+                        _consumedBy = c;
+                        InputConsumed = true;
                     }
                 }
-
-                // Handle scroll
-                var scroll = _mouseState.ScrollWheelValue - _prevMouseState.ScrollWheelValue;
-                if (scroll != 0) c.OnScroll?.Invoke(_mousePos, scroll);
-
-                // Handle movement
-                if (_mousePos != _prevMousePos)
+                else if (_mouseEntered.Contains(c))
                 {
-                    var curAreaPos = MouseToAreaPos(context.Scene, _mousePos, t, c);
-                    var prevAreaPos = MouseToAreaPos(context.Scene, _prevMousePos, t, c);
-                    c.OnMove?.Invoke(curAreaPos, curAreaPos - prevAreaPos);
+                    c.OnMouseExit?.Invoke();
+                    _mouseEntered.Remove(c);
                 }
-
-                // Mark input as consumed
-                if (c.ConsumeInput)
-                {
-                    _consumedBy = c;
-                    InputConsumed = true;
-                }
-            }
-            else if (_mouseEntered.Contains(c))
-            {
-                c.OnMouseExit?.Invoke();
-                _mouseEntered.Remove(c);
-            }
+            });
         }
 
         public static Vector2 MouseToScenePos(Scene scene, MouseState state) =>

@@ -30,19 +30,19 @@ namespace Atlas
         }
     }
 
-    public class ModulateSystem : IComponentParentSystem<UpdateContext, Modulate>
+    public class ModulateSystem : IComponentSystem<UpdateContext>
     {
-        public void Process(UpdateContext context, ref Modulate a, ref Modulate? parent, bool hasParent)
+        public void Process(UpdateContext context, IEcsContext ecs)
         {
-            if (parent != null) a.InheritFrom = parent;
-        }
-    }
+            ecs.Query((ref Modulate a, ref Modulate? parent, bool hasParent) =>
+            {
+                if (parent != null) a.InheritFrom = parent;
+            });
 
-    public class DrawableModulateSystem : IComponentSystem<UpdateContext, Drawable, Modulate>
-    {
-        public void Process(UpdateContext context, ref Drawable a, ref Modulate b)
-        {
-            if (a.Modulate != b) a.Modulate = b;
+            ecs.Query((ref Drawable a, ref Modulate b) =>
+            {
+                if (a.Modulate != b) a.Modulate = b;
+            });
         }
     }
 }

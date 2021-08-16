@@ -15,11 +15,11 @@ namespace Atlas
         public void Update(Scene scene, float elapsed) => UpdateMethod?.Invoke(scene, elapsed);
     }
 
-    public class UpdateSystem : IComponentSystem<UpdateContext, Updateable>
+    public class UpdateSystem : IComponentSystem<UpdateContext>
     {
-        public void Process(UpdateContext context, ref Updateable component)
+        public void Process(UpdateContext context, IEcsContext ecs)
         {
-            component.Update(context.Scene, context.ElapsedTime);
+            ecs.Query((ref Updateable component) => component.Update(context.Scene, context.ElapsedTime));
         }
     }
 }

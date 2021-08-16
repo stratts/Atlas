@@ -27,12 +27,15 @@ namespace Atlas
         public void Reset() => _currentAnimation?.Reset();
     }
 
-    public class AnimationSystem : IComponentSystem<UpdateContext, Animated>
+    public class AnimationSystem : IComponentSystem<UpdateContext>
     {
-        public void Process(UpdateContext context, ref Animated c)
+        public void Process(UpdateContext context, IEcsContext ecs)
         {
-            c.CurrentTime += context.ElapsedTime;
-            c.CurrentAnimation?.Update(c.CurrentTime);
+            ecs.Query((ref Animated c) =>
+            {
+                c.CurrentTime += context.ElapsedTime;
+                c.CurrentAnimation?.Update(c.CurrentTime);
+            });
         }
     }
 }
