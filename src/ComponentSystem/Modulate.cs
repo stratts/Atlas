@@ -34,7 +34,7 @@ namespace Atlas
     {
         public void Process(UpdateContext context, EcsContext ecs)
         {
-            ecs.Query((ref Modulate a, ref Modulate? parent, bool hasParent) =>
+            ecs.Query((ref Modulate a, ref Modulate parent, bool hasParent) =>
             {
                 if (hasParent) a.InheritFrom = parent;
                 else a.InheritFrom = null;

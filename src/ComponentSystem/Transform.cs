@@ -1,5 +1,6 @@
 using Necs;
 using System;
+using System.Diagnostics;
 
 namespace Atlas
 {
@@ -9,24 +10,44 @@ namespace Atlas
         public Vector2 LastPos;
         public Vector2 ScenePos;
         public Vector2 Size;
+        public Rectangle Bounds;
+        internal bool UpdateBounds;
     }
 
     public class TransformSystem : IComponentSystem<UpdateContext>
     {
+        Stopwatch stopWatch = new Stopwatch();
+
         public void Process(UpdateContext context, EcsContext ecs)
         {
-            ecs.Query<Transform>(Query);
-        }
-
-        private void Query(ref Transform c, ref Transform parent, bool hasParent)
-        {
-            c.LastPos = c.ScenePos;
-
-            if (hasParent)
+            ecs.Query<Transform>((ref Transform c, ref Transform parent, bool hasParent) =>
             {
-                c.ScenePos = parent.ScenePos + c.Position;
-            }
-            else c.ScenePos = c.Position;
+                c.LastPos = c.ScenePos;
+                c.UpdateBounds = false;
+
+                if (hasParent)
+                {
+                    c.ScenePos = parent.ScenePos + c.Position;
+                    if (c.LastPos - parent.ScenePos != c.Position)
+                    {
+                        parent.UpdateBounds = true;
+                        parent.Bounds = parent.Size.ToRectangle();
+                    }
+                    if (parent.UpdateBounds) c.UpdateBounds = true;
+                }
+                else c.ScenePos = c.Position;
+            });
+
+            ecs.Query<Transform>((ref Transform c, ref Transform parent, bool hasParent) =>
+            {
+                if (hasParent && parent.UpdateBounds)
+                {
+                    var b = c.Bounds;
+                    b.Offset(c.Position);
+                    parent.Bounds = Rectangle.Union(parent.Bounds, b);
+                }
+            },
+            reverse: true);
         }
     }
 }

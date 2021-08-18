@@ -87,7 +87,8 @@ namespace Atlas
                     c.OnMouseExit?.Invoke();
                     _mouseEntered.Remove(c);
                 }
-            });
+            },
+            reverse: true);
         }
 
         public static Vector2 MouseToScenePos(Scene scene, MouseState state) =>

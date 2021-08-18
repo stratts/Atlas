@@ -84,7 +84,7 @@ namespace Atlas
             }
         }
 
-        public void Process(UpdateContext context, EcsContext ecs) => ecs.QueryParent<Layout, Transform>(Query);
+        public void Process(UpdateContext context, EcsContext ecs) => ecs.Query<Layout, Transform>(Query);
 
         private void Query(ref Layout c, ref Transform transform, ref Transform parent, bool hasParent)
         {
