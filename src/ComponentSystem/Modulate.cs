@@ -36,12 +36,16 @@ namespace Atlas
         {
             ecs.Query((ref Modulate a, ref Modulate? parent, bool hasParent) =>
             {
-                if (parent != null) a.InheritFrom = parent;
+                if (hasParent) a.InheritFrom = parent;
+                else a.InheritFrom = null;
             });
+
+            var span = ecs.GetSpan<Drawable>();
+            foreach (ref var d in span) d.Modulate = null;
 
             ecs.Query((ref Drawable a, ref Modulate b) =>
             {
-                if (a.Modulate != b) a.Modulate = b;
+                a.Modulate = b;
             });
         }
     }

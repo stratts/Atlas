@@ -146,14 +146,13 @@ namespace Atlas
         /// </summary>
         public IEnumerable<Node> GetNodesAt(Vector2 position)
         {
-            yield break;
-            /*foreach (var node in Nodes)
+            foreach (var node in _nodes.Values)
             {
                 if (node == Camera) continue;
                 var bounds = node.Bounds;
                 bounds.Offset(node.ScenePosition);
                 if (bounds.Contains(position)) yield return node;
-            }*/
+            }
         }
 
         public T? GetNodeAt<T>(Vector2 position) where T : Node
@@ -184,9 +183,9 @@ namespace Atlas
 
         private void DepthSortSystem(UpdateContext ctx, IEcsContext ecs)
         {
-            ecs.Query((ComponentInfo entity, ref Transform t) =>
+            ecs.Query((EntityInfo entity, ref Transform t) =>
             {
-                if (entity.ParentId != null || t.LastPos == t.ScenePos) return;
+                if (entity.Depth > 0 || t.LastPos == t.ScenePos) return;
                 var node = _nodes[entity.Id];
                 if (IsDepthSort(node.SceneLayer)) UpdateNodeSort(node);
             });

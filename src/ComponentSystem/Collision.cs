@@ -59,53 +59,52 @@ namespace Atlas
 
         public void Process(SceneContext context, IEcsContext ecs)
         {
-            ecs.Query<Collision>(components =>
+            var components = ecs.GetSpan<Collision>();
+
+            foreach (var list in _grid.Values) list.Clear();
+
+            // Assign components to grid cells
+            foreach (var c in components)
             {
-                foreach (var list in _grid.Values) list.Clear();
+                var box = c.CollisionBox;
 
-                // Assign components to grid cells
-                foreach (var c in components)
+                for (int x = box.Left / _gridSize; x < box.Right / _gridSize + 1; x++)
                 {
-                    var box = c.CollisionBox;
-
-                    for (int x = box.Left / _gridSize; x < box.Right / _gridSize + 1; x++)
+                    for (int y = box.Top / _gridSize; y < box.Bottom / _gridSize + 1; y++)
                     {
-                        for (int y = box.Top / _gridSize; y < box.Bottom / _gridSize + 1; y++)
+                        if (!_grid.TryGetValue((x, y), out var list))
                         {
-                            if (!_grid.TryGetValue((x, y), out var list))
-                            {
-                                list = new List<Collision>();
-                                _grid[(x, y)] = list;
-                            }
+                            list = new List<Collision>();
+                            _grid[(x, y)] = list;
+                        }
 
-                            list.Add(c);
+                        list.Add(c);
+                    }
+                }
+            }
+
+            // Check collisions within each cell
+            foreach (var cell in _grid.Values)
+            {
+                foreach (var a in cell)
+                {
+                    if (a.OnCollision == null) continue;
+
+                    foreach (var b in cell)
+                    {
+                        if (a == b || (a.Mask == b.Mask && a.Mask.HasValue && b.Mask.HasValue)) continue;
+
+                        if (a.CollidingWith(b))
+                        {
+                            var info = GetInfo(a.CollisionBox, b.CollisionBox);
+                            var collisionInfo = new CollisionInfo(a, b, info.vector, info.coord, info.dir);
+                            if (a.RestrictDirection.HasValue && !a.RestrictDirection.Value.HasFlag(info.dir)) continue;
+                            if (b.RestrictDirection.HasValue && !b.RestrictDirection.Value.HasFlag(info.dir.Invert())) continue;
+                            a.OnCollision?.Invoke(collisionInfo);
                         }
                     }
                 }
-
-                // Check collisions within each cell
-                foreach (var cell in _grid.Values)
-                {
-                    foreach (var a in cell)
-                    {
-                        if (a.OnCollision == null) continue;
-
-                        foreach (var b in cell)
-                        {
-                            if (a == b || (a.Mask == b.Mask && a.Mask.HasValue && b.Mask.HasValue)) continue;
-
-                            if (a.CollidingWith(b))
-                            {
-                                var info = GetInfo(a.CollisionBox, b.CollisionBox);
-                                var collisionInfo = new CollisionInfo(a, b, info.vector, info.coord, info.dir);
-                                if (a.RestrictDirection.HasValue && !a.RestrictDirection.Value.HasFlag(info.dir)) continue;
-                                if (b.RestrictDirection.HasValue && !b.RestrictDirection.Value.HasFlag(info.dir.Invert())) continue;
-                                a.OnCollision?.Invoke(collisionInfo);
-                            }
-                        }
-                    }
-                }
-            });
+            }
         }
 
         private (float coord, Collision.Direction dir, Vector2 vector) GetInfo(Rectangle a, Rectangle b)
