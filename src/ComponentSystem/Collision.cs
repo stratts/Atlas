@@ -57,7 +57,7 @@ namespace Atlas
         private Dictionary<(int, int), List<Collision>> _grid = new Dictionary<(int, int), List<Collision>>();
 
 
-        public void Process(SceneContext context, IEcsContext ecs)
+        public void Process(SceneContext context, EcsContext ecs)
         {
             var components = ecs.GetSpan<Collision>();
 

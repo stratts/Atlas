@@ -13,7 +13,7 @@ namespace Atlas
 
     public class TransformSystem : IComponentSystem<UpdateContext>
     {
-        public void Process(UpdateContext context, IEcsContext ecs)
+        public void Process(UpdateContext context, EcsContext ecs)
         {
             ecs.Query<Transform>(Query);
         }

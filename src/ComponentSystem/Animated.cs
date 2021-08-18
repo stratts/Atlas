@@ -29,7 +29,7 @@ namespace Atlas
 
     public class AnimationSystem : IComponentSystem<UpdateContext>
     {
-        public void Process(UpdateContext context, IEcsContext ecs)
+        public void Process(UpdateContext context, EcsContext ecs)
         {
             ecs.Query((ref Animated c) =>
             {

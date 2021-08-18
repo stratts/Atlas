@@ -32,7 +32,7 @@ namespace Atlas
 
     public class ModulateSystem : IComponentSystem<UpdateContext>
     {
-        public void Process(UpdateContext context, IEcsContext ecs)
+        public void Process(UpdateContext context, EcsContext ecs)
         {
             ecs.Query((ref Modulate a, ref Modulate? parent, bool hasParent) =>
             {

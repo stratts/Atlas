@@ -50,7 +50,7 @@ namespace Atlas
             _viewport = context.Scene.Camera.Viewport;
         }
 
-        public void Process(RenderContext context, IEcsContext ecs)
+        public void Process(RenderContext context, EcsContext ecs)
         {
             ecs.Query((ref Drawable d, ref Transform t) =>
             {

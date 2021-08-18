@@ -34,7 +34,7 @@ namespace Atlas
 
         public static bool InputConsumed { get; set; } = false;
 
-        public void Process(UpdateContext context, IEcsContext ecs)
+        public void Process(UpdateContext context, EcsContext ecs)
         {
             ecs.Query((ref Transform t, ref MouseInput c) =>
             {

@@ -17,7 +17,7 @@ namespace Atlas
 
     public class UpdateSystem : IComponentSystem<UpdateContext>
     {
-        public void Process(UpdateContext context, IEcsContext ecs)
+        public void Process(UpdateContext context, EcsContext ecs)
         {
             ecs.Query((ref Updateable component) => component.Update(context.Scene, context.ElapsedTime));
         }

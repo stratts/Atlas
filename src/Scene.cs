@@ -181,7 +181,7 @@ namespace Atlas
             _ecs.SetTreePriority(node.Id, priority);
         }
 
-        private void DepthSortSystem(UpdateContext ctx, IEcsContext ecs)
+        private void DepthSortSystem(UpdateContext ctx, EcsContext ecs)
         {
             ecs.Query((EntityInfo entity, ref Transform t) =>
             {
