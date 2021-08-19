@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://git.stratts.dev/stratts/Necs.git
 	branch = main
-	commit = 3e0ec842243a9d8ef1a7ef8ca91776b395e2da23
-	parent = 5796e16f9cef2317f4ec27f8109fc21330eedfe2
+	commit = 0885b3c9aff8d725825c6bc42ecd595162174872
+	parent = 59c26dc31ddd18e68b7b55d84d896428fc817a8b
 	method = merge
 	cmdver = 0.4.3
