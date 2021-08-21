@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" Condition="'$(TargetFramework)' == 'net5.0-windows'" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" Condition="'$(TargetFramework)' == 'net5.0'" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFrameworks>net5.0;net5.0-windows</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <DefaultItemExcludes>$(DefaultItemExcludes);lib/**;examples/**;</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
+    <ContentWithTargetPath Include="..\native\freetype.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>freetype.dll</TargetPath>
+    </ContentWithTargetPath>
+    <EmbeddedResource Include="../resources/default_font.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\lib\SharpFont\SharpFont\SharpFont.csproj" />
+    <ProjectReference Include="..\lib\Atlas.AnimGenerator\Atlas.AnimGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\lib\Necs\src\Necs.csproj" />
+  </ItemGroup>
+
+</Project>
