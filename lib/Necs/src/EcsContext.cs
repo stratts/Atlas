@@ -47,6 +47,8 @@ namespace Necs
             });
         }
 
+        public Entity GetEntity(ulong entityId) => GetEntityData(entityId).Parent;
+
         public void SetTreePriority(ulong tree, ulong priority)
         {
             Do(() =>
@@ -95,8 +97,6 @@ namespace Necs
             _lists.Add(newList);
             UpdateMapping(newList.Infos, newList);
         }
-
-        internal void AddEntity(ComponentInfo info) => AddComponent(info, EntityData.Create());
 
         internal void AddComponentToEntity<T>(ulong entityId, T component)
         {

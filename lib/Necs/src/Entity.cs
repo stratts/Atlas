@@ -21,7 +21,7 @@ namespace Necs
             info.Name = GetType().Name;
             info.IsEntity = true;
             Id = info.Id;
-            _context.AddEntity(info);
+            _context.AddComponent(info, new EntityData(this));
         }
 
         public virtual void AddChild(Entity child)
@@ -54,14 +54,15 @@ namespace Necs
 
     struct EntityData
     {
-        public HashSet<ulong> Children { get; set; }
-        public Dictionary<ulong, byte> Branches { get; set; }
+        public Entity Parent { get; }
+        public HashSet<ulong> Children { get; }
+        public Dictionary<ulong, byte> Branches { get; }
 
-        public static EntityData Create() =>
-            new EntityData()
-            {
-                Branches = new(),
-                Children = new()
-            };
+        public EntityData(Entity parent)
+        {
+            Parent = parent;
+            Branches = new();
+            Children = new();
+        }
     }
 }
