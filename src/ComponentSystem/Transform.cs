@@ -12,6 +12,7 @@ namespace Atlas
         public Vector2 Size;
         public Rectangle Bounds;
         internal bool UpdateBounds;
+        internal bool UpdatedInitial;
     }
 
     public class TransformSystem : IComponentSystem<UpdateContext>
@@ -24,6 +25,12 @@ namespace Atlas
             {
                 c.LastPos = c.ScenePos;
                 c.UpdateBounds = false;
+
+                if (!c.UpdatedInitial)
+                {
+                    c.Bounds = c.Size.ToRectangle();
+                    c.UpdatedInitial = true;
+                }
 
                 if (hasParent)
                 {

@@ -16,7 +16,7 @@ namespace Atlas.Examples.Pong
             // Coloured rectangle to represent paddle
             var paddleRect = new Rect()
             {
-                Color = Color.Black,
+                Color = Colors.Black,
                 Size = Size
             };
             AddChild(paddleRect);

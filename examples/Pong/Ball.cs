@@ -22,7 +22,7 @@ namespace Atlas.Examples.Pong
             // Colored circle to represent ball
             var circle = new Circle()
             {
-                Color = Color.Black,
+                Color = Colors.Black,
                 Radius = radius
             };
             AddChild(circle);
@@ -74,7 +74,7 @@ namespace Atlas.Examples.Pong
             }
 
             // If collided with paddle, set velocity based on position of ball relative to paddle
-            if (info.Source.Parent is Paddle paddle)
+            if (info.SourceEntity is Paddle paddle)
             {
                 var bounceVector = (BoundingBox.Center - paddle.BoundingBox.Center).ToVector2().Normalized();
                 _velocity = (_velocity.Normalized() + bounceVector).Normalized() * _speed;

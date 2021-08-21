@@ -102,7 +102,7 @@ namespace Atlas
 
             _ecs.AddSystem(new AnimationSystem());
             _ecs.AddSystem(new UpdateSystem());
-            //AddSystem(new CollisionSystem());
+            _ecs.AddSystem(new CollisionSystem());
 
             _ecs.AddSystem(new ModulateSystem());
             //AddSystem(new ScissorSystem());
@@ -149,8 +149,7 @@ namespace Atlas
             foreach (var node in _nodes.Values)
             {
                 if (node == Camera) continue;
-                var bounds = node.Bounds;
-                bounds.Offset(node.ScenePosition);
+                var bounds = node.BoundingBox;
                 if (bounds.Contains(position)) yield return node;
             }
         }

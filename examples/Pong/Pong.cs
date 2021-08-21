@@ -87,7 +87,7 @@ namespace Atlas.Examples.Pong
             _paddle = paddle;
             _text = new Text()
             {
-                Color = Color.Black,
+                Color = Colors.Black,
                 FontSize = 32
             };
 
@@ -118,7 +118,7 @@ namespace Atlas.Examples.Pong
 
         private void HandleCollision(CollisionInfo info)
         {
-            if (info.Source.Parent == _ball)
+            if (info.SourceEntity == _ball)
             {
                 _ball.Reset();
                 _target.Score++;

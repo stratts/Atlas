@@ -52,7 +52,14 @@ namespace Atlas
         public ref Vector2 Position => ref GetComponent<Transform>().Position;
         public ref Vector2 ScenePosition => ref GetComponent<Transform>().ScenePos;
         public ref Vector2 Size => ref GetComponent<Transform>().Size;
-        public virtual Rectangle Bounds => GetBounds();
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                ref var t = ref GetComponent<Transform>();
+                return new Rectangle((int)t.ScenePos.X - t.Bounds.X, (int)t.ScenePos.Y - t.Bounds.Y, t.Bounds.Width, t.Bounds.Height);
+            }
+        }
         public bool Enabled { get; set; } = true;
 
         public bool PlaceInScene { get; set; } = false;
@@ -123,17 +130,5 @@ namespace Atlas
         public void RemoveTag(Tag tag) => _tags.RemoveTag(tag);
 
         public bool HasTag(Tag tag) => _tags.HasTag(tag);
-
-        private Rectangle GetBounds()
-        {
-            var bounds = Size.ToRectangle();
-            foreach (var child in Children)
-            {
-                var childBounds = child.Bounds;
-                childBounds.Offset(child.Position);
-                bounds = Rectangle.Union(bounds, childBounds);
-            }
-            return bounds;
-        }
     }
 }

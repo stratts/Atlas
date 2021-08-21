@@ -25,12 +25,14 @@ namespace Atlas
     {
         public Collision Component { get; }
         public Collision Source { get; }
+        public Entity SourceEntity { get; }
         public Collision.Direction Direction { get; }
         public Vector2 Vector { get; }
         public float Coordinate { get; }
 
-        public CollisionInfo(Collision component, Collision collided, Vector2 vector, float coordinate, Collision.Direction direction)
+        public CollisionInfo(Entity source, Collision component, Collision collided, Vector2 vector, float coordinate, Collision.Direction direction)
         {
+            SourceEntity = source;
             Vector = vector;
             Component = component;
             Source = collided;
@@ -46,26 +48,34 @@ namespace Atlas
         public Direction? RestrictDirection { get; set; }
         public Rectangle? Area { get; set; }
         public Action<CollisionInfo>? OnCollision { get; set; }
-        public Rectangle CollisionBox => Rectangle.Empty;
+        public Rectangle CollisionBox { get; set; }
         public int? Mask { get; set; }
         public bool CollidingWith(Collision other) => CollisionBox.Intersects(other.CollisionBox);
     }
 
-    public class CollisionSystem : IComponentSystem<SceneContext>
+    public class CollisionSystem : IComponentSystem<UpdateContext>
     {
         private const int _gridSize = 128;
-        private Dictionary<(int, int), List<Collision>> _grid = new Dictionary<(int, int), List<Collision>>();
+        private Dictionary<(int, int), List<(ulong, Collision)>> _grid = new();
 
-
-        public void Process(SceneContext context, EcsContext ecs)
+        public void Process(UpdateContext context, EcsContext ecs)
         {
-            var components = ecs.GetSpan<Collision>();
+            ecs.Query((ref Collision c, ref Transform t) =>
+            {
+                var area = c.Area != null ? c.Area.Value : t.Bounds;
+                area.Offset(t.ScenePos);
+                c.CollisionBox = area;
+            });
+
+            var iter = ecs.GetIterator<Collision>();
 
             foreach (var list in _grid.Values) list.Clear();
 
             // Assign components to grid cells
-            foreach (var c in components)
+            while (iter.MoveNext())
             {
+                var c = iter.Component;
+                var entity = iter.Entity.Id;
                 var box = c.CollisionBox;
 
                 for (int x = box.Left / _gridSize; x < box.Right / _gridSize + 1; x++)
@@ -74,11 +84,11 @@ namespace Atlas
                     {
                         if (!_grid.TryGetValue((x, y), out var list))
                         {
-                            list = new List<Collision>();
+                            list = new();
                             _grid[(x, y)] = list;
                         }
 
-                        list.Add(c);
+                        list.Add((entity, c));
                     }
                 }
             }
@@ -86,20 +96,20 @@ namespace Atlas
             // Check collisions within each cell
             foreach (var cell in _grid.Values)
             {
-                foreach (var a in cell)
+                foreach (var (entityA, a) in cell)
                 {
                     if (a.OnCollision == null) continue;
 
-                    foreach (var b in cell)
+                    foreach (var (entityB, b) in cell)
                     {
                         if (a == b || (a.Mask == b.Mask && a.Mask.HasValue && b.Mask.HasValue)) continue;
 
                         if (a.CollidingWith(b))
                         {
                             var info = GetInfo(a.CollisionBox, b.CollisionBox);
-                            var collisionInfo = new CollisionInfo(a, b, info.vector, info.coord, info.dir);
                             if (a.RestrictDirection.HasValue && !a.RestrictDirection.Value.HasFlag(info.dir)) continue;
                             if (b.RestrictDirection.HasValue && !b.RestrictDirection.Value.HasFlag(info.dir.Invert())) continue;
+                            var collisionInfo = new CollisionInfo(ecs.GetEntity(entityB), a, b, info.vector, info.coord, info.dir);
                             a.OnCollision?.Invoke(collisionInfo);
                         }
                     }
